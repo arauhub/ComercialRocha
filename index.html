@@ -1861,14 +1861,15 @@ Estamos sempre à disposição! 🙏`,
         }
 
         function setupPDFButton() {
-            document.getElementById('salvarPDF').addEventListener('click', function() {
-                if (typeof window.jsPDF !== 'undefined' && currentRelatorioData && currentRelatorioTitulo) {
-                    gerarPDF(currentRelatorioTitulo, currentRelatorioData);
-                } else {
-                    alert('❌ Erro: Biblioteca PDF não está disponível ou dados não carregados.');
-                }
-            });
+    document.getElementById('salvarPDF').addEventListener('click', function() {
+        // ✅ VERIFICAÇÃO CORRIGIDA
+        if (typeof window.jspdf?.jsPDF !== 'undefined' && currentRelatorioData && currentRelatorioTitulo) {
+            gerarPDF(currentRelatorioTitulo, currentRelatorioData);
+        } else {
+            alert('❌ Erro: Biblioteca PDF não está disponível ou dados não carregados.');
         }
+    });
+}
 
         function setupLoginForm() {
             const form = document.getElementById('authForm');
@@ -4158,168 +4159,174 @@ Estamos sempre à disposição! 🙏`,
         }
 
         function gerarPDF(titulo, pedidosList) {
-            try {
-                // Verificar se jsPDF está carregado
-                if (!window.jsPDF) {
-                    alert('❌ Biblioteca PDF não carregada. Aguarde alguns segundos e tente novamente.');
-                    return;
-                }
+    try {
+        // --- INÍCIO DA CORREÇÃO ---
+        
+        // 1. A verificação foi alterada de 'window.jsPDF' para 'window.jspdf.jsPDF'.
+        if (typeof window.jspdf?.jsPDF === 'undefined') {
+            alert('❌ Biblioteca PDF não carregada. Aguarde alguns segundos e tente novamente.');
+            return;
+        }
 
-                const { jsPDF } = window.jsPDF;
-                const doc = new jsPDF();
+        // 2. A criação do documento foi corrigida para usar o construtor correto.
+        //    As linhas 'const { jsPDF } = window.jsPDF;' e 'const doc = new jsPDF();' foram substituídas.
+        const doc = new window.jspdf.jsPDF();
+        
+        // --- FIM DA CORREÇÃO ---
+
+        // O restante do seu código original permanece o mesmo, pois já estava correto.
+        
+        // Configurações
+        const margin = 20;
+        let yPosition = margin;
+        const pageWidth = doc.internal.pageSize.getWidth();
+        
+        // Título principal
+        doc.setFontSize(18);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Comercial Rocha', margin, yPosition);
+        yPosition += 10;
+        
+        doc.setFontSize(14);
+        doc.text(titulo, margin, yPosition);
+        yPosition += 15;
+        
+        if (pedidosList.length === 0) {
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Nenhum pedido encontrado para o período selecionado.', margin, yPosition);
+        } else {
+            // Estatísticas resumidas
+            const totalVendas = pedidosList.length;
+            const totalPago = pedidosList.filter(p => p.pago).length;
+            const totalPendente = totalVendas - totalPago;
+            const totalValor = pedidosList.reduce((sum, p) => sum + (p.valorTotal || 0), 0);
+            const totalGaloes = pedidosList.reduce((sum, p) => sum + (p.quantidade || 1), 0);
+            
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Resumo:', margin, yPosition);
+            yPosition += 8;
+            
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Total de Vendas: ${totalVendas}`, margin, yPosition);
+            yPosition += 6;
+            doc.text(`Pagos: ${totalPago}`, margin, yPosition);
+            yPosition += 6;
+            doc.text(`Pendentes: ${totalPendente}`, margin, yPosition);
+            yPosition += 6;
+            doc.text(`Total de Galões: ${totalGaloes}`, margin, yPosition);
+            yPosition += 6;
+            doc.text(`Valor Total: R$ ${totalValor.toFixed(2)}`, margin, yPosition);
+            yPosition += 15;
+            
+            // Preparar dados para a tabela
+            const tableData = pedidosList.map(pedido => {
+                const cliente = clientes.find(c => c.id == pedido.clienteId);
+                const galoesInfo = (pedido.galoesEntregues && pedido.galoesEntregues.length > 0) ? 
+                    pedido.galoesEntregues.join(', ') : 'Pendente';
+                const galoesVindos = (pedido.galoesVindos && pedido.galoesVindos.length > 0) ? 
+                    pedido.galoesVindos.join(', ') : '-';
                 
-                // Configurações
-                const margin = 20;
-                let yPosition = margin;
-                const pageWidth = doc.internal.pageSize.getWidth();
-                
-                // Título principal
-                doc.setFontSize(18);
+                return [
+                    new Date(pedido.data).toLocaleDateString('pt-BR'),
+                    cliente ? cliente.nome.substring(0, 20) : 'N/A',
+                    `${(pedido.quantidade || 1)}${pedido.galoesGratis > 0 ? ` (${pedido.galoesGratis})` : ''}`,
+                    `R$ ${(pedido.valorTotal || 0).toFixed(2)}`,
+                    pedido.pago ? 'Pago' : 'Pendente',
+                    pedido.formaPagamento || '-',
+                    galoesInfo,
+                    galoesVindos
+                ];
+            });
+            
+            if (doc.autoTable) {
+                doc.autoTable({
+                    head: [['Data', 'Cliente', 'Qtd', 'Valor', 'Status', 'Pagamento', 'Galões Entregues', 'Galões Vindo']],
+                    body: tableData,
+                    startY: yPosition,
+                    margin: { left: margin, right: margin },
+                    styles: { fontSize: 8 },
+                    headStyles: { fillColor: [93, 92, 222] },
+                    columnStyles: {
+                        0: { cellWidth: 20 },
+                        1: { cellWidth: 30 },
+                        2: { cellWidth: 15 },
+                        3: { cellWidth: 20 },
+                        4: { cellWidth: 20 },
+                        5: { cellWidth: 25 },
+                        6: { cellWidth: 30 },
+                        7: { cellWidth: 30 }
+                    }
+                });
+            } else {
+                // Fallback para tabela manual se autoTable não estiver disponível
                 doc.setFont('helvetica', 'bold');
-                doc.text('Comercial Rocha', margin, yPosition);
+                doc.text('Detalhes dos Pedidos:', margin, yPosition);
                 yPosition += 10;
                 
-                doc.setFontSize(14);
-                doc.text(titulo, margin, yPosition);
-                yPosition += 15;
+                doc.setFontSize(10);
+                const headers = ['Data', 'Cliente', 'Qtd', 'Valor', 'Status', 'Pagamento'];
+                const columnWidths = [25, 50, 15, 25, 25, 30];
+                let xPosition = margin;
                 
-                if (pedidosList.length === 0) {
-                    doc.setFontSize(12);
-                    doc.setFont('helvetica', 'normal');
-                    doc.text('Nenhum pedido encontrado para o período selecionado.', margin, yPosition);
-                } else {
-                    // Estatísticas resumidas
-                    const totalVendas = pedidosList.length;
-                    const totalPago = pedidosList.filter(p => p.pago).length;
-                    const totalPendente = totalVendas - totalPago;
-                    const totalValor = pedidosList.reduce((sum, p) => sum + (p.valorTotal || 0), 0);
-                    const totalGaloes = pedidosList.reduce((sum, p) => sum + (p.quantidade || 1), 0);
+                headers.forEach((header, index) => {
+                    doc.text(header, xPosition, yPosition);
+                    xPosition += columnWidths[index];
+                });
+                
+                yPosition += 8;
+                doc.setFont('helvetica', 'normal');
+                
+                pedidosList.forEach(pedido => {
+                    if (yPosition > 270) {
+                        doc.addPage();
+                        yPosition = margin;
+                    }
                     
-                    doc.setFontSize(12);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text('Resumo:', margin, yPosition);
-                    yPosition += 8;
+                    const cliente = clientes.find(c => c.id == pedido.clienteId);
+                    xPosition = margin;
                     
-                    doc.setFont('helvetica', 'normal');
-                    doc.text(`Total de Vendas: ${totalVendas}`, margin, yPosition);
-                    yPosition += 6;
-                    doc.text(`Pagos: ${totalPago}`, margin, yPosition);
-                    yPosition += 6;
-                    doc.text(`Pendentes: ${totalPendente}`, margin, yPosition);
-                    yPosition += 6;
-                    doc.text(`Total de Galões: ${totalGaloes}`, margin, yPosition);
-                    yPosition += 6;
-                    doc.text(`Valor Total: R$ ${totalValor.toFixed(2)}`, margin, yPosition);
-                    yPosition += 15;
+                    const rowData = [
+                        new Date(pedido.data).toLocaleDateString('pt-BR'),
+                        cliente ? cliente.nome.substring(0, 20) : 'N/A',
+                        `${(pedido.quantidade || 1)}${pedido.galoesGratis > 0 ? ` (${pedido.galoesGratis})` : ''}`,
+                        `R$ ${(pedido.valorTotal || 0).toFixed(2)}`,
+                        pedido.pago ? 'Pago' : 'Pendente',
+                        pedido.formaPagamento || '-'
+                    ];
                     
-                    // Preparar dados para a tabela
-                    const tableData = pedidosList.map(pedido => {
-                        const cliente = clientes.find(c => c.id == pedido.clienteId);
-                        const galoesInfo = (pedido.galoesEntregues && pedido.galoesEntregues.length > 0) ? 
-                            pedido.galoesEntregues.join(', ') : 'Pendente';
-                        const galoesVindos = (pedido.galoesVindos && pedido.galoesVindos.length > 0) ? 
-                            pedido.galoesVindos.join(', ') : '-';
-                        
-                        return [
-                            new Date(pedido.data).toLocaleDateString('pt-BR'),
-                            cliente ? cliente.nome.substring(0, 20) : 'N/A',
-                            `${(pedido.quantidade || 1)}${pedido.galoesGratis > 0 ? ` (${pedido.galoesGratis})` : ''}`,
-                            `R$ ${(pedido.valorTotal || 0).toFixed(2)}`,
-                            pedido.pago ? 'Pago' : 'Pendente',
-                            pedido.formaPagamento || '-',
-                            galoesInfo,
-                            galoesVindos
-                        ];
+                    rowData.forEach((data, index) => {
+                        doc.text(data, xPosition, yPosition);
+                        xPosition += columnWidths[index];
                     });
                     
-                    // Verificar se autoTable está disponível
-                    if (doc.autoTable) {
-                        doc.autoTable({
-                            head: [['Data', 'Cliente', 'Qtd', 'Valor', 'Status', 'Pagamento', 'Galões Entregues', 'Galões Vindo']],
-                            body: tableData,
-                            startY: yPosition,
-                            margin: { left: margin, right: margin },
-                            styles: { fontSize: 8 },
-                            headStyles: { fillColor: [93, 92, 222] },
-                            columnStyles: {
-                                0: { cellWidth: 20 },
-                                1: { cellWidth: 30 },
-                                2: { cellWidth: 15 },
-                                3: { cellWidth: 20 },
-                                4: { cellWidth: 20 },
-                                5: { cellWidth: 25 },
-                                6: { cellWidth: 30 },
-                                7: { cellWidth: 30 }
-                            }
-                        });
-                    } else {
-                        // Fallback para tabela manual se autoTable não estiver disponível
-                        doc.setFont('helvetica', 'bold');
-                        doc.text('Detalhes dos Pedidos:', margin, yPosition);
-                        yPosition += 10;
-                        
-                        doc.setFontSize(10);
-                        const headers = ['Data', 'Cliente', 'Qtd', 'Valor', 'Status', 'Pagamento'];
-                        const columnWidths = [25, 50, 15, 25, 25, 30];
-                        let xPosition = margin;
-                        
-                        headers.forEach((header, index) => {
-                            doc.text(header, xPosition, yPosition);
-                            xPosition += columnWidths[index];
-                        });
-                        
-                        yPosition += 8;
-                        doc.setFont('helvetica', 'normal');
-                        
-                        pedidosList.forEach(pedido => {
-                            if (yPosition > 270) {
-                                doc.addPage();
-                                yPosition = margin;
-                            }
-                            
-                            const cliente = clientes.find(c => c.id == pedido.clienteId);
-                            xPosition = margin;
-                            
-                            const rowData = [
-                                new Date(pedido.data).toLocaleDateString('pt-BR'),
-                                cliente ? cliente.nome.substring(0, 20) : 'N/A',
-                                `${(pedido.quantidade || 1)}${pedido.galoesGratis > 0 ? ` (${pedido.galoesGratis})` : ''}`,
-                                `R$ ${(pedido.valorTotal || 0).toFixed(2)}`,
-                                pedido.pago ? 'Pago' : 'Pendente',
-                                pedido.formaPagamento || '-'
-                            ];
-                            
-                            rowData.forEach((data, index) => {
-                                doc.text(data, xPosition, yPosition);
-                                xPosition += columnWidths[index];
-                            });
-                            
-                            yPosition += 6;
-                        });
-                    }
-                }
-                
-                // Rodapé
-                const pageCount = doc.internal.getNumberOfPages();
-                for (let i = 1; i <= pageCount; i++) {
-                    doc.setPage(i);
-                    doc.setFontSize(8);
-                    doc.setFont('helvetica', 'normal');
-                    doc.text(`Página ${i} de ${pageCount}`, pageWidth - 30, 290);
-                    doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, margin, 290);
-                }
-                
-                // Salvar PDF
-                const fileName = `${titulo.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
-                doc.save(fileName);
-                
-                alert('✅ PDF gerado com sucesso!');
-                
-            } catch (error) {
-                console.error('❌ Erro ao gerar PDF:', error);
-                alert('❌ Erro ao gerar PDF: ' + error.message);
+                    yPosition += 6;
+                });
             }
         }
+        
+        // Rodapé
+        const pageCount = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Página ${i} de ${pageCount}`, pageWidth - 30, 290);
+            doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, margin, 290);
+        }
+        
+        // Salvar PDF
+        const fileName = `${titulo.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+        doc.save(fileName);
+        
+        alert('✅ PDF gerado com sucesso!');
+        
+    } catch (error) {
+        console.error('❌ Erro ao gerar PDF:', error);
+        alert('❌ Erro ao gerar PDF: ' + error.message);
+    }
+}
 
         window.addEventListener('beforeunload', function() {
             if (clientesListener) clientesListener();
