@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="pt-BR"><head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="
+  <meta http-equiv="Content-Security-Policy" content="
 default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:
 https://cdnjs.cloudflare.com
 https://cdn.jsdelivr.net
@@ -103,7 +103,7 @@ upgrade-insecure-requests;
 
 block-all-mixed-content;
 ">
-
+  
 
     <title>Comercial Rocha - Controle de Galões</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -962,9 +962,9 @@ block-all-mixed-content;
             <h3 class="text-xl font-bold mb-6 text-gray-900 dark:text-white text-center">💰 Selecione a Forma de Pagamento</h3>
             <div id="fidelidadeInfo" class="mb-4 p-4 bg-orange-100 dark:bg-orange-900 rounded-lg hidden">
                 <div class="fidelidade-badge">
-                    🎉 COMPRA GRÁTIS! 🎉
+                    🎉 GALÃO GRÁTIS! 🎉
                 </div>
-                <p class="text-orange-800 dark:text-orange-200 mt-2 text-sm" id="fidelidadeText">Este cliente completou galões suficientes. Esta compra é grátis!</p>
+                <p class="text-orange-800 dark:text-orange-200 mt-2 text-sm" id="fidelidadeText">Este pedido tem galões grátis!</p>
             </div>
             <div id="paymentOptions" class="space-y-3">
                 <div class="payment-option" data-payment="Dinheiro">
@@ -1343,6 +1343,17 @@ block-all-mixed-content;
                     </div>
                 </div>
 
+                <!-- Lista Detalhada -->
+                <div class="card-modern p-6 mb-6">
+                    <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Quantidades por Data</h3>
+                    <div id="estoqueDetalhado" class="estoque-lista space-y-2">
+                        <div class="text-center py-4">
+                            <div class="loading-indicator mx-auto mb-2"></div>
+                            <p class="text-gray-500 text-sm">Carregando...</p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Estoque Geral -->
                 <div class="mb-6">
                     <div class="estoque-geral-card">
@@ -1356,32 +1367,6 @@ block-all-mixed-content;
                                 <div class="text-3xl font-bold" id="totalGaloesVazios">0</div>
                                 <div class="text-sm opacity-90">Galões Vazios</div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Lista Detalhada -->
-                <div class="card-modern p-6 mb-6">
-                    <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Quantidades por Data</h3>
-                    <div id="estoqueDetalhado" class="estoque-lista space-y-2">
-                        <div class="text-center py-4">
-                            <div class="loading-indicator mx-auto mb-2"></div>
-                            <p class="text-gray-500 text-sm">Carregando...</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Visual do Estoque -->
-                <div class="card-modern p-6">
-                    <h3 class="text-xl font-semibold mb-6 text-gray-900 dark:text-white flex items-center">
-                        <span class="text-2xl mr-3">📦</span>
-                        Galões por Data
-                        <span class="ml-4 text-sm text-gray-500">Clique com o botão direito para editar</span>
-                    </h3>
-                    <div id="visualEstoque" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                        <div class="text-center py-8 col-span-full">
-                            <div class="loading-indicator mx-auto mb-4"></div>
-                            <p class="text-gray-500">Carregando estoque...</p>
                         </div>
                     </div>
                 </div>
@@ -1603,7 +1588,7 @@ Estamos sempre à disposição! 🙏`,
             loadConfiguracoes();
             
             checkInternetConnection();
-            setInterval(checkInternetConnection, 30000);
+            setInterval(checkInternetConnection, 180000); // 3 minutos
             
             setTimeout(() => {
                 if (window.firebaseLoaded && window.auth && window.firebaseUtils && window.authUtils) {
@@ -1968,248 +1953,68 @@ Estamos sempre à disposição! 🙏`,
             }
         }
 
-        // Configuration Modal
-        function abrirConfiguracoes() {
-            document.getElementById('configDiasNotificacao').value = configuracoes.diasNotificacao;
-            document.getElementById('configPrecoGalao').value = configuracoes.precoGalao;
-            document.getElementById('configGaloesParaGratis').value = configuracoes.galoesParaGratis;
-            document.getElementById('configMensagemPedido').value = configuracoes.mensagemPedido;
-            document.getElementById('configMensagemNotificacao').value = configuracoes.mensagemNotificacao;
-            document.getElementById('configModal').classList.remove('hidden');
-        }
-
-        function setupConfigModal() {
-            const modal = document.getElementById('configModal');
-            const salvarBtn = document.getElementById('salvarConfig');
-            const restaurarBtn = document.getElementById('restaurarConfig');
-            const cancelBtn = document.getElementById('cancelConfig');
-            const exportarBtn = document.getElementById('exportarDados');
-            const confirmarImportBtn = document.getElementById('confirmarImport');
-            
-            salvarBtn.addEventListener('click', () => {
-                configuracoes.diasNotificacao = parseInt(document.getElementById('configDiasNotificacao').value) || 7;
-                configuracoes.precoGalao = parseFloat(document.getElementById('configPrecoGalao').value) || 10.00;
-                configuracoes.galoesParaGratis = parseInt(document.getElementById('configGaloesParaGratis').value) || 10;
-                configuracoes.mensagemPedido = document.getElementById('configMensagemPedido').value;
-                configuracoes.mensagemNotificacao = document.getElementById('configMensagemNotificacao').value;
-                saveConfiguracoes();
-                modal.classList.add('hidden');
-                alert('✅ Configurações salvas com sucesso!');
-                
-                // Recalcular valor total se necessário
-                calcularValorTotal();
-            });
-            
-            restaurarBtn.addEventListener('click', () => {
-                if (confirm('⚠️ Tem certeza que deseja restaurar as configurações padrão?')) {
-                    configuracoes = {
-                        mensagemPedido: `🪣 *Comercial Rocha*
-
-Olá {nome}! 😊
-
-✅ Sua entrega foi registrada:
-{tipo_pedido}
-📦 Galão entregue: {galao_foi}
-📅 Data: {data}
-
-{mensagem_fidelidade}
-
-Obrigado pela confiança! 🙏💧`,
-                        mensagemNotificacao: `🪣 *Comercial Rocha*
-
-Olá {nome}! 😊
-
-Sentimos sua falta! 💙
-Já faz alguns dias que você não faz seu pedido de água.
-
-💧 Que tal renovar seu estoque?
-📞 Entre em contato conosco para agendar sua próxima entrega!
-
-Estamos sempre à disposição! 🙏`,
-                        diasNotificacao: 7,
-                        precoGalao: 10.00,
-                        galoesParaGratis: 10
-                    };
-                    document.getElementById('configDiasNotificacao').value = configuracoes.diasNotificacao;
-                    document.getElementById('configPrecoGalao').value = configuracoes.precoGalao;
-                    document.getElementById('configGaloesParaGratis').value = configuracoes.galoesParaGratis;
-                    document.getElementById('configMensagemPedido').value = configuracoes.mensagemPedido;
-                    document.getElementById('configMensagemNotificacao').value = configuracoes.mensagemNotificacao;
-                    saveConfiguracoes();
-                    alert('✅ Configurações restauradas para o padrão!');
-                }
-            });
-            
-            cancelBtn.addEventListener('click', () => {
-                modal.classList.add('hidden');
-            });
-
-            exportarBtn.addEventListener('click', () => {
-                exportarDados();
-            });
-
-            confirmarImportBtn.addEventListener('click', () => {
-                importarDados();
-            });
-        }
-
-        function exportarDados() {
-            const dados = {
-                clientes,
-                pedidos,
-                estoque,
-                configuracoes,
-                exportDate: new Date().toISOString()
-            };
-            
-            const dataStr = JSON.stringify(dados, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `comercial-rocha-backup-${new Date().toISOString().split('T')[0]}.json`;
-            link.click();
-            URL.revokeObjectURL(url);
-            
-            alert('✅ Dados exportados com sucesso!');
-        }
-
-        function importarDados() {
-            const fileInput = document.getElementById('importarDados');
-            const file = fileInput.files[0];
-            
-            if (!file) {
-                alert('⚠️ Selecione um arquivo para importar!');
-                return;
-            }
-            
-            if (!confirm('⚠️ ATENÇÃO: Importar dados irá SUBSTITUIR todos os dados atuais. Tem certeza?')) {
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                try {
-                    const dados = JSON.parse(e.target.result);
-                    
-                    if (dados.clientes) clientes = dados.clientes;
-                    if (dados.pedidos) pedidos = dados.pedidos;
-                    if (dados.estoque) estoque = dados.estoque;
-                    if (dados.configuracoes) configuracoes = dados.configuracoes;
-                    
-                    saveLocalData();
-                    saveConfiguracoes();
-                    
-                    // Atualizar interface
-                    updateListaClientes();
-                    updateListaPedidos();
-                    updateVisualizacaoEstoque();
-                    updateEstoqueDetalhado();
-                    updateDashboard();
-                    loadClienteOptions();
-                    loadClienteOptionsRelatorio();
-                    
-                    document.getElementById('configModal').classList.add('hidden');
-                    alert('✅ Dados importados com sucesso!');
-                    
-                } catch (error) {
-                    console.error('❌ Erro ao importar dados:', error);
-                    alert('❌ Erro ao importar dados. Verifique se o arquivo está correto.');
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        // Setup Firebase Listeners
-        function setupFirebaseListeners() {
-            if (!window.db || !window.firebaseUtils || !currentUser || isOfflineMode) return;
-
-            const { collection, onSnapshot, orderBy, query } = window.firebaseUtils;
-
-            const clientesRef = collection(window.db, 'clientes');
-            clientesListener = onSnapshot(clientesRef, (snapshot) => {
-                clientes = [];
-                snapshot.forEach((doc) => {
-                    clientes.push({ id: doc.id, ...doc.data() });
-                });
-                updateListaClientes();
-                updateDashboard();
-                loadClienteOptions();
-                loadClienteOptionsRelatorio();
-                saveLocalData();
-            }, (error) => {
-                console.error('❌ Erro ao escutar clientes:', error);
-                updateConnectionStatus('❌ Erro', 'error');
-            });
-
-            const pedidosRef = collection(window.db, 'pedidos');
-            const pedidosQuery = query(pedidosRef, orderBy('data', 'desc'));
-            pedidosListener = onSnapshot(pedidosQuery, (snapshot) => {
-                pedidos = [];
-                snapshot.forEach((doc) => {
-                    pedidos.push({ id: doc.id, ...doc.data() });
-                });
-                updateListaPedidos();
-                updateDashboard();
-                saveLocalData();
-            }, (error) => {
-                console.error('❌ Erro ao escutar pedidos:', error);
-                updateConnectionStatus('❌ Erro', 'error');
-            });
-
-            const estoqueRef = collection(window.db, 'estoque');
-            estoqueListener = onSnapshot(estoqueRef, (snapshot) => {
-                estoque = {};
-                snapshot.forEach((doc) => {
-                    const id = doc.id.replace(/_/g, '-');
-                    estoque[id] = doc.data();
-                });
-                updateVisualizacaoEstoque();
-                updateEstoqueDetalhado();
-                updateDashboard();
-                saveLocalData();
-            }, (error) => {
-                console.error('❌ Erro ao escutar estoque:', error);
-                updateConnectionStatus('❌ Erro', 'error');
-            });
-        }
-
-        // Sistema de Fidelidade - Corrigido para usar a configuração
+        // Sistema de Fidelidade - Corrigido para reiniciar contagem
         function contarGaloesVendidos(clienteId) {
             return pedidos.filter(p => p.clienteId === clienteId && p.pago)
-                          .reduce((total, pedido) => total + (pedido.quantidade || 1), 0);
+                          .reduce((total, pedido) => total + (pedido.quantidade || 1) - (pedido.galoesGratis || 0), 0);
         }
 
-        function isCompraGratis(clienteId) {
+        function calcularGaloesGratis(clienteId, quantidadePedido) {
             const galoesVendidos = contarGaloesVendidos(clienteId);
             const galoesParaGratis = configuracoes.galoesParaGratis || 10;
-            return (galoesVendidos + 1) % (galoesParaGratis + 1) === 0;
+            
+            let galoesGratis = 0;
+            let galoesRestantes = galoesVendidos % galoesParaGratis;
+            
+            for (let i = 0; i < quantidadePedido; i++) {
+                galoesRestantes++;
+                if (galoesRestantes >= galoesParaGratis) {
+                    galoesGratis++;
+                    galoesRestantes = 0;
+                }
+            }
+            
+            return galoesGratis;
         }
 
         function proximaCompraGratis(clienteId) {
             const galoesVendidos = contarGaloesVendidos(clienteId);
             const galoesParaGratis = configuracoes.galoesParaGratis || 10;
-            return (galoesParaGratis + 1) - (galoesVendidos % (galoesParaGratis + 1));
+            return galoesParaGratis - (galoesVendidos % galoesParaGratis);
         }
 
         function calcularValorTotal() {
             const quantidade = parseInt(document.getElementById('quantidadeGaloes').value) || 1;
             const valorUnitario = configuracoes.precoGalao || 10.00;
-            const valorTotal = quantidade * valorUnitario;
+            const clienteId = document.getElementById('clientePedido').value;
+            
+            let galoesGratis = 0;
+            if (clienteId) {
+                galoesGratis = calcularGaloesGratis(clienteId, quantidade);
+            }
+            
+            const valorTotal = (quantidade - galoesGratis) * valorUnitario;
             document.getElementById('valorTotal').value = valorTotal.toFixed(2);
+            
+            // Atualizar informações do cliente para mostrar galões grátis
+            if (clienteId && galoesGratis > 0) {
+                updateClienteInfo(clienteId);
+            }
         }
 
-        function getClienteGaloes(clienteId) {
-            const pedidosCliente = pedidos.filter(p => p.clienteId === clienteId && p.pago && p.galoesEntregues && p.galoesEntregues.length > 0).sort((a, b) => new Date(b.data) - new Date(a.data));
+        function getClienteUltimaCompra(clienteId) {
+            const pedidosCliente = pedidos.filter(p => p.clienteId === clienteId && p.pago).sort((a, b) => new Date(b.data) - new Date(a.data));
             
-            if (pedidosCliente.length === 0) return [];
+            if (pedidosCliente.length === 0) return null;
             
-            // Pegar últimos 3 pedidos
-            return pedidosCliente.slice(0, 3).map(p => ({
-                datas: p.galoesEntregues,
-                dataEntrega: new Date(p.dataIda).toLocaleDateString('pt-BR')
-            }));
+            // Retornar apenas o último pedido
+            const ultimoPedido = pedidosCliente[0];
+            return {
+                dataEntrega: new Date(ultimoPedido.dataIda).toLocaleDateString('pt-BR'),
+                quantidade: ultimoPedido.quantidade || 1,
+                galoes: ultimoPedido.galoesEntregues || [],
+                galoesGratis: ultimoPedido.galoesGratis || 0
+            };
         }
 
         function getClienteUltimosGaloes(clienteId) {
@@ -2472,6 +2277,18 @@ Estamos sempre à disposição! 🙏`,
                     ...dadosAtualizacao,
                     updatedAt: new Date().toISOString()
                 });
+                
+                // Atualizar informações do cliente no Firebase também
+                if (dadosAtualizacao.pago) {
+                    const pedido = pedidos.find(p => p.id === pedidoId);
+                    if (pedido) {
+                        await atualizarCliente(pedido.clienteId, {
+                            ultimaCompra: new Date().toISOString(),
+                            galaoAtual: pedido.galoesEntregues ? pedido.galoesEntregues[0] : null
+                        });
+                    }
+                }
+                
             } catch (error) {
                 console.error('❌ Erro ao atualizar pedido:', error);
                 throw error;
@@ -2638,18 +2455,7 @@ Estamos sempre à disposição! 🙏`,
                     input.addEventListener('input', function(e) {
                         let value = e.target.value.replace(/\D/g, '');
                         
-                        // Se estiver vazio, colocar apenas (33)
-                        if (value.length === 0) {
-                            e.target.value = '(33) ';
-                            return;
-                        }
-                        
-                        // Se não começar com 33, adicionar 33 no início
-                        if (!value.startsWith('33')) {
-                            value = '33' + value;
-                        }
-                        
-                        // Formatação: (33) 99999-9999
+                        // Formatação: (XX) 99999-9999
                         if (value.length >= 2) {
                             value = '(' + value.substring(0, 2) + ') ' + value.substring(2);
                         }
@@ -2661,7 +2467,7 @@ Estamos sempre à disposição! 🙏`,
                     });
                     
                     input.addEventListener('focus', function(e) {
-                        if (e.target.value === '' || e.target.value === '(33)') {
+                        if (e.target.value === '') {
                             e.target.value = '(33) ';
                         }
                     });
@@ -2700,8 +2506,7 @@ Estamos sempre à disposição! 🙏`,
         }
 
         function createClienteElement(cliente) {
-            const galoesInfo = getClienteGaloes(cliente.id);
-            const ultimosGaloes = getClienteUltimosGaloes(cliente.id);
+            const ultimaCompra = getClienteUltimaCompra(cliente.id);
             const galoesVendidos = contarGaloesVendidos(cliente.id);
             const proximaGratis = proximaCompraGratis(cliente.id);
             const galoesParaGratis = configuracoes.galoesParaGratis || 10;
@@ -2714,22 +2519,18 @@ Estamos sempre à disposição! 🙏`,
                 (item.data.id === cliente.id || (item.action === 'add_cliente' && cliente.id.startsWith('offline_')))
             );
             
-            let galoesHtml = '';
-            if (galoesInfo.length > 0) {
-                galoesHtml = galoesInfo.map(g => 
-                    `<div class="galao-info-card">
-                        <strong>Galões:</strong> ${g.datas.join(', ')} - <strong>Entregue em:</strong> ${g.dataEntrega}
-                    </div>`
-                ).join('');
-            } else if (ultimosGaloes.length > 0) {
-                galoesHtml = `<div class="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg mt-2">
-                    <p class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">Últimas compras:</p>
-                    ${ultimosGaloes.map(g => 
-                        `<p class="text-xs text-gray-600 dark:text-gray-400">${g.dataEntrega} - ${g.quantidade} galão(s)${g.galoes.length > 0 ? ` (${g.galoes.join(', ')})` : ''}</p>`
-                    ).join('')}
+            let ultimaCompraHtml = '';
+            if (ultimaCompra) {
+                ultimaCompraHtml = `<div class="bg-blue-100 dark:bg-blue-800 p-3 rounded-lg mt-2">
+                    <p class="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-1">Última compra:</p>
+                    <p class="text-xs text-blue-700 dark:text-blue-300">
+                        ${ultimaCompra.dataEntrega} - ${ultimaCompra.quantidade} galão(s)
+                        ${ultimaCompra.galoesGratis > 0 ? ` (${ultimaCompra.galoesGratis} grátis)` : ''}
+                        ${ultimaCompra.galoes.length > 0 ? ` - ${ultimaCompra.galoes.join(', ')}` : ''}
+                    </p>
                 </div>`;
             } else {
-                galoesHtml = '<p class="text-gray-500 dark:text-gray-400 mt-2">Nenhuma compra realizada</p>';
+                ultimaCompraHtml = '<p class="text-gray-500 dark:text-gray-400 mt-2">Nenhuma compra realizada</p>';
             }
             
             div.innerHTML = `
@@ -2745,9 +2546,9 @@ Estamos sempre à disposição! 🙏`,
                         <span class="mr-2">📞</span>${cliente.telefone}
                     </p>` : ''}
                     <p class="text-orange-600 dark:text-orange-400 flex items-center mt-1 font-semibold">
-                        <span class="mr-2">🎯</span>Galões vendidos: ${galoesVendidos} | Próxima grátis em: ${proximaGratis} galão(s) (${galoesParaGratis + 1}ª compra)
+                        <span class="mr-2">🎯</span>Galões vendidos: ${galoesVendidos} | Próxima grátis em: ${proximaGratis} galão(s)
                     </p>
-                    ${galoesHtml}
+                    ${ultimaCompraHtml}
                 </div>
                 <div class="flex flex-col space-y-2">
                     <button onclick="editarCliente('${cliente.id}')" class="btn-modern btn-uniform-size bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-sm">
@@ -2871,6 +2672,213 @@ Estamos sempre à disposição! 🙏`,
                     alert('❌ Erro ao excluir cliente. Tente novamente.');
                 }
             }
+        }
+
+        // Configuration Modal
+        function abrirConfiguracoes() {
+            document.getElementById('configDiasNotificacao').value = configuracoes.diasNotificacao;
+            document.getElementById('configPrecoGalao').value = configuracoes.precoGalao;
+            document.getElementById('configGaloesParaGratis').value = configuracoes.galoesParaGratis;
+            document.getElementById('configMensagemPedido').value = configuracoes.mensagemPedido;
+            document.getElementById('configMensagemNotificacao').value = configuracoes.mensagemNotificacao;
+            document.getElementById('configModal').classList.remove('hidden');
+        }
+
+        function setupConfigModal() {
+            const modal = document.getElementById('configModal');
+            const salvarBtn = document.getElementById('salvarConfig');
+            const restaurarBtn = document.getElementById('restaurarConfig');
+            const cancelBtn = document.getElementById('cancelConfig');
+            const exportarBtn = document.getElementById('exportarDados');
+            const confirmarImportBtn = document.getElementById('confirmarImport');
+            
+            salvarBtn.addEventListener('click', () => {
+                configuracoes.diasNotificacao = parseInt(document.getElementById('configDiasNotificacao').value) || 7;
+                configuracoes.precoGalao = parseFloat(document.getElementById('configPrecoGalao').value) || 10.00;
+                configuracoes.galoesParaGratis = parseInt(document.getElementById('configGaloesParaGratis').value) || 10;
+                configuracoes.mensagemPedido = document.getElementById('configMensagemPedido').value;
+                configuracoes.mensagemNotificacao = document.getElementById('configMensagemNotificacao').value;
+                saveConfiguracoes();
+                modal.classList.add('hidden');
+                alert('✅ Configurações salvas com sucesso!');
+                
+                // Recalcular valor total se necessário
+                calcularValorTotal();
+            });
+            
+            restaurarBtn.addEventListener('click', () => {
+                if (confirm('⚠️ Tem certeza que deseja restaurar as configurações padrão?')) {
+                    configuracoes = {
+                        mensagemPedido: `🪣 *Comercial Rocha*
+
+Olá {nome}! 😊
+
+✅ Sua entrega foi registrada:
+{tipo_pedido}
+📦 Galão entregue: {galao_foi}
+📅 Data: {data}
+
+{mensagem_fidelidade}
+
+Obrigado pela confiança! 🙏💧`,
+                        mensagemNotificacao: `🪣 *Comercial Rocha*
+
+Olá {nome}! 😊
+
+Sentimos sua falta! 💙
+Já faz alguns dias que você não faz seu pedido de água.
+
+💧 Que tal renovar seu estoque?
+📞 Entre em contato conosco para agendar sua próxima entrega!
+
+Estamos sempre à disposição! 🙏`,
+                        diasNotificacao: 7,
+                        precoGalao: 10.00,
+                        galoesParaGratis: 10
+                    };
+                    document.getElementById('configDiasNotificacao').value = configuracoes.diasNotificacao;
+                    document.getElementById('configPrecoGalao').value = configuracoes.precoGalao;
+                    document.getElementById('configGaloesParaGratis').value = configuracoes.galoesParaGratis;
+                    document.getElementById('configMensagemPedido').value = configuracoes.mensagemPedido;
+                    document.getElementById('configMensagemNotificacao').value = configuracoes.mensagemNotificacao;
+                    saveConfiguracoes();
+                    alert('✅ Configurações restauradas para o padrão!');
+                }
+            });
+            
+            cancelBtn.addEventListener('click', () => {
+                modal.classList.add('hidden');
+            });
+
+            exportarBtn.addEventListener('click', () => {
+                exportarDados();
+            });
+
+            confirmarImportBtn.addEventListener('click', () => {
+                importarDados();
+            });
+        }
+
+        function exportarDados() {
+            const dados = {
+                clientes,
+                pedidos,
+                estoque,
+                configuracoes,
+                exportDate: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(dados, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `comercial-rocha-backup-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            
+            alert('✅ Dados exportados com sucesso!');
+        }
+
+        function importarDados() {
+            const fileInput = document.getElementById('importarDados');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('⚠️ Selecione um arquivo para importar!');
+                return;
+            }
+            
+            if (!confirm('⚠️ ATENÇÃO: Importar dados irá SUBSTITUIR todos os dados atuais. Tem certeza?')) {
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const dados = JSON.parse(e.target.result);
+                    
+                    if (dados.clientes) clientes = dados.clientes;
+                    if (dados.pedidos) pedidos = dados.pedidos;
+                    if (dados.estoque) estoque = dados.estoque;
+                    if (dados.configuracoes) configuracoes = dados.configuracoes;
+                    
+                    saveLocalData();
+                    saveConfiguracoes();
+                    
+                    // Atualizar interface
+                    updateListaClientes();
+                    updateListaPedidos();
+                    updateVisualizacaoEstoque();
+                    updateEstoqueDetalhado();
+                    updateDashboard();
+                    loadClienteOptions();
+                    loadClienteOptionsRelatorio();
+                    
+                    document.getElementById('configModal').classList.add('hidden');
+                    alert('✅ Dados importados com sucesso!');
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao importar dados:', error);
+                    alert('❌ Erro ao importar dados. Verifique se o arquivo está correto.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Setup Firebase Listeners
+        function setupFirebaseListeners() {
+            if (!window.db || !window.firebaseUtils || !currentUser || isOfflineMode) return;
+
+            const { collection, onSnapshot, orderBy, query } = window.firebaseUtils;
+
+            const clientesRef = collection(window.db, 'clientes');
+            clientesListener = onSnapshot(clientesRef, (snapshot) => {
+                clientes = [];
+                snapshot.forEach((doc) => {
+                    clientes.push({ id: doc.id, ...doc.data() });
+                });
+                updateListaClientes();
+                updateDashboard();
+                loadClienteOptions();
+                loadClienteOptionsRelatorio();
+                saveLocalData();
+            }, (error) => {
+                console.error('❌ Erro ao escutar clientes:', error);
+                updateConnectionStatus('❌ Erro', 'error');
+            });
+
+            const pedidosRef = collection(window.db, 'pedidos');
+            const pedidosQuery = query(pedidosRef, orderBy('data', 'desc'));
+            pedidosListener = onSnapshot(pedidosQuery, (snapshot) => {
+                pedidos = [];
+                snapshot.forEach((doc) => {
+                    pedidos.push({ id: doc.id, ...doc.data() });
+                });
+                updateListaPedidos();
+                updateDashboard();
+                saveLocalData();
+            }, (error) => {
+                console.error('❌ Erro ao escutar pedidos:', error);
+                updateConnectionStatus('❌ Erro', 'error');
+            });
+
+            const estoqueRef = collection(window.db, 'estoque');
+            estoqueListener = onSnapshot(estoqueRef, (snapshot) => {
+                estoque = {};
+                snapshot.forEach((doc) => {
+                    const id = doc.id.replace(/_/g, '-');
+                    estoque[id] = doc.data();
+                });
+                updateVisualizacaoEstoque();
+                updateEstoqueDetalhado();
+                updateDashboard();
+                saveLocalData();
+            }, (error) => {
+                console.error('❌ Erro ao escutar estoque:', error);
+                updateConnectionStatus('❌ Erro', 'error');
+            });
         }
 
         function setupContextMenu() {
@@ -3041,13 +3049,16 @@ Estamos sempre à disposição! 🙏`,
                         }
                     }
                     
-                    // Adicionar galões vindos como vazios - CORRIGIDO para adicionar a quantidade correta
-                    for (const dataGalao of galoesVindos) {
+                    // Adicionar galões vindos como vazios - Processados individualmente
+                    const galoesVindosContados = {};
+                    galoesVindos.forEach(dataGalao => {
+                        galoesVindosContados[dataGalao] = (galoesVindosContados[dataGalao] || 0) + 1;
+                    });
+                    
+                    for (const [dataGalao, quantidade] of Object.entries(galoesVindosContados)) {
                         const currentVazio = estoque[dataGalao]?.vazio || 0;
-                        // Contar quantas vezes esta data aparece em galoesVindos
-                        const quantidadeEstaData = galoesVindos.filter(g => g === dataGalao).length;
                         await atualizarEstoque(dataGalao, {
-                            vazio: currentVazio + quantidadeEstaData
+                            vazio: currentVazio + quantidade
                         });
                     }
                     
@@ -3192,6 +3203,14 @@ Estamos sempre à disposição! 🙏`,
                             dataPagamento: new Date().toISOString()
                         });
                         
+                        // Atualizar última compra do cliente
+                        const cliente = clientes.find(c => c.id == currentPedidoForPayment.clienteId);
+                        if (cliente) {
+                            await atualizarCliente(cliente.id, {
+                                ultimaCompra: new Date().toISOString()
+                            });
+                        }
+                        
                         modal.classList.add('hidden');
                         paymentOptions.forEach(opt => opt.classList.remove('selected'));
                         currentPedidoForPayment = null;
@@ -3275,10 +3294,10 @@ Estamos sempre à disposição! 🙏`,
             const clienteInfoContent = document.getElementById('clienteInfoContent');
             
             const cliente = clientes.find(c => c.id == clienteId);
-            const galoesInfo = getClienteGaloes(clienteId);
             const galoesVendidos = contarGaloesVendidos(clienteId);
             const proximaGratis = proximaCompraGratis(clienteId);
-            const compraGratis = isCompraGratis(clienteId);
+            const quantidade = parseInt(document.getElementById('quantidadeGaloes').value) || 1;
+            const galoesGratis = calcularGaloesGratis(clienteId, quantidade);
             const galoesParaGratis = configuracoes.galoesParaGratis || 10;
             
             let infoHtml = `
@@ -3298,20 +3317,23 @@ Estamos sempre à disposição! 🙏`,
                 <div class="mt-3 p-3 bg-orange-100 dark:bg-orange-800 rounded-lg">
                     <p class="text-sm font-semibold text-orange-800 dark:text-orange-200">Sistema de Fidelidade:</p>
                     <p class="text-orange-700 dark:text-orange-300">Galões vendidos: ${galoesVendidos}</p>
-                    ${compraGratis ? 
-                        `<p class="text-green-700 dark:text-green-300 font-bold">🎉 Esta é a ${galoesParaGratis + 1}ª compra - GRÁTIS!</p>` : 
-                        `<p class="text-orange-700 dark:text-orange-300">Próxima grátis em: ${proximaGratis} galão(s) (${galoesParaGratis + 1}ª compra)</p>`
+                    ${galoesGratis > 0 ? 
+                        `<p class="text-green-700 dark:text-green-300 font-bold">🎉 Neste pedido: ${galoesGratis} galão(s) GRÁTIS!</p>` : 
+                        `<p class="text-orange-700 dark:text-orange-300">Próxima grátis em: ${proximaGratis} galão(s)</p>`
                     }
                 </div>
             `;
             
-            if (galoesInfo.length > 0) {
+            const ultimaCompra = getClienteUltimaCompra(clienteId);
+            if (ultimaCompra) {
                 infoHtml += `
                     <div class="mt-3 p-3 bg-blue-100 dark:bg-blue-800 rounded-lg">
-                        <p class="text-sm font-semibold text-blue-800 dark:text-blue-200">Galões Atuais (últimas 3 compras):</p>
-                        ${galoesInfo.map(g => 
-                            `<p class="text-blue-700 dark:text-blue-300">${g.datas.join(', ')} - Entregue em ${g.dataEntrega}</p>`
-                        ).join('')}
+                        <p class="text-sm font-semibold text-blue-800 dark:text-blue-200">Última compra:</p>
+                        <p class="text-blue-700 dark:text-blue-300">
+                            ${ultimaCompra.dataEntrega} - ${ultimaCompra.quantidade} galão(s)
+                            ${ultimaCompra.galoesGratis > 0 ? ` (${ultimaCompra.galoesGratis} grátis)` : ''}
+                            ${ultimaCompra.galoes.length > 0 ? ` - ${ultimaCompra.galoes.join(', ')}` : ''}
+                        </p>
                     </div>
                 `;
             }
@@ -3359,12 +3381,14 @@ Estamos sempre à disposição! 🙏`,
                 const cliente = clientes.find(c => c.id == clienteId);
                 const quantidade = parseInt(document.getElementById('quantidadeGaloes').value);
                 const valorTotal = parseFloat(document.getElementById('valorTotal').value);
+                const galoesGratis = calcularGaloesGratis(clienteId, quantidade);
                 
                 const pedido = {
                     clienteId: clienteId,
                     dataIda: document.getElementById('dataIda').value,
                     quantidade: quantidade,
                     valorTotal: valorTotal,
+                    galoesGratis: galoesGratis,
                     galoesEntregues: [],
                     galoesVindos: [],
                     detalhesConfirmados: false,
@@ -3398,15 +3422,14 @@ Estamos sempre à disposição! 🙏`,
             
             if (!cliente || !pedido) return;
             
-            const compraGratis = isCompraGratis(cliente.id);
-            const galoesParaGratis = configuracoes.galoesParaGratis || 10;
+            const galoesGratis = pedido.galoesGratis || 0;
             
             let mensagem = configuracoes.mensagemPedido;
             mensagem = mensagem.replace('{nome}', cliente.nome);
-            mensagem = mensagem.replace('{tipo_pedido}', `📦 ${pedido.quantidade} galão(s) - R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}`);
+            mensagem = mensagem.replace('{tipo_pedido}', `📦 ${pedido.quantidade} galão(s)${galoesGratis > 0 ? ` (${galoesGratis} grátis)` : ''} - R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}`);
             mensagem = mensagem.replace('{galao_foi}', pedido.galoesEntregues ? pedido.galoesEntregues.join(', ') : 'Pendente');
             mensagem = mensagem.replace('{data}', new Date(pedido.dataIda).toLocaleDateString('pt-BR'));
-            mensagem = mensagem.replace('{mensagem_fidelidade}', compraGratis ? `🎉 *PARABÉNS!* Esta é sua ${galoesParaGratis + 1}ª compra - GRÁTIS! 🎁` : '');
+            mensagem = mensagem.replace('{mensagem_fidelidade}', galoesGratis > 0 ? `🎉 *PARABÉNS!* ${galoesGratis} galão(s) GRÁTIS pelo sistema de fidelidade! 🎁` : '');
             
             abrirWhatsApp(cliente.telefone, mensagem);
         }
@@ -3423,7 +3446,7 @@ Estamos sempre à disposição! 🙏`,
             pedidoInfo.innerHTML = `
                 <p><strong>Cliente:</strong> ${cliente ? cliente.nome : 'N/A'}</p>
                 <p><strong>Data:</strong> ${new Date(pedido.dataIda).toLocaleDateString('pt-BR')}</p>
-                <p><strong>Quantidade:</strong> ${pedido.quantidade} galão(s)</p>
+                <p><strong>Quantidade:</strong> ${pedido.quantidade} galão(s)${pedido.galoesGratis > 0 ? ` (${pedido.galoesGratis} grátis)` : ''}</p>
                 <p><strong>Valor Total:</strong> R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}</p>
             `;
             
@@ -3550,8 +3573,7 @@ Estamos sempre à disposição! 🙏`,
 
         function createPedidoElement(pedido, isAdmin) {
             const cliente = clientes.find(c => c.id == pedido.clienteId);
-            const compraGratis = cliente && isCompraGratis(cliente.id);
-            const galoesParaGratis = configuracoes.galoesParaGratis || 10;
+            const galoesGratis = pedido.galoesGratis || 0;
             
             const div = document.createElement('div');
             div.className = `flex flex-col md:flex-row md:items-center md:justify-between p-6 border rounded-xl transition-all duration-300 ${pedido.pago ? 'border-green-300 bg-green-50 dark:bg-green-900 dark:border-green-600' : 'border-red-300 bg-red-50 dark:bg-red-900 dark:border-red-600'}`;
@@ -3578,10 +3600,10 @@ Estamos sempre à disposição! 🙏`,
                     <h4 class="font-bold text-lg text-gray-900 dark:text-white flex items-center">
                         ${cliente ? cliente.nome : 'Cliente não encontrado'}
                         ${syncPendingItem ? '<span class="sync-pending">Pendente</span>' : ''}
-                        ${compraGratis ? `<span class="fidelidade-badge ml-2">🎉 ${galoesParaGratis + 1}ª GRÁTIS!</span>` : ''}
+                        ${galoesGratis > 0 ? `<span class="fidelidade-badge ml-2">🎉 ${galoesGratis} Grátis!</span>` : ''}
                     </h4>
                     <p class="text-gray-600 dark:text-gray-400 mt-1">
-                        📦 ${pedido.quantidade || 1} galão(s) - R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}
+                        📦 ${pedido.quantidade || 1} galão(s)${galoesGratis > 0 ? ` (${galoesGratis} grátis)` : ''} - R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}
                     </p>
                     <p class="text-gray-600 dark:text-gray-400 mt-1">📅 ${new Date(pedido.dataIda).toLocaleDateString('pt-BR')}</p>
                     ${galoesInfo}
@@ -3628,19 +3650,20 @@ Estamos sempre à disposição! 🙏`,
                 currentPedidoForPayment = pedido;
                 
                 const cliente = clientes.find(c => c.id == pedido.clienteId);
-                const compraGratis = cliente && isCompraGratis(cliente.id);
-                const galoesParaGratis = configuracoes.galoesParaGratis || 10;
+                const galoesGratis = pedido.galoesGratis || 0;
                 
                 const fidelidadeInfo = document.getElementById('fidelidadeInfo');
                 const fidelidadeText = document.getElementById('fidelidadeText');
                 const gratisOption = document.querySelector('[data-payment="Grátis"]');
                 
-                if (compraGratis) {
+                if (galoesGratis > 0) {
                     fidelidadeInfo.classList.remove('hidden');
-                    fidelidadeText.textContent = `Este cliente completou ${galoesParaGratis} galões. Esta é a ${galoesParaGratis + 1}ª compra grátis!`;
+                    fidelidadeText.textContent = `Este pedido tem ${galoesGratis} galão(s) grátis pelo sistema de fidelidade!`;
                     gratisOption.classList.remove('hidden');
-                    document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
-                    gratisOption.classList.add('selected');
+                    if (pedido.valorTotal === 0) {
+                        document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
+                        gratisOption.classList.add('selected');
+                    }
                 } else {
                     fidelidadeInfo.classList.add('hidden');
                     gratisOption.classList.add('hidden');
@@ -3693,6 +3716,7 @@ Estamos sempre à disposição! 🙏`,
 
         function updateVisualizacaoEstoque() {
             const visual = document.getElementById('visualEstoque');
+            if (!visual) return; // Element might not exist
             visual.innerHTML = '';
             
             if (Object.keys(estoque).length === 0) {
@@ -3730,6 +3754,7 @@ Estamos sempre à disposição! 🙏`,
 
         function updateEstoqueDetalhado() {
             const lista = document.getElementById('estoqueDetalhado');
+            if (!lista) return; // Element might not exist
             lista.innerHTML = '';
             
             if (Object.keys(estoque).length === 0) {
@@ -3904,8 +3929,13 @@ Estamos sempre à disposição! 🙏`,
             const totalVazios = Object.values(estoque).reduce((total, stock) => total + (stock.vazio || 0), 0);
             
             document.getElementById('galoesEstoque').textContent = totalCheios;
-            document.getElementById('totalGaloesCheios').textContent = totalCheios;
-            document.getElementById('totalGaloesVazios').textContent = totalVazios;
+            
+            if (document.getElementById('totalGaloesCheios')) {
+                document.getElementById('totalGaloesCheios').textContent = totalCheios;
+            }
+            if (document.getElementById('totalGaloesVazios')) {
+                document.getElementById('totalGaloesVazios').textContent = totalVazios;
+            }
             
             const pendentes = pedidos.filter(p => !p.pago).length;
             document.getElementById('pedidosPendentes').textContent = pendentes;
@@ -4103,7 +4133,7 @@ Estamos sempre à disposição! 🙏`,
                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
                             <td class="border border-gray-300 dark:border-gray-600 p-4">${new Date(pedido.data).toLocaleDateString('pt-BR')}</td>
                             <td class="border border-gray-300 dark:border-gray-600 p-4 font-semibold">${cliente ? cliente.nome : 'N/A'}</td>
-                            <td class="border border-gray-300 dark:border-gray-600 p-4">${pedido.quantidade || 1}</td>
+                            <td class="border border-gray-300 dark:border-gray-600 p-4">${pedido.quantidade || 1}${pedido.galoesGratis > 0 ? ` (${pedido.galoesGratis} grátis)` : ''}</td>
                             <td class="border border-gray-300 dark:border-gray-600 p-4">R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}</td>
                             <td class="border border-gray-300 dark:border-gray-600 p-4">
                                 <span class="${pedido.pago ? 'text-green-600 bg-green-100 dark:bg-green-800' : 'text-red-600 bg-red-100 dark:bg-red-800'} font-bold px-3 py-1 rounded-full text-sm">
@@ -4193,7 +4223,7 @@ Estamos sempre à disposição! 🙏`,
                         return [
                             new Date(pedido.data).toLocaleDateString('pt-BR'),
                             cliente ? cliente.nome.substring(0, 20) : 'N/A',
-                            (pedido.quantidade || 1).toString(),
+                            `${(pedido.quantidade || 1)}${pedido.galoesGratis > 0 ? ` (${pedido.galoesGratis})` : ''}`,
                             `R$ ${(pedido.valorTotal || 0).toFixed(2)}`,
                             pedido.pago ? 'Pago' : 'Pendente',
                             pedido.formaPagamento || '-',
@@ -4253,7 +4283,7 @@ Estamos sempre à disposição! 🙏`,
                             const rowData = [
                                 new Date(pedido.data).toLocaleDateString('pt-BR'),
                                 cliente ? cliente.nome.substring(0, 20) : 'N/A',
-                                (pedido.quantidade || 1).toString(),
+                                `${(pedido.quantidade || 1)}${pedido.galoesGratis > 0 ? ` (${pedido.galoesGratis})` : ''}`,
                                 `R$ ${(pedido.valorTotal || 0).toFixed(2)}`,
                                 pedido.pago ? 'Pago' : 'Pendente',
                                 pedido.formaPagamento || '-'
