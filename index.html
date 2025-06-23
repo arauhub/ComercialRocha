@@ -1,105 +1,119 @@
 <!DOCTYPE html><html lang="pt-BR">
-
-
-	<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="
-default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: 
-https://cdnjs.cloudflare.com 
-https://cdn.jsdelivr.net 
-https://code.jquery.com 
-https://unpkg.com 
-https://d3js.org 
-https://threejs.org 
-https://cdn.plot.ly 
-https://stackpath.bootstrapcdn.com 
-https://maps.googleapis.com 
-https://cdn.tailwindcss.com 
-https://ajax.googleapis.com 
-https://kit.fontawesome.com 
-https://cdn.datatables.net 
-https://maxcdn.bootstrapcdn.com 
-https://code.highcharts.com 
-https://tako-static-assets-production.s3.amazonaws.com 
-https://www.youtube.com 
-https://fonts.googleapis.com 
-https://fonts.gstatic.com 
-https://pfst.cf2.poecdn.net 
-https://puc.poecdn.net 
-https://i.imgur.com 
-https://wikimedia.org 
-https://*.icons8.com 
-https://*.giphy.com 
-https://picsum.photos 
-https://images.unsplash.com 
-https://www.gstatic.com 
-https://*.firebaseapp.com 
-https://*.googleapis.com 
-https://securetoken.googleapis.com 
-https://identitytoolkit.googleapis.com 
-https://firebase.googleapis.com 
-https://*.cloudfunctions.net 
-https://firebaseinstallations.googleapis.com;
+	<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-script-src 'self' 'unsafe-inline' 'unsafe-eval' 
-https://www.gstatic.com 
-https://*.firebaseapp.com 
-https://*.googleapis.com 
-https://securetoken.googleapis.com 
-https://identitytoolkit.googleapis.com 
-https://firebase.googleapis.com 
-https://*.cloudfunctions.net 
-https://firebaseinstallations.googleapis.com 
-https://cdn.tailwindcss.com 
-https://cdnjs.cloudflare.com 
-https://cdn.jsdelivr.net 
-https://code.jquery.com 
-https://unpkg.com;
+ <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-connect-src 'self' 
-https://www.gstatic.com 
-https://*.firebaseapp.com 
-https://*.googleapis.com 
-https://securetoken.googleapis.com 
-https://identitytoolkit.googleapis.com 
-https://firebase.googleapis.com 
-https://*.cloudfunctions.net 
-https://firebaseinstallations.googleapis.com 
-https://nominatim.openstreetmap.org 
-https://1.1.1.1 
-https://www.google.com;
+    <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:
+    https://cdnjs.cloudflare.com
+    https://cdn.jsdelivr.net
+    https://code.jquery.com
+    https://unpkg.com
+    https://d3js.org
+    https://threejs.org
+    https://cdn.plot.ly
+    https://stackpath.bootstrapcdn.com
+    https://maps.googleapis.com
+    https://cdn.tailwindcss.com
+    https://ajax.googleapis.com
+    https://kit.fontawesome.com
+    https://cdn.datatables.net
+    https://maxcdn.bootstrapcdn.com
+    https://code.highcharts.com
+    https://tako-static-assets-production.s3.amazonaws.com
+    https://www.youtube.com
+    https://fonts.googleapis.com
+    https://fonts.gstatic.com
+    https://pfst.cf2.poecdn.net
+    https://puc.poecdn.net
+    https://i.imgur.com
+    https://wikimedia.org
+    https://*.icons8.com
+    https://*.giphy.com
+    https://picsum.photos
+    https://images.unsplash.com
+    https://www.gstatic.com
+    https://*.firebaseapp.com
+    https://*.googleapis.com
+    https://securetoken.googleapis.com
+    https://identitytoolkit.googleapis.com
+    https://firebase.googleapis.com
+    https://*.cloudfunctions.net
+    https://firebaseinstallations.googleapis.com
+    https://nominatim.openstreetmap.org
+    https://1.1.1.1
+    https://www.google.com;
 
-img-src 'self' data: blob: 
-https://www.gstatic.com 
-https://cdnjs.cloudflare.com 
-https://cdn.jsdelivr.net 
-https://code.jquery.com 
-https://unpkg.com 
-https://images.unsplash.com 
-https://i.imgur.com 
-https://wikimedia.org 
-https://*.icons8.com 
-https://*.giphy.com 
-https://picsum.photos;
+    script-src 'self' 'unsafe-inline' 'unsafe-eval'
+    https://www.gstatic.com
+    https://*.firebaseapp.com
+    https://*.googleapis.com
+    https://securetoken.googleapis.com
+    https://identitytoolkit.googleapis.com
+    https://firebase.googleapis.com
+    https://*.cloudfunctions.net
+    https://firebaseinstallations.googleapis.com
+    https://cdn.tailwindcss.com
+    https://cdnjs.cloudflare.com
+    https://cdn.jsdelivr.net
+    https://code.jquery.com
+    https://unpkg.com
+    https://kit.fontawesome.com
+    https://cdn.plot.ly
+    https://code.highcharts.com;
 
-frame-src 'self' 
-https://www.youtube.com 
-https://trytako.com 
-https://*.firebaseapp.com;
+    connect-src 'self'
+    https://www.gstatic.com
+    https://*.firebaseapp.com
+    https://*.googleapis.com
+    https://securetoken.googleapis.com
+    https://identitytoolkit.googleapis.com
+    https://firebase.googleapis.com
+    https://*.cloudfunctions.net
+    https://firebaseinstallations.googleapis.com
+    https://nominatim.openstreetmap.org
+    https://1.1.1.1
+    https://www.google.com;
 
-child-src 'self';
+    img-src 'self' data: blob:
+    https://www.gstatic.com
+    https://cdnjs.cloudflare.com
+    https://cdn.jsdelivr.net
+    https://code.jquery.com
+    https://unpkg.com
+    https://images.unsplash.com
+    https://i.imgur.com
+    https://wikimedia.org
+    https://*.icons8.com
+    https://*.giphy.com
+    https://picsum.photos
+    https://cdn.plot.ly
+    https://code.highcharts.com;
 
-manifest-src 'self';
+    frame-src 'self'
+    https://www.youtube.com
+    https://trytako.com
+    https://*.firebaseapp.com;
 
-worker-src 'self';
+    child-src 'self';
 
-upgrade-insecure-requests;
+    manifest-src 'self';
 
-block-all-mixed-content;
-">
+    worker-src 'self';
+
+    upgrade-insecure-requests;
+
+    block-all-mixed-content;
+    ">
 
     <title>Comercial Rocha - Controle de Galões</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- jsPDF para gerar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <!-- Firebase SDKs -->
     <script type="module">
         // Try to load Firebase, but don't block the app if it fails
@@ -623,6 +637,93 @@ block-all-mixed-content;
         .search-container {
             position: relative;
         }
+
+        .galao-input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .galao-input-group input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .galao-input-group button {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .galao-input-group button:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+        }
+
+        .admin-only {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .admin-only.admin-active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .estoque-item-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .estoque-item-actions button {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit-estoque {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-edit-estoque:hover {
+            background: #2563eb;
+        }
+
+        .btn-delete-estoque {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-delete-estoque:hover {
+            background: #dc2626;
+        }
+
+        .galao-dates-display {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .data-galao-input {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 12px;
+            width: 80px;
+        }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
@@ -771,7 +872,7 @@ block-all-mixed-content;
                 
                 <div>
                     <h4 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Selecionar Galões do Estoque</h4>
-                    <div id="galaoSelectionList" class="space-y-3 max-h-60 overflow-y-auto">
+                    <div id="galaoSelectionList" class="space-y-4">
                         <!-- Lista de galões será preenchida aqui -->
                     </div>
                 </div>
@@ -812,6 +913,29 @@ block-all-mixed-content;
                         <input type="number" id="editPedidoValor" step="0.01" class="input-modern w-full">
                     </div>
                 </div>
+                
+                <!-- Galões Entregues -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Galões Entregues</h4>
+                    <div id="editGaloesEntregues" class="space-y-2">
+                        <!-- Será preenchido dinamicamente -->
+                    </div>
+                    <button type="button" id="addGalaoEntregue" class="btn-modern mt-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-sm">
+                        ➕ Adicionar Galão
+                    </button>
+                </div>
+
+                <!-- Galões Vindos -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Galões Vindos do Cliente</h4>
+                    <div id="editGaloesVindos" class="space-y-2">
+                        <!-- Será preenchido dinamicamente -->
+                    </div>
+                    <button type="button" id="addGalaoVindo" class="btn-modern mt-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-sm">
+                        ➕ Adicionar Galão Vindo
+                    </button>
+                </div>
+                
                 <div class="flex space-x-3 mt-6">
                     <button type="submit" class="btn-modern flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
                         ✅ Salvar
@@ -941,17 +1065,26 @@ block-all-mixed-content;
                     <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Data</label>
                     <input type="text" id="editDataEstoque" readonly="" class="input-modern w-full bg-gray-100 dark:bg-gray-600">
                 </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Status</label>
-                    <input type="text" id="editStatusEstoque" readonly="" class="input-modern w-full bg-gray-100 dark:bg-gray-600">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Quantidade</label>
-                    <input type="number" id="editQuantidadeEstoque" min="0" required="" class="input-modern w-full">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Galões Cheios</label>
+                        <input type="number" id="editCheioEstoque" min="0" class="input-modern w-full">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Galões Vazios</label>
+                        <input type="number" id="editVazioEstoque" min="0" class="input-modern w-full">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Com Cliente</label>
+                        <input type="number" id="editClienteEstoque" min="0" class="input-modern w-full">
+                    </div>
                 </div>
                 <div class="flex space-x-3 mt-6">
                     <button type="submit" class="btn-modern flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
                         ✅ Salvar
+                    </button>
+                    <button type="button" id="deleteEstoque" class="btn-modern flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700">
+                        🗑️ Excluir
                     </button>
                     <button type="button" id="cancelEditEstoque" class="btn-modern flex-1 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700">
                         ❌ Cancelar
@@ -1303,10 +1436,15 @@ block-all-mixed-content;
 
                 <!-- Área de Resultados -->
                 <div id="resultadosRelatorio" class="card-modern p-6 hidden">
-                    <h3 class="text-xl font-semibold mb-6 text-gray-900 dark:text-white flex items-center">
-                        <span class="text-2xl mr-3">📄</span>
-                        Resultados
-                    </h3>
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
+                            <span class="text-2xl mr-3">📄</span>
+                            Resultados
+                        </h3>
+                        <button id="salvarPDF" class="btn-modern bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700">
+                            📄 Salvar PDF
+                        </button>
+                    </div>
                     <div id="conteudoRelatorio"></div>
                 </div>
             </section>
@@ -1334,12 +1472,15 @@ block-all-mixed-content;
         let currentPedidoForDetails = null;
         let currentEditingCliente = null;
         let currentEditingPedido = null;
+        let currentEditingEstoque = null;
         let currentContextMenuData = null;
         let firebaseConnected = false;
         let currentUser = null;
         let isOfflineMode = false;
         let pendingSync = [];
         let isOnline = navigator.onLine;
+        let currentRelatorioData = null;
+        let currentRelatorioTitulo = '';
         let configuracoes = {
             mensagemPedido: `🪣 *Comercial Rocha*
 
@@ -1733,7 +1874,16 @@ Estamos sempre à disposição! 🙏`,
             setupClienteBusca();
             setupClienteRelatorioSelection();
             setupPedidoBusca();
+            setupPDFButton();
             calcularValorTotal();
+        }
+
+        function setupPDFButton() {
+            document.getElementById('salvarPDF').addEventListener('click', function() {
+                if (currentRelatorioData && currentRelatorioTitulo) {
+                    gerarPDF(currentRelatorioTitulo, currentRelatorioData);
+                }
+            });
         }
 
         function setupLoginForm() {
@@ -2043,6 +2193,68 @@ Estamos sempre à disposição! 🙏`,
             document.getElementById('valorTotal').value = valorTotal.toFixed(2);
         }
 
+        function getClienteGaloes(clienteId) {
+            const pedidosCliente = pedidos.filter(p => p.clienteId === clienteId && p.pago && p.galoesEntregues && p.galoesEntregues.length > 0).sort((a, b) => new Date(b.data) - new Date(a.data));
+            
+            if (pedidosCliente.length === 0) return [];
+            
+            // Pegar últimos 3 pedidos
+            return pedidosCliente.slice(0, 3).map(p => ({
+                datas: p.galoesEntregues,
+                dataEntrega: new Date(p.dataIda).toLocaleDateString('pt-BR')
+            }));
+        }
+
+        function getClienteUltimosGaloes(clienteId) {
+            const pedidosCliente = pedidos.filter(p => p.clienteId === clienteId && p.pago).sort((a, b) => new Date(b.data) - new Date(a.data));
+            
+            if (pedidosCliente.length === 0) return [];
+            
+            // Pegar últimos 3 pedidos mesmo sem galões entregues
+            return pedidosCliente.slice(0, 3).map(p => ({
+                dataEntrega: new Date(p.dataIda).toLocaleDateString('pt-BR'),
+                quantidade: p.quantidade || 1,
+                galoes: p.galoesEntregues || []
+            }));
+        }
+
+        function getClienteUltimoGalao(clienteId) {
+            const pedidosCliente = pedidos.filter(p => 
+                p.clienteId === clienteId && 
+                p.pago && 
+                p.galoesEntregues && 
+                p.galoesEntregues.length > 0
+            ).sort((a, b) => new Date(b.data) - new Date(a.data));
+            
+            if (pedidosCliente.length === 0) return null;
+            
+            // Retornar o primeiro galão do último pedido
+            return pedidosCliente[0].galoesEntregues[0];
+        }
+
+        function getGalaoMaisProximo(dataReferencia, galoesDisponiveis) {
+            if (!dataReferencia || galoesDisponiveis.length === 0) return galoesDisponiveis[0] || '';
+            
+            const dataRef = parseDataMesAno(dataReferencia);
+            if (!dataRef) return galoesDisponiveis[0] || '';
+            
+            let melhorGalao = galoesDisponiveis[0];
+            let menorDiferenca = Math.abs(parseDataMesAno(melhorGalao) - dataRef);
+            
+            galoesDisponiveis.forEach(galao => {
+                const dataGalao = parseDataMesAno(galao);
+                if (dataGalao) {
+                    const diferenca = Math.abs(dataGalao - dataRef);
+                    if (diferenca < menorDiferenca) {
+                        menorDiferenca = diferenca;
+                        melhorGalao = galao;
+                    }
+                }
+            });
+            
+            return melhorGalao;
+        }
+
         // Cliente Relatório Selection
         function setupClienteRelatorioSelection() {
             const input = document.getElementById('clienteRelatorioInput');
@@ -2093,18 +2305,6 @@ Estamos sempre à disposição! 🙏`,
                 const clienteElement = createPedidoElement(pedido, isAdmin);
                 lista.appendChild(clienteElement);
             });
-        }
-
-        function getClienteGaloes(clienteId) {
-            const pedidosCliente = pedidos.filter(p => p.clienteId === clienteId && p.pago && p.galoesEntregues).sort((a, b) => new Date(b.data) - new Date(a.data));
-            
-            if (pedidosCliente.length === 0) return [];
-            
-            // Pegar últimos 3 pedidos
-            return pedidosCliente.slice(0, 3).map(p => ({
-                datas: p.galoesEntregues,
-                dataEntrega: new Date(p.dataIda).toLocaleDateString('pt-BR')
-            }));
         }
 
         // Firebase CRUD Operations with offline support
@@ -2397,6 +2597,17 @@ Estamos sempre à disposição! 🙏`,
                     });
                 }
             });
+
+            // Máscara para campos de data de galão nos modais
+            document.addEventListener('input', function(e) {
+                if (e.target.classList.contains('data-galao-input')) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length >= 2) {
+                        value = value.substring(0, 2) + '/' + value.substring(2, 6);
+                    }
+                    e.target.value = value;
+                }
+            });
         }
 
         function setupClienteBusca() {
@@ -2431,6 +2642,7 @@ Estamos sempre à disposição! 🙏`,
 
         function createClienteElement(cliente) {
             const galoesInfo = getClienteGaloes(cliente.id);
+            const ultimosGaloes = getClienteUltimosGaloes(cliente.id);
             const comprasRealizadas = contarComprasCliente(cliente.id);
             const proximaGratis = proximaCompraGratis(cliente.id);
             
@@ -2449,8 +2661,15 @@ Estamos sempre à disposição! 🙏`,
                         <strong>Galões:</strong> ${g.datas.join(', ')} - <strong>Entregue em:</strong> ${g.dataEntrega}
                     </div>`
                 ).join('');
+            } else if (ultimosGaloes.length > 0) {
+                galoesHtml = `<div class="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg mt-2">
+                    <p class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">Últimas compras:</p>
+                    ${ultimosGaloes.map(g => 
+                        `<p class="text-xs text-gray-600 dark:text-gray-400">${g.dataEntrega} - ${g.quantidade} galão(ns)${g.galoes.length > 0 ? ` (${g.galoes.join(', ')})` : ''}</p>`
+                    ).join('')}
+                </div>`;
             } else {
-                galoesHtml = '<p class="text-gray-500 dark:text-gray-400 mt-2">Nenhum galão ativo</p>';
+                galoesHtml = '<p class="text-gray-500 dark:text-gray-400 mt-2">Nenhuma compra realizada</p>';
             }
             
             div.innerHTML = `
@@ -2610,22 +2829,23 @@ Estamos sempre à disposição! 🙏`,
             const modal = document.getElementById('editEstoqueModal');
             const form = document.getElementById('formEditEstoque');
             const cancelBtn = document.getElementById('cancelEditEstoque');
+            const deleteBtn = document.getElementById('deleteEstoque');
             
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
-                if (!currentContextMenuData) return;
+                if (!currentEditingEstoque) return;
                 
                 try {
-                    const novaQuantidade = parseInt(document.getElementById('editQuantidadeEstoque').value);
-                    const { dataGalao, status } = currentContextMenuData;
+                    const dadosAtualizacao = {
+                        cheio: parseInt(document.getElementById('editCheioEstoque').value) || 0,
+                        vazio: parseInt(document.getElementById('editVazioEstoque').value) || 0,
+                        cliente: parseInt(document.getElementById('editClienteEstoque').value) || 0
+                    };
                     
-                    await atualizarEstoque(dataGalao, {
-                        [status]: novaQuantidade
-                    });
-                    
+                    await atualizarEstoque(currentEditingEstoque, dadosAtualizacao);
                     modal.classList.add('hidden');
-                    currentContextMenuData = null;
+                    currentEditingEstoque = null;
                     alert('✅ Estoque atualizado com sucesso!');
                     
                 } catch (error) {
@@ -2633,10 +2853,26 @@ Estamos sempre à disposição! 🙏`,
                     alert('❌ Erro ao atualizar estoque. Tente novamente.');
                 }
             });
+
+            deleteBtn.addEventListener('click', async () => {
+                if (!currentEditingEstoque) return;
+                
+                if (confirm(`⚠️ Tem certeza que deseja excluir todo o estoque da data "${currentEditingEstoque}"?\n\nEsta ação não pode ser desfeita.`)) {
+                    try {
+                        await excluirEstoque(currentEditingEstoque);
+                        modal.classList.add('hidden');
+                        currentEditingEstoque = null;
+                        alert('✅ Estoque excluído com sucesso!');
+                    } catch (error) {
+                        console.error('❌ Erro ao excluir estoque:', error);
+                        alert('❌ Erro ao excluir estoque. Tente novamente.');
+                    }
+                }
+            });
             
             cancelBtn.addEventListener('click', () => {
                 modal.classList.add('hidden');
-                currentContextMenuData = null;
+                currentEditingEstoque = null;
             });
         }
 
@@ -2651,6 +2887,20 @@ Estamos sempre à disposição! 🙏`,
             
             document.getElementById('editEstoqueModal').classList.remove('hidden');
             document.getElementById('contextMenu').classList.add('hidden');
+        }
+
+        function editarEstoqueDetalhado(dataGalao) {
+            const stockData = estoque[dataGalao];
+            if (!stockData) return;
+            
+            currentEditingEstoque = dataGalao;
+            
+            document.getElementById('editDataEstoque').value = dataGalao;
+            document.getElementById('editCheioEstoque').value = stockData.cheio || 0;
+            document.getElementById('editVazioEstoque').value = stockData.vazio || 0;
+            document.getElementById('editClienteEstoque').value = stockData.cliente || 0;
+            
+            document.getElementById('editEstoqueModal').classList.remove('hidden');
         }
 
         async function excluirEstoqueItem() {
@@ -2688,8 +2938,22 @@ Estamos sempre à disposição! 🙏`,
             confirmBtn.addEventListener('click', async function() {
                 if (!currentPedidoForDetails) return;
                 
-                const selectedGaloes = Array.from(document.querySelectorAll('.galao-selection.selected'))
-                    .map(el => el.dataset.dataGalao);
+                const selectedGaloes = [];
+                const galoesVindos = [];
+                
+                // Coletar galões selecionados
+                document.querySelectorAll('#galaoSelectionList select').forEach(select => {
+                    if (select.value) {
+                        selectedGaloes.push(select.value);
+                    }
+                });
+                
+                // Coletar galões vindos
+                document.querySelectorAll('#galaoSelectionList .galao-input-group input').forEach(input => {
+                    if (input.value.trim() && isValidDataFormat(input.value.trim())) {
+                        galoesVindos.push(input.value.trim());
+                    }
+                });
                 
                 if (selectedGaloes.length === 0) {
                     alert('⚠️ Selecione pelo menos um galão do estoque!');
@@ -2700,10 +2964,11 @@ Estamos sempre à disposição! 🙏`,
                     // Atualizar pedido com os galões selecionados
                     await atualizarPedido(currentPedidoForDetails.id, {
                         galoesEntregues: selectedGaloes,
+                        galoesVindos: galoesVindos,
                         detalhesConfirmados: true
                     });
                     
-                    // Atualizar estoque
+                    // Atualizar estoque - remover galões cheios
                     for (const dataGalao of selectedGaloes) {
                         const currentCheio = estoque[dataGalao]?.cheio || 0;
                         const currentCliente = estoque[dataGalao]?.cliente || 0;
@@ -2714,6 +2979,14 @@ Estamos sempre à disposição! 🙏`,
                                 cliente: currentCliente + 1
                             });
                         }
+                    }
+                    
+                    // Adicionar galões vindos como vazios
+                    for (const dataGalao of galoesVindos) {
+                        const currentVazio = estoque[dataGalao]?.vazio || 0;
+                        await atualizarEstoque(dataGalao, {
+                            vazio: currentVazio + 1
+                        });
                     }
                     
                     modal.classList.add('hidden');
@@ -2737,6 +3010,8 @@ Estamos sempre à disposição! 🙏`,
             const form = document.getElementById('formEditPedido');
             const cancelBtn = document.getElementById('cancelEditPedido');
             const excluirBtn = document.getElementById('excluirPedido');
+            const addGalaoEntregueBtn = document.getElementById('addGalaoEntregue');
+            const addGalaoVindoBtn = document.getElementById('addGalaoVindo');
             
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -2744,10 +3019,28 @@ Estamos sempre à disposição! 🙏`,
                 if (!currentEditingPedido) return;
                 
                 try {
+                    // Coletar galões entregues
+                    const galoesEntregues = [];
+                    document.querySelectorAll('#editGaloesEntregues input').forEach(input => {
+                        if (input.value.trim() && isValidDataFormat(input.value.trim())) {
+                            galoesEntregues.push(input.value.trim());
+                        }
+                    });
+
+                    // Coletar galões vindos
+                    const galoesVindos = [];
+                    document.querySelectorAll('#editGaloesVindos input').forEach(input => {
+                        if (input.value.trim() && isValidDataFormat(input.value.trim())) {
+                            galoesVindos.push(input.value.trim());
+                        }
+                    });
+                    
                     const dadosAtualizacao = {
                         dataIda: document.getElementById('editPedidoData').value,
                         quantidade: parseInt(document.getElementById('editPedidoQuantidade').value),
-                        valorTotal: parseFloat(document.getElementById('editPedidoValor').value)
+                        valorTotal: parseFloat(document.getElementById('editPedidoValor').value),
+                        galoesEntregues: galoesEntregues,
+                        galoesVindos: galoesVindos
                     };
                     
                     await atualizarPedido(currentEditingPedido, dadosAtualizacao);
@@ -2759,6 +3052,14 @@ Estamos sempre à disposição! 🙏`,
                     console.error('❌ Erro ao atualizar pedido:', error);
                     alert('❌ Erro ao atualizar pedido. Tente novamente.');
                 }
+            });
+            
+            addGalaoEntregueBtn.addEventListener('click', () => {
+                addGalaoEntregueInput();
+            });
+
+            addGalaoVindoBtn.addEventListener('click', () => {
+                addGalaoVindoInput();
             });
             
             excluirBtn.addEventListener('click', async () => {
@@ -2781,6 +3082,28 @@ Estamos sempre à disposição! 🙏`,
                 modal.classList.add('hidden');
                 currentEditingPedido = null;
             });
+        }
+
+        function addGalaoEntregueInput() {
+            const container = document.getElementById('editGaloesEntregues');
+            const div = document.createElement('div');
+            div.className = 'flex items-center gap-2';
+            div.innerHTML = `
+                <input type="text" class="data-galao-input flex-1" placeholder="MM/AAAA" maxlength="7">
+                <button type="button" class="btn-delete-estoque" onclick="this.parentElement.remove()">🗑️</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function addGalaoVindoInput() {
+            const container = document.getElementById('editGaloesVindos');
+            const div = document.createElement('div');
+            div.className = 'flex items-center gap-2';
+            div.innerHTML = `
+                <input type="text" class="data-galao-input flex-1" placeholder="MM/AAAA" maxlength="7">
+                <button type="button" class="btn-delete-estoque" onclick="this.parentElement.remove()">🗑️</button>
+            `;
+            container.appendChild(div);
         }
 
         function setupPaymentModal() {
@@ -2922,7 +3245,7 @@ Estamos sempre à disposição! 🙏`,
             if (galoesInfo.length > 0) {
                 infoHtml += `
                     <div class="mt-3 p-3 bg-blue-100 dark:bg-blue-800 rounded-lg">
-                        <p class="text-sm font-semibold text-blue-800 dark:text-blue-200">Galões Atuais:</p>
+                        <p class="text-sm font-semibold text-blue-800 dark:text-blue-200">Galões Atuais (últimas 3 compras):</p>
                         ${galoesInfo.map(g => 
                             `<p class="text-blue-700 dark:text-blue-300">${g.datas.join(', ')} - Entregue em ${g.dataEntrega}</p>`
                         ).join('')}
@@ -2980,6 +3303,7 @@ Estamos sempre à disposição! 🙏`,
                     quantidade: quantidade,
                     valorTotal: valorTotal,
                     galoesEntregues: [],
+                    galoesVindos: [],
                     detalhesConfirmados: false,
                     pago: false,
                     formaPagamento: null,
@@ -3050,21 +3374,35 @@ Estamos sempre à disposição! 🙏`,
             if (galoesDisponiveis.length === 0) {
                 galaoList.innerHTML = '<p class="text-red-600">Nenhum galão disponível no estoque!</p>';
             } else {
+                // Pegar último galão do cliente como referência
+                const ultimoGalaoCliente = cliente ? getClienteUltimoGalao(cliente.id) : null;
+                
                 for (let i = 0; i < pedido.quantidade; i++) {
                     const div = document.createElement('div');
+                    div.className = 'border border-gray-200 rounded-lg p-4';
+                    
+                    // Selecionar galão mais próximo da data do cliente
+                    const galaoSugerido = ultimoGalaoCliente ? 
+                        getGalaoMaisProximo(ultimoGalaoCliente, galoesDisponiveis) : 
+                        galoesDisponiveis[0];
+                    
                     div.innerHTML = `
-                        <h5 class="font-semibold mb-2">Galão ${i + 1}:</h5>
-                        <div class="space-y-2">
-                            ${galoesDisponiveis.map(data => `
-                                <div class="galao-selection" data-data-galao="${data}" onclick="selectGalao(this, ${i})">
-                                    <div class="flex justify-between items-center">
-                                        <span class="font-medium">${data}</span>
-                                        <span class="text-sm text-gray-600">${estoque[data].cheio} disponíveis</span>
-                                    </div>
-                                </div>
-                            `).join('')}
+                        <h5 class="font-semibold mb-3">Galão ${i + 1}:</h5>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Selecionar galão do estoque (indo para o cliente):</label>
+                                <select class="input-modern w-full galao-estoque-select" data-index="${i}" required onchange="handleGalaoEstoqueChange(this)">
+                                    <option value="">Escolha um galão...</option>
+                                    ${galoesDisponiveis.map(data => `
+                                        <option value="${data}" ${data === galaoSugerido ? 'selected' : ''}>${data} (${estoque[data].cheio} disponíveis)</option>
+                                    `).join('')}
+                                </select>
+                            </div>
+                            <div class="galao-input-group">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Galão vindo do cliente (MM/AAAA):</label>
+                                <input type="text" class="data-galao-input galao-vindo-input" data-index="${i}" placeholder="MM/AAAA" maxlength="7" onchange="handleGalaoVindoChange(this)" value="${ultimoGalaoCliente || ''}">
+                            </div>
                         </div>
-                        ${i < pedido.quantidade - 1 ? '<hr class="my-4">' : ''}
                     `;
                     galaoList.appendChild(div);
                 }
@@ -3073,27 +3411,31 @@ Estamos sempre à disposição! 🙏`,
             document.getElementById('confirmDetailsModal').classList.remove('hidden');
         }
 
-        function selectGalao(element, galaoIndex) {
-            // Remover seleção anterior para este galão
-            const container = element.closest('.space-y-2');
-            container.querySelectorAll('.galao-selection').forEach(el => el.classList.remove('selected'));
+        function handleGalaoEstoqueChange(select) {
+            const index = select.dataset.index;
+            const selectedValue = select.value;
             
-            // Selecionar novo galão
-            element.classList.add('selected');
-            
-            // Auto-selecionar a mesma data para os galões seguintes
-            if (galaoIndex === 0) {
-                const selectedData = element.dataset.dataGalao;
-                const allContainers = document.querySelectorAll('#galaoSelectionList .space-y-2');
-                
-                for (let i = 1; i < allContainers.length; i++) {
-                    const nextContainer = allContainers[i];
-                    const sameDataOption = nextContainer.querySelector(`[data-data-galao="${selectedData}"]`);
-                    if (sameDataOption && estoque[selectedData].cheio >= i + 1) {
-                        nextContainer.querySelectorAll('.galao-selection').forEach(el => el.classList.remove('selected'));
-                        sameDataOption.classList.add('selected');
+            if (index === '0') {
+                // Se for o primeiro galão, auto-selecionar os outros
+                document.querySelectorAll('.galao-estoque-select').forEach((otherSelect, idx) => {
+                    if (idx > 0) {
+                        otherSelect.value = selectedValue;
                     }
-                }
+                });
+            }
+        }
+
+        function handleGalaoVindoChange(input) {
+            const index = input.dataset.index;
+            const selectedValue = input.value;
+            
+            if (index === '0') {
+                // Se for o primeiro galão, auto-preencher os outros
+                document.querySelectorAll('.galao-vindo-input').forEach((otherInput, idx) => {
+                    if (idx > 0) {
+                        otherInput.value = selectedValue;
+                    }
+                });
             }
         }
 
@@ -3109,6 +3451,36 @@ Estamos sempre à disposição! 🙏`,
             document.getElementById('editPedidoQuantidade').value = pedido.quantidade || 1;
             document.getElementById('editPedidoValor').value = pedido.valorTotal || 0;
             
+            // Preencher galões entregues
+            const galoesEntreguesContainer = document.getElementById('editGaloesEntregues');
+            galoesEntreguesContainer.innerHTML = '';
+            if (pedido.galoesEntregues && pedido.galoesEntregues.length > 0) {
+                pedido.galoesEntregues.forEach(galao => {
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center gap-2';
+                    div.innerHTML = `
+                        <input type="text" class="data-galao-input flex-1" value="${galao}" maxlength="7">
+                        <button type="button" class="btn-delete-estoque" onclick="this.parentElement.remove()">🗑️</button>
+                    `;
+                    galoesEntreguesContainer.appendChild(div);
+                });
+            }
+
+            // Preencher galões vindos
+            const galoesVindosContainer = document.getElementById('editGaloesVindos');
+            galoesVindosContainer.innerHTML = '';
+            if (pedido.galoesVindos && pedido.galoesVindos.length > 0) {
+                pedido.galoesVindos.forEach(galao => {
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center gap-2';
+                    div.innerHTML = `
+                        <input type="text" class="data-galao-input flex-1" value="${galao}" maxlength="7">
+                        <button type="button" class="btn-delete-estoque" onclick="this.parentElement.remove()">🗑️</button>
+                    `;
+                    galoesVindosContainer.appendChild(div);
+                });
+            }
+            
             document.getElementById('editPedidoModal').classList.remove('hidden');
         }
 
@@ -3123,6 +3495,18 @@ Estamos sempre à disposição! 🙏`,
                 item.collection === 'pedidos' && 
                 (item.data.id === pedido.id || (item.action === 'add_pedido' && pedido.id.startsWith('offline_')))
             );
+
+            // Exibir datas dos galões
+            let galoesInfo = '';
+            if (pedido.galoesEntregues && pedido.galoesEntregues.length > 0) {
+                galoesInfo += `<p class="text-blue-600 dark:text-blue-400 mt-1 font-semibold">🏺 Galões entregues: ${pedido.galoesEntregues.join(', ')}</p>`;
+            }
+            if (pedido.galoesVindos && pedido.galoesVindos.length > 0) {
+                galoesInfo += `<p class="text-orange-600 dark:text-orange-400 mt-1 font-semibold">🔄 Galões vindos: ${pedido.galoesVindos.join(', ')}</p>`;
+            }
+            if (!galoesInfo) {
+                galoesInfo = '<p class="text-gray-600 dark:text-gray-400 mt-1">🪣 Galões: Pendente</p>';
+            }
             
             div.innerHTML = `
                 <div class="flex-1 mb-4 md:mb-0">
@@ -3135,9 +3519,7 @@ Estamos sempre à disposição! 🙏`,
                         📦 ${pedido.quantidade || 1} galão(ns) - R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}
                     </p>
                     <p class="text-gray-600 dark:text-gray-400 mt-1">📅 ${new Date(pedido.dataIda).toLocaleDateString('pt-BR')}</p>
-                    <p class="text-blue-600 dark:text-blue-400 mt-1 font-semibold">
-                        🪣 Galões: ${pedido.galoesEntregues && pedido.galoesEntregues.length > 0 ? pedido.galoesEntregues.join(', ') : 'Pendente'}
-                    </p>
+                    ${galoesInfo}
                     ${pedido.pago && pedido.formaPagamento ? `<p class="text-green-600 dark:text-green-400 mt-1 font-semibold">💰 ${pedido.formaPagamento}</p>` : ''}
                 </div>
                 <div class="flex flex-col items-end space-y-2">
@@ -3293,13 +3675,15 @@ Estamos sempre à disposição! 🙏`,
                 return dataA - dataB;
             });
             
+            const isAdmin = currentUser?.email === 'adm@comercialrocha.com';
+            
             datasSortidas.forEach(data => {
                 const stockData = estoque[data];
                 const total = stockData.cheio + stockData.vazio + stockData.cliente;
                 
                 if (total > 0) {
                     const div = document.createElement('div');
-                    div.className = 'bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-600';
+                    div.className = `bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-600 ${!isAdmin ? 'admin-only' : 'admin-only admin-active'}`;
                     
                     const syncPendingItem = pendingSync.find(item => 
                         item.collection === 'estoque' && item.data.dataGalao === data
@@ -3311,7 +3695,15 @@ Estamos sempre à disposição! 🙏`,
                                 ${data}
                                 ${syncPendingItem ? '<span class="sync-pending ml-2">Pendente</span>' : ''}
                             </h4>
-                            <span class="text-sm text-gray-500">Total: ${total}</span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm text-gray-500">Total: ${total}</span>
+                                ${isAdmin ? `
+                                    <div class="estoque-item-actions">
+                                        <button class="btn-edit-estoque" onclick="editarEstoqueDetalhado('${data}')">✏️</button>
+                                        <button class="btn-delete-estoque" onclick="excluirEstoqueDetalhado('${data}')">🗑️</button>
+                                    </div>
+                                ` : ''}
+                            </div>
                         </div>
                         <div class="grid grid-cols-3 gap-2 text-sm">
                             <div class="text-center">
@@ -3328,9 +3720,16 @@ Estamos sempre à disposição! 🙏`,
                             </div>
                         </div>
                     `;
+                    
                     lista.appendChild(div);
                 }
             });
+        }
+
+        function excluirEstoqueDetalhado(dataGalao) {
+            if (confirm(`⚠️ Tem certeza que deseja excluir todo o estoque da data "${dataGalao}"?\n\nEsta ação não pode ser desfeita.`)) {
+                excluirEstoque(dataGalao);
+            }
         }
 
         function createGalaoVisual(data, status, quantidade) {
@@ -3362,15 +3761,21 @@ Estamos sempre à disposição! 🙏`,
             div.addEventListener('touchstart', showTooltip);
             div.addEventListener('touchend', hideTooltip);
             
-            div.addEventListener('contextmenu', (e) => {
-                e.preventDefault();
-                showContextMenu(e, data, status, quantidade);
-            });
+            const isAdmin = currentUser?.email === 'adm@comercialrocha.com';
+            if (isAdmin) {
+                div.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    showContextMenu(e, data, status, quantidade);
+                });
+            }
             
             return div;
         }
 
         function showContextMenu(event, dataGalao, status, quantidade) {
+            const isAdmin = currentUser?.email === 'adm@comercialrocha.com';
+            if (!isAdmin) return;
+            
             const contextMenu = document.getElementById('contextMenu');
             currentContextMenuData = { dataGalao, status, quantidade };
             
@@ -3553,6 +3958,10 @@ Estamos sempre à disposição! 🙏`,
             const container = document.getElementById('resultadosRelatorio');
             const conteudo = document.getElementById('conteudoRelatorio');
             
+            // Armazenar dados para PDF
+            currentRelatorioTitulo = titulo;
+            currentRelatorioData = pedidosList;
+            
             let html = `<h4 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">${titulo}</h4>`;
             
             if (pedidosList.length === 0) {
@@ -3605,6 +4014,7 @@ Estamos sempre à disposição! 🙏`,
                                         <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Valor</th>
                                         <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Status</th>
                                         <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Pagamento</th>
+                                        <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Galões</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -3612,6 +4022,11 @@ Estamos sempre à disposição! 🙏`,
                 
                 pedidosList.forEach(pedido => {
                     const cliente = clientes.find(c => c.id == pedido.clienteId);
+                    const galoesInfo = (pedido.galoesEntregues && pedido.galoesEntregues.length > 0) ? 
+                        `Entregues: ${pedido.galoesEntregues.join(', ')}` : 'Pendente';
+                    const galoesVindos = (pedido.galoesVindos && pedido.galoesVindos.length > 0) ? 
+                        ` | Vindos: ${pedido.galoesVindos.join(', ')}` : '';
+                    
                     html += `
                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
                             <td class="border border-gray-300 dark:border-gray-600 p-4">${new Date(pedido.data).toLocaleDateString('pt-BR')}</td>
@@ -3626,6 +4041,9 @@ Estamos sempre à disposição! 🙏`,
                             <td class="border border-gray-300 dark:border-gray-600 p-4">
                                 ${pedido.formaPagamento ? pedido.formaPagamento : '-'}
                             </td>
+                            <td class="border border-gray-300 dark:border-gray-600 p-4 text-sm">
+                                ${galoesInfo}${galoesVindos}
+                            </td>
                         </tr>
                     `;
                 });
@@ -3637,6 +4055,170 @@ Estamos sempre à disposição! 🙏`,
             container.classList.remove('hidden');
         }
 
+        function gerarPDF(titulo, pedidosList) {
+            try {
+                // Verificar se jsPDF está carregado
+                if (!window.jsPDF) {
+                    alert('❌ Biblioteca PDF não carregada. Recarregue a página e tente novamente.');
+                    return;
+                }
+
+                const { jsPDF } = window.jsPDF;
+                const doc = new jsPDF();
+                
+                // Configurações
+                const margin = 20;
+                let yPosition = margin;
+                const pageWidth = doc.internal.pageSize.getWidth();
+                
+                // Título principal
+                doc.setFontSize(18);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Comercial Rocha', margin, yPosition);
+                yPosition += 10;
+                
+                doc.setFontSize(14);
+                doc.text(titulo, margin, yPosition);
+                yPosition += 15;
+                
+                if (pedidosList.length === 0) {
+                    doc.setFontSize(12);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text('Nenhum pedido encontrado para o período selecionado.', margin, yPosition);
+                } else {
+                    // Estatísticas resumidas
+                    const totalVendas = pedidosList.length;
+                    const totalPago = pedidosList.filter(p => p.pago).length;
+                    const totalPendente = totalVendas - totalPago;
+                    const totalValor = pedidosList.reduce((sum, p) => sum + (p.valorTotal || 0), 0);
+                    const totalGaloes = pedidosList.reduce((sum, p) => sum + (p.quantidade || 1), 0);
+                    
+                    doc.setFontSize(12);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('Resumo:', margin, yPosition);
+                    yPosition += 8;
+                    
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(`Total de Vendas: ${totalVendas}`, margin, yPosition);
+                    yPosition += 6;
+                    doc.text(`Pagos: ${totalPago}`, margin, yPosition);
+                    yPosition += 6;
+                    doc.text(`Pendentes: ${totalPendente}`, margin, yPosition);
+                    yPosition += 6;
+                    doc.text(`Total de Galões: ${totalGaloes}`, margin, yPosition);
+                    yPosition += 6;
+                    doc.text(`Valor Total: R$ ${totalValor.toFixed(2)}`, margin, yPosition);
+                    yPosition += 15;
+                    
+                    // Preparar dados para a tabela
+                    const tableData = pedidosList.map(pedido => {
+                        const cliente = clientes.find(c => c.id == pedido.clienteId);
+                        const galoesInfo = (pedido.galoesEntregues && pedido.galoesEntregues.length > 0) ? 
+                            pedido.galoesEntregues.join(', ') : 'Pendente';
+                        const galoesVindos = (pedido.galoesVindos && pedido.galoesVindos.length > 0) ? 
+                            pedido.galoesVindos.join(', ') : '-';
+                        
+                        return [
+                            new Date(pedido.data).toLocaleDateString('pt-BR'),
+                            cliente ? cliente.nome.substring(0, 20) : 'N/A',
+                            (pedido.quantidade || 1).toString(),
+                            `R$ ${(pedido.valorTotal || 0).toFixed(2)}`,
+                            pedido.pago ? 'Pago' : 'Pendente',
+                            pedido.formaPagamento || '-',
+                            galoesInfo,
+                            galoesVindos
+                        ];
+                    });
+                    
+                    // Verificar se autoTable está disponível
+                    if (doc.autoTable) {
+                        doc.autoTable({
+                            head: [['Data', 'Cliente', 'Qtd', 'Valor', 'Status', 'Pagamento', 'Galões Entregues', 'Galões Vindos']],
+                            body: tableData,
+                            startY: yPosition,
+                            margin: { left: margin, right: margin },
+                            styles: { fontSize: 8 },
+                            headStyles: { fillColor: [93, 92, 222] },
+                            columnStyles: {
+                                0: { cellWidth: 20 },
+                                1: { cellWidth: 30 },
+                                2: { cellWidth: 15 },
+                                3: { cellWidth: 20 },
+                                4: { cellWidth: 20 },
+                                5: { cellWidth: 25 },
+                                6: { cellWidth: 30 },
+                                7: { cellWidth: 30 }
+                            }
+                        });
+                    } else {
+                        // Fallback para tabela manual se autoTable não estiver disponível
+                        doc.setFont('helvetica', 'bold');
+                        doc.text('Detalhes dos Pedidos:', margin, yPosition);
+                        yPosition += 10;
+                        
+                        doc.setFontSize(10);
+                        const headers = ['Data', 'Cliente', 'Qtd', 'Valor', 'Status', 'Pagamento'];
+                        const columnWidths = [25, 50, 15, 25, 25, 30];
+                        let xPosition = margin;
+                        
+                        headers.forEach((header, index) => {
+                            doc.text(header, xPosition, yPosition);
+                            xPosition += columnWidths[index];
+                        });
+                        
+                        yPosition += 8;
+                        doc.setFont('helvetica', 'normal');
+                        
+                        pedidosList.forEach(pedido => {
+                            if (yPosition > 270) {
+                                doc.addPage();
+                                yPosition = margin;
+                            }
+                            
+                            const cliente = clientes.find(c => c.id == pedido.clienteId);
+                            xPosition = margin;
+                            
+                            const rowData = [
+                                new Date(pedido.data).toLocaleDateString('pt-BR'),
+                                cliente ? cliente.nome.substring(0, 20) : 'N/A',
+                                (pedido.quantidade || 1).toString(),
+                                `R$ ${(pedido.valorTotal || 0).toFixed(2)}`,
+                                pedido.pago ? 'Pago' : 'Pendente',
+                                pedido.formaPagamento || '-'
+                            ];
+                            
+                            rowData.forEach((data, index) => {
+                                doc.text(data, xPosition, yPosition);
+                                xPosition += columnWidths[index];
+                            });
+                            
+                            yPosition += 6;
+                        });
+                    }
+                }
+                
+                // Rodapé
+                const pageCount = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= pageCount; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(8);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(`Página ${i} de ${pageCount}`, pageWidth - 30, 290);
+                    doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, margin, 290);
+                }
+                
+                // Salvar PDF
+                const fileName = `${titulo.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+                doc.save(fileName);
+                
+                alert('✅ PDF gerado com sucesso!');
+                
+            } catch (error) {
+                console.error('❌ Erro ao gerar PDF:', error);
+                alert('❌ Erro ao gerar PDF. Verifique se a biblioteca está carregada corretamente.');
+            }
+        }
+
         window.addEventListener('beforeunload', function() {
             if (clientesListener) clientesListener();
             if (pedidosListener) pedidosListener();
@@ -3644,6 +4226,8 @@ Estamos sempre à disposição! 🙏`,
             if (authStateListener) authStateListener();
         });
     </script>
+
+
 
 
 
