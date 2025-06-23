@@ -1,113 +1,109 @@
-<!DOCTYPE html><html lang="pt-BR">
+<!DOCTYPE html><html lang="pt-BR"><head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
- <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <meta http-equiv="Content-Security-Policy" content="
-    default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:
-    https://cdnjs.cloudflare.com
-    https://cdn.jsdelivr.net
-    https://code.jquery.com
-    https://unpkg.com
-    https://d3js.org
-    https://threejs.org
-    https://cdn.plot.ly
-    https://stackpath.bootstrapcdn.com
-    https://maps.googleapis.com
-    https://cdn.tailwindcss.com
-    https://ajax.googleapis.com
-    https://kit.fontawesome.com
-    https://cdn.datatables.net
-    https://maxcdn.bootstrapcdn.com
-    https://code.highcharts.com
-    https://tako-static-assets-production.s3.amazonaws.com
-    https://www.youtube.com
-    https://fonts.googleapis.com
-    https://fonts.gstatic.com
-    https://pfst.cf2.poecdn.net
-    https://puc.poecdn.net
-    https://i.imgur.com
-    https://wikimedia.org
-    https://*.icons8.com
-    https://*.giphy.com
-    https://picsum.photos
-    https://images.unsplash.com
-    https://www.gstatic.com
-    https://*.firebaseapp.com
-    https://*.googleapis.com
-    https://securetoken.googleapis.com
-    https://identitytoolkit.googleapis.com
-    https://firebase.googleapis.com
-    https://*.cloudfunctions.net
-    https://firebaseinstallations.googleapis.com
-    https://nominatim.openstreetmap.org
-    https://1.1.1.1
-    https://www.google.com;
+default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:
+https://cdnjs.cloudflare.com
+https://cdn.jsdelivr.net
+https://code.jquery.com
+https://unpkg.com
+https://d3js.org
+https://threejs.org
+https://cdn.plot.ly
+https://stackpath.bootstrapcdn.com
+https://maps.googleapis.com
+https://cdn.tailwindcss.com
+https://ajax.googleapis.com
+https://kit.fontawesome.com
+https://cdn.datatables.net
+https://maxcdn.bootstrapcdn.com
+https://code.highcharts.com
+https://tako-static-assets-production.s3.amazonaws.com
+https://www.youtube.com
+https://fonts.googleapis.com
+https://fonts.gstatic.com
+https://pfst.cf2.poecdn.net
+https://puc.poecdn.net
+https://i.imgur.com
+https://wikimedia.org
+https://*.icons8.com
+https://*.giphy.com
+https://picsum.photos
+https://images.unsplash.com
+https://www.gstatic.com
+https://*.firebaseapp.com
+https://*.googleapis.com
+https://securetoken.googleapis.com
+https://identitytoolkit.googleapis.com
+https://firebase.googleapis.com
+https://*.cloudfunctions.net
+https://firebaseinstallations.googleapis.com
+https://nominatim.openstreetmap.org
+https://1.1.1.1
+https://www.google.com;
 
-    script-src 'self' 'unsafe-inline' 'unsafe-eval'
-    https://www.gstatic.com
-    https://*.firebaseapp.com
-    https://*.googleapis.com
-    https://securetoken.googleapis.com
-    https://identitytoolkit.googleapis.com
-    https://firebase.googleapis.com
-    https://*.cloudfunctions.net
-    https://firebaseinstallations.googleapis.com
-    https://cdn.tailwindcss.com
-    https://cdnjs.cloudflare.com
-    https://cdn.jsdelivr.net
-    https://code.jquery.com
-    https://unpkg.com
-    https://kit.fontawesome.com
-    https://cdn.plot.ly
-    https://code.highcharts.com;
+script-src 'self' 'unsafe-inline' 'unsafe-eval'
+https://www.gstatic.com
+https://*.firebaseapp.com
+https://*.googleapis.com
+https://securetoken.googleapis.com
+https://identitytoolkit.googleapis.com
+https://firebase.googleapis.com
+https://*.cloudfunctions.net
+https://firebaseinstallations.googleapis.com
+https://cdn.tailwindcss.com
+https://cdnjs.cloudflare.com
+https://cdn.jsdelivr.net
+https://code.jquery.com
+https://unpkg.com
+https://kit.fontawesome.com
+https://cdn.plot.ly
+https://code.highcharts.com;
 
-    connect-src 'self'
-    https://www.gstatic.com
-    https://*.firebaseapp.com
-    https://*.googleapis.com
-    https://securetoken.googleapis.com
-    https://identitytoolkit.googleapis.com
-    https://firebase.googleapis.com
-    https://*.cloudfunctions.net
-    https://firebaseinstallations.googleapis.com
-    https://nominatim.openstreetmap.org
-    https://1.1.1.1
-    https://www.google.com;
+connect-src 'self'
+https://www.gstatic.com
+https://*.firebaseapp.com
+https://*.googleapis.com
+https://securetoken.googleapis.com
+https://identitytoolkit.googleapis.com
+https://firebase.googleapis.com
+https://*.cloudfunctions.net
+https://firebaseinstallations.googleapis.com
+https://nominatim.openstreetmap.org
+https://1.1.1.1
+https://www.google.com;
 
-    img-src 'self' data: blob:
-    https://www.gstatic.com
-    https://cdnjs.cloudflare.com
-    https://cdn.jsdelivr.net
-    https://code.jquery.com
-    https://unpkg.com
-    https://images.unsplash.com
-    https://i.imgur.com
-    https://wikimedia.org
-    https://*.icons8.com
-    https://*.giphy.com
-    https://picsum.photos
-    https://cdn.plot.ly
-    https://code.highcharts.com;
+img-src 'self' data: blob:
+https://www.gstatic.com
+https://cdnjs.cloudflare.com
+https://cdn.jsdelivr.net
+https://code.jquery.com
+https://unpkg.com
+https://images.unsplash.com
+https://i.imgur.com
+https://wikimedia.org
+https://*.icons8.com
+https://*.giphy.com
+https://picsum.photos
+https://cdn.plot.ly
+https://code.highcharts.com;
 
-    frame-src 'self'
-    https://www.youtube.com
-    https://trytako.com
-    https://*.firebaseapp.com;
+frame-src 'self'
+https://www.youtube.com
+https://trytako.com
+https://*.firebaseapp.com;
 
-    child-src 'self';
+child-src 'self';
 
-    manifest-src 'self';
+manifest-src 'self';
 
-    worker-src 'self';
+worker-src 'self';
 
-    upgrade-insecure-requests;
+upgrade-insecure-requests;
 
-    block-all-mixed-content;
-    ">
+block-all-mixed-content;
+">
+
 
     <title>Comercial Rocha - Controle de Galões</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -548,18 +544,6 @@
             background: #4b5563;
         }
 
-        .legenda-simples {
-            font-size: 12px;
-            text-align: center;
-        }
-
-        .legenda-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-        }
-
         .estoque-lista {
             max-height: 300px;
             overflow-y: auto;
@@ -724,6 +708,22 @@
             font-size: 12px;
             width: 80px;
         }
+
+        .btn-uniform-size {
+            min-width: 120px;
+            padding: 8px 12px;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .estoque-geral-card {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
@@ -798,7 +798,7 @@
                     <h4 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">⚙️ Configurações Gerais</h4>
                     
                     <div class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Dias para Notificação</label>
                                 <input type="number" id="configDiasNotificacao" min="1" max="30" class="input-modern w-full" placeholder="7">
@@ -806,8 +806,13 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Preço do Galão (R$)</label>
-                                <input type="number" id="configPrecoGalao" step="0.01" min="0" class="input-modern w-full" placeholder="8.00">
+                                <input type="number" id="configPrecoGalao" step="0.01" min="0" class="input-modern w-full" placeholder="10.00">
                                 <p class="text-xs text-gray-500 mt-1">Valor unitário do galão</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Galões para Grátis</label>
+                                <input type="number" id="configGaloesParaGratis" min="1" class="input-modern w-full" placeholder="10">
+                                <p class="text-xs text-gray-500 mt-1">Quantos galões comprados para ganhar 1 grátis</p>
                             </div>
                         </div>
                     </div>
@@ -879,7 +884,7 @@
             </div>
             <div class="flex space-x-3 mt-6">
                 <button id="confirmDetailsBtn" class="btn-modern flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
-                    ✅ Confirmar Detalhes
+                    ✅ Confirmar
                 </button>
                 <button id="cancelDetailsBtn" class="btn-modern flex-1 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700">
                     ❌ Cancelar
@@ -927,7 +932,7 @@
 
                 <!-- Galões Vindos -->
                 <div>
-                    <h4 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Galões Vindos do Cliente</h4>
+                    <h4 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Galões Vindo do Cliente</h4>
                     <div id="editGaloesVindos" class="space-y-2">
                         <!-- Será preenchido dinamicamente -->
                     </div>
@@ -957,9 +962,9 @@
             <h3 class="text-xl font-bold mb-6 text-gray-900 dark:text-white text-center">💰 Selecione a Forma de Pagamento</h3>
             <div id="fidelidadeInfo" class="mb-4 p-4 bg-orange-100 dark:bg-orange-900 rounded-lg hidden">
                 <div class="fidelidade-badge">
-                    🎉 11ª COMPRA GRÁTIS! 🎉
+                    🎉 COMPRA GRÁTIS! 🎉
                 </div>
-                <p class="text-orange-800 dark:text-orange-200 mt-2 text-sm">Este cliente completou 10 compras. Esta é a 11ª compra grátis!</p>
+                <p class="text-orange-800 dark:text-orange-200 mt-2 text-sm" id="fidelidadeText">Este cliente completou galões suficientes. Esta compra é grátis!</p>
             </div>
             <div id="paymentOptions" class="space-y-3">
                 <div class="payment-option" data-payment="Dinheiro">
@@ -1322,12 +1327,12 @@
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Data do Galão (MM/AAAA)</label>
-                            <input type="text" id="novaDataGalao" placeholder="03/2024" maxlength="7" class="input-modern w-full">
+                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Data do Galão (MM-AAAA)</label>
+                            <input type="text" id="novaDataGalao" placeholder="03-2024" maxlength="7" class="input-modern w-full">
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Quantidade</label>
-                            <input type="number" id="quantidadeGaloes" value="1" min="1" class="input-modern w-full">
+                            <input type="number" id="novaQuantidadeGaloes" value="1" min="1" class="input-modern w-full">
                         </div>
                         <div>
                             <button onclick="adicionarGaloesEstoque()" class="btn-modern w-full">
@@ -1338,40 +1343,30 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                    <!-- Legenda -->
-                    <div class="card-modern p-6">
-                        <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Legenda</h3>
-                        <div class="space-y-3">
-                            <div class="legenda-item">
-                                <div class="galao-container galao-cheio w-12 h-16 flex flex-col items-center justify-center text-xl">
-                                    <div class="galao-icon">🏺</div>
-                                </div>
-                                <span class="legenda-simples text-gray-700 dark:text-gray-300 font-medium">Cheio</span>
+                <!-- Estoque Geral -->
+                <div class="mb-6">
+                    <div class="estoque-geral-card">
+                        <h3 class="text-xl font-bold mb-4">📦 Estoque Geral</h3>
+                        <div class="grid grid-cols-2 gap-6">
+                            <div>
+                                <div class="text-3xl font-bold" id="totalGaloesCheios">0</div>
+                                <div class="text-sm opacity-90">Galões Cheios</div>
                             </div>
-                            <div class="legenda-item">
-                                <div class="galao-container galao-vazio w-12 h-16 flex flex-col items-center justify-center text-xl">
-                                    <div class="galao-icon">🫙</div>
-                                </div>
-                                <span class="legenda-simples text-gray-700 dark:text-gray-300 font-medium">Vazio</span>
-                            </div>
-                            <div class="legenda-item">
-                                <div class="galao-container galao-cliente w-12 h-16 flex flex-col items-center justify-center text-xl">
-                                    <div class="galao-icon">🚚</div>
-                                </div>
-                                <span class="legenda-simples text-gray-700 dark:text-gray-300 font-medium">Com Cliente</span>
+                            <div>
+                                <div class="text-3xl font-bold" id="totalGaloesVazios">0</div>
+                                <div class="text-sm opacity-90">Galões Vazios</div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Lista Detalhada -->
-                    <div class="lg:col-span-2 card-modern p-6">
-                        <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Quantidades por Data</h3>
-                        <div id="estoqueDetalhado" class="estoque-lista space-y-2">
-                            <div class="text-center py-4">
-                                <div class="loading-indicator mx-auto mb-2"></div>
-                                <p class="text-gray-500 text-sm">Carregando...</p>
-                            </div>
+                <!-- Lista Detalhada -->
+                <div class="card-modern p-6 mb-6">
+                    <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Quantidades por Data</h3>
+                    <div id="estoqueDetalhado" class="estoque-lista space-y-2">
+                        <div class="text-center py-4">
+                            <div class="loading-indicator mx-auto mb-2"></div>
+                            <p class="text-gray-500 text-sm">Carregando...</p>
                         </div>
                     </div>
                 </div>
@@ -1380,7 +1375,7 @@
                 <div class="card-modern p-6">
                     <h3 class="text-xl font-semibold mb-6 text-gray-900 dark:text-white flex items-center">
                         <span class="text-2xl mr-3">📦</span>
-                        Status dos Galões por Data
+                        Galões por Data
                         <span class="ml-4 text-sm text-gray-500">Clique com o botão direito para editar</span>
                     </h3>
                     <div id="visualEstoque" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -1506,7 +1501,8 @@ Já faz alguns dias que você não faz seu pedido de água.
 
 Estamos sempre à disposição! 🙏`,
             diasNotificacao: 7,
-            precoGalao: 8.00
+            precoGalao: 10.00,
+            galoesParaGratis: 10
         };
 
         // Firebase listeners
@@ -1875,13 +1871,16 @@ Estamos sempre à disposição! 🙏`,
             setupClienteRelatorioSelection();
             setupPedidoBusca();
             setupPDFButton();
+            setupTelefoneInputMasks();
             calcularValorTotal();
         }
 
         function setupPDFButton() {
             document.getElementById('salvarPDF').addEventListener('click', function() {
-                if (currentRelatorioData && currentRelatorioTitulo) {
+                if (typeof window.jsPDF !== 'undefined' && currentRelatorioData && currentRelatorioTitulo) {
                     gerarPDF(currentRelatorioTitulo, currentRelatorioData);
+                } else {
+                    alert('❌ Erro: Biblioteca PDF não está disponível ou dados não carregados.');
                 }
             });
         }
@@ -1973,6 +1972,7 @@ Estamos sempre à disposição! 🙏`,
         function abrirConfiguracoes() {
             document.getElementById('configDiasNotificacao').value = configuracoes.diasNotificacao;
             document.getElementById('configPrecoGalao').value = configuracoes.precoGalao;
+            document.getElementById('configGaloesParaGratis').value = configuracoes.galoesParaGratis;
             document.getElementById('configMensagemPedido').value = configuracoes.mensagemPedido;
             document.getElementById('configMensagemNotificacao').value = configuracoes.mensagemNotificacao;
             document.getElementById('configModal').classList.remove('hidden');
@@ -1988,7 +1988,8 @@ Estamos sempre à disposição! 🙏`,
             
             salvarBtn.addEventListener('click', () => {
                 configuracoes.diasNotificacao = parseInt(document.getElementById('configDiasNotificacao').value) || 7;
-                configuracoes.precoGalao = parseFloat(document.getElementById('configPrecoGalao').value) || 8.00;
+                configuracoes.precoGalao = parseFloat(document.getElementById('configPrecoGalao').value) || 10.00;
+                configuracoes.galoesParaGratis = parseInt(document.getElementById('configGaloesParaGratis').value) || 10;
                 configuracoes.mensagemPedido = document.getElementById('configMensagemPedido').value;
                 configuracoes.mensagemNotificacao = document.getElementById('configMensagemNotificacao').value;
                 saveConfiguracoes();
@@ -2026,10 +2027,12 @@ Já faz alguns dias que você não faz seu pedido de água.
 
 Estamos sempre à disposição! 🙏`,
                         diasNotificacao: 7,
-                        precoGalao: 8.00
+                        precoGalao: 10.00,
+                        galoesParaGratis: 10
                     };
                     document.getElementById('configDiasNotificacao').value = configuracoes.diasNotificacao;
                     document.getElementById('configPrecoGalao').value = configuracoes.precoGalao;
+                    document.getElementById('configGaloesParaGratis').value = configuracoes.galoesParaGratis;
                     document.getElementById('configMensagemPedido').value = configuracoes.mensagemPedido;
                     document.getElementById('configMensagemNotificacao').value = configuracoes.mensagemNotificacao;
                     saveConfiguracoes();
@@ -2159,7 +2162,8 @@ Estamos sempre à disposição! 🙏`,
             estoqueListener = onSnapshot(estoqueRef, (snapshot) => {
                 estoque = {};
                 snapshot.forEach((doc) => {
-                    estoque[doc.id] = doc.data();
+                    const id = doc.id.replace(/_/g, '-');
+                    estoque[id] = doc.data();
                 });
                 updateVisualizacaoEstoque();
                 updateEstoqueDetalhado();
@@ -2171,24 +2175,27 @@ Estamos sempre à disposição! 🙏`,
             });
         }
 
-        // Sistema de Fidelidade - Alterado para 11ª compra
-        function contarComprasCliente(clienteId) {
-            return pedidos.filter(p => p.clienteId === clienteId && p.pago).length;
+        // Sistema de Fidelidade - Corrigido para usar a configuração
+        function contarGaloesVendidos(clienteId) {
+            return pedidos.filter(p => p.clienteId === clienteId && p.pago)
+                          .reduce((total, pedido) => total + (pedido.quantidade || 1), 0);
         }
 
         function isCompraGratis(clienteId) {
-            const compras = contarComprasCliente(clienteId);
-            return (compras + 1) % 11 === 0;
+            const galoesVendidos = contarGaloesVendidos(clienteId);
+            const galoesParaGratis = configuracoes.galoesParaGratis || 10;
+            return (galoesVendidos + 1) % (galoesParaGratis + 1) === 0;
         }
 
         function proximaCompraGratis(clienteId) {
-            const compras = contarComprasCliente(clienteId);
-            return 11 - (compras % 11);
+            const galoesVendidos = contarGaloesVendidos(clienteId);
+            const galoesParaGratis = configuracoes.galoesParaGratis || 10;
+            return (galoesParaGratis + 1) - (galoesVendidos % (galoesParaGratis + 1));
         }
 
         function calcularValorTotal() {
             const quantidade = parseInt(document.getElementById('quantidadeGaloes').value) || 1;
-            const valorUnitario = configuracoes.precoGalao || 8.00;
+            const valorUnitario = configuracoes.precoGalao || 10.00;
             const valorTotal = quantidade * valorUnitario;
             document.getElementById('valorTotal').value = valorTotal.toFixed(2);
         }
@@ -2438,6 +2445,18 @@ Estamos sempre à disposição! 🙏`,
                     addToPendingSync('update_pedido', 'pedidos', { id: pedidoId, updates: dadosAtualizacao });
                     updateListaPedidos();
                     updateDashboard();
+                    
+                    // Atualizar informações do cliente se o pedido foi finalizado
+                    if (dadosAtualizacao.pago) {
+                        const pedido = pedidos[pedidoIndex];
+                        const clienteIndex = clientes.findIndex(c => c.id === pedido.clienteId);
+                        if (clienteIndex !== -1) {
+                            clientes[clienteIndex].ultimaCompra = new Date().toISOString();
+                            clientes[clienteIndex].galaoAtual = pedido.galoesEntregues ? pedido.galoesEntregues[0] : null;
+                            updateListaClientes();
+                        }
+                    }
+                    
                     saveLocalData();
                 }
                 return;
@@ -2510,7 +2529,7 @@ Estamos sempre à disposição! 🙏`,
                 console.log('🔄 Atualizando estoque:', { dataGalao, dadosEstoque });
                 
                 const { doc, setDoc, getDoc } = window.firebaseUtils;
-                const estoqueDocRef = doc(window.db, 'estoque', dataGalao.replace(/\//g, '-'));
+                const estoqueDocRef = doc(window.db, 'estoque', dataGalao.replace(/[-\/]/g, '_'));
                 
                 let dadosExistentes = { cheio: 0, vazio: 0, cliente: 0 };
                 
@@ -2575,7 +2594,7 @@ Estamos sempre à disposição! 🙏`,
 
             try {
                 const { deleteDoc, doc } = window.firebaseUtils;
-                await deleteDoc(doc(window.db, 'estoque', dataGalao.replace(/\//g, '-')));
+                await deleteDoc(doc(window.db, 'estoque', dataGalao.replace(/[-\/]/g, '_')));
             } catch (error) {
                 console.error('❌ Erro ao excluir estoque:', error);
                 throw error;
@@ -2591,7 +2610,7 @@ Estamos sempre à disposição! 🙏`,
                     input.addEventListener('input', function(e) {
                         let value = e.target.value.replace(/\D/g, '');
                         if (value.length >= 2) {
-                            value = value.substring(0, 2) + '/' + value.substring(2, 6);
+                            value = value.substring(0, 2) + '-' + value.substring(2, 6);
                         }
                         e.target.value = value;
                     });
@@ -2603,9 +2622,49 @@ Estamos sempre à disposição! 🙏`,
                 if (e.target.classList.contains('data-galao-input')) {
                     let value = e.target.value.replace(/\D/g, '');
                     if (value.length >= 2) {
-                        value = value.substring(0, 2) + '/' + value.substring(2, 6);
+                        value = value.substring(0, 2) + '-' + value.substring(2, 6);
                     }
                     e.target.value = value;
+                }
+            });
+        }
+
+        function setupTelefoneInputMasks() {
+            const telefoneInputs = ['addTelefoneCliente', 'editTelefoneCliente'];
+            
+            telefoneInputs.forEach(inputId => {
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.addEventListener('input', function(e) {
+                        let value = e.target.value.replace(/\D/g, '');
+                        
+                        // Se estiver vazio, colocar apenas (33)
+                        if (value.length === 0) {
+                            e.target.value = '(33) ';
+                            return;
+                        }
+                        
+                        // Se não começar com 33, adicionar 33 no início
+                        if (!value.startsWith('33')) {
+                            value = '33' + value;
+                        }
+                        
+                        // Formatação: (33) 99999-9999
+                        if (value.length >= 2) {
+                            value = '(' + value.substring(0, 2) + ') ' + value.substring(2);
+                        }
+                        if (value.length >= 10) {
+                            value = value.substring(0, 10) + '-' + value.substring(10, 14);
+                        }
+                        
+                        e.target.value = value;
+                    });
+                    
+                    input.addEventListener('focus', function(e) {
+                        if (e.target.value === '' || e.target.value === '(33)') {
+                            e.target.value = '(33) ';
+                        }
+                    });
                 }
             });
         }
@@ -2643,8 +2702,9 @@ Estamos sempre à disposição! 🙏`,
         function createClienteElement(cliente) {
             const galoesInfo = getClienteGaloes(cliente.id);
             const ultimosGaloes = getClienteUltimosGaloes(cliente.id);
-            const comprasRealizadas = contarComprasCliente(cliente.id);
+            const galoesVendidos = contarGaloesVendidos(cliente.id);
             const proximaGratis = proximaCompraGratis(cliente.id);
+            const galoesParaGratis = configuracoes.galoesParaGratis || 10;
             
             const div = document.createElement('div');
             div.className = 'flex items-center justify-between p-6 border border-gray-200 dark:border-gray-600 rounded-xl hover:shadow-lg transition-all duration-300';
@@ -2665,7 +2725,7 @@ Estamos sempre à disposição! 🙏`,
                 galoesHtml = `<div class="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg mt-2">
                     <p class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">Últimas compras:</p>
                     ${ultimosGaloes.map(g => 
-                        `<p class="text-xs text-gray-600 dark:text-gray-400">${g.dataEntrega} - ${g.quantidade} galão(ns)${g.galoes.length > 0 ? ` (${g.galoes.join(', ')})` : ''}</p>`
+                        `<p class="text-xs text-gray-600 dark:text-gray-400">${g.dataEntrega} - ${g.quantidade} galão(s)${g.galoes.length > 0 ? ` (${g.galoes.join(', ')})` : ''}</p>`
                     ).join('')}
                 </div>`;
             } else {
@@ -2685,18 +2745,18 @@ Estamos sempre à disposição! 🙏`,
                         <span class="mr-2">📞</span>${cliente.telefone}
                     </p>` : ''}
                     <p class="text-orange-600 dark:text-orange-400 flex items-center mt-1 font-semibold">
-                        <span class="mr-2">🎯</span>Compras: ${comprasRealizadas} | Próxima grátis em: ${proximaGratis} (11ª compra)
+                        <span class="mr-2">🎯</span>Galões vendidos: ${galoesVendidos} | Próxima grátis em: ${proximaGratis} galão(s) (${galoesParaGratis + 1}ª compra)
                     </p>
                     ${galoesHtml}
                 </div>
                 <div class="flex flex-col space-y-2">
-                    <button onclick="editarCliente('${cliente.id}')" class="btn-modern bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 px-4 py-2 text-sm">
+                    <button onclick="editarCliente('${cliente.id}')" class="btn-modern btn-uniform-size bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-sm">
                         ✏️ Editar
                     </button>
-                    ${cliente.telefone ? `<button onclick="abrirWhatsApp('${cliente.telefone}')" class="btn-modern bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 px-4 py-2 text-sm">
+                    ${cliente.telefone ? `<button onclick="abrirWhatsApp('${cliente.telefone}')" class="btn-modern btn-uniform-size bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-sm">
                         📱 WhatsApp
                     </button>` : ''}
-                    <button onclick="excluirClienteConfirm('${cliente.id}')" class="btn-modern bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 px-4 py-2 text-sm">
+                    <button onclick="excluirClienteConfirm('${cliente.id}')" class="btn-modern btn-uniform-size bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-sm">
                         🗑️ Excluir
                     </button>
                 </div>
@@ -2718,7 +2778,7 @@ Estamos sempre à disposição! 🙏`,
                     
                     const dadosCliente = {
                         nome: document.getElementById('addNomeCliente').value,
-                        telefone: telefone === '(33)' || telefone === '(33) ' ? '' : telefone,
+                        telefone: telefone === '(33) ' ? '' : telefone,
                         endereco: endereco,
                         ultimaCompra: null,
                         galaoAtual: null
@@ -2764,7 +2824,7 @@ Estamos sempre à disposição! 🙏`,
                     
                     const dadosAtualizacao = {
                         nome: document.getElementById('editNomeCliente').value,
-                        telefone: telefone === '(33)' || telefone === '(33) ' ? '' : telefone,
+                        telefone: telefone === '(33) ' ? '' : telefone,
                         endereco: endereco
                     };
                     
@@ -2981,11 +3041,13 @@ Estamos sempre à disposição! 🙏`,
                         }
                     }
                     
-                    // Adicionar galões vindos como vazios
+                    // Adicionar galões vindos como vazios - CORRIGIDO para adicionar a quantidade correta
                     for (const dataGalao of galoesVindos) {
                         const currentVazio = estoque[dataGalao]?.vazio || 0;
+                        // Contar quantas vezes esta data aparece em galoesVindos
+                        const quantidadeEstaData = galoesVindos.filter(g => g === dataGalao).length;
                         await atualizarEstoque(dataGalao, {
-                            vazio: currentVazio + 1
+                            vazio: currentVazio + quantidadeEstaData
                         });
                     }
                     
@@ -3089,7 +3151,7 @@ Estamos sempre à disposição! 🙏`,
             const div = document.createElement('div');
             div.className = 'flex items-center gap-2';
             div.innerHTML = `
-                <input type="text" class="data-galao-input flex-1" placeholder="MM/AAAA" maxlength="7">
+                <input type="text" class="data-galao-input flex-1" placeholder="MM-AAAA" maxlength="7">
                 <button type="button" class="btn-delete-estoque" onclick="this.parentElement.remove()">🗑️</button>
             `;
             container.appendChild(div);
@@ -3100,7 +3162,7 @@ Estamos sempre à disposição! 🙏`,
             const div = document.createElement('div');
             div.className = 'flex items-center gap-2';
             div.innerHTML = `
-                <input type="text" class="data-galao-input flex-1" placeholder="MM/AAAA" maxlength="7">
+                <input type="text" class="data-galao-input flex-1" placeholder="MM-AAAA" maxlength="7">
                 <button type="button" class="btn-delete-estoque" onclick="this.parentElement.remove()">🗑️</button>
             `;
             container.appendChild(div);
@@ -3157,13 +3219,13 @@ Estamos sempre à disposição! 🙏`,
         }
 
         function isValidDataFormat(data) {
-            const regex = /^(0[1-9]|1[0-2])\/\d{4}$/;
+            const regex = /^(0[1-9]|1[0-2])-\d{4}$/;
             return regex.test(data);
         }
 
         function parseDataMesAno(data) {
             if (!data) return null;
-            const [mes, ano] = data.split('/');
+            const [mes, ano] = data.split(/[-\/]/);
             return new Date(parseInt(ano), parseInt(mes) - 1);
         }
 
@@ -3214,9 +3276,10 @@ Estamos sempre à disposição! 🙏`,
             
             const cliente = clientes.find(c => c.id == clienteId);
             const galoesInfo = getClienteGaloes(clienteId);
-            const comprasRealizadas = contarComprasCliente(clienteId);
+            const galoesVendidos = contarGaloesVendidos(clienteId);
             const proximaGratis = proximaCompraGratis(clienteId);
             const compraGratis = isCompraGratis(clienteId);
+            const galoesParaGratis = configuracoes.galoesParaGratis || 10;
             
             let infoHtml = `
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -3234,10 +3297,10 @@ Estamos sempre à disposição! 🙏`,
             infoHtml += `
                 <div class="mt-3 p-3 bg-orange-100 dark:bg-orange-800 rounded-lg">
                     <p class="text-sm font-semibold text-orange-800 dark:text-orange-200">Sistema de Fidelidade:</p>
-                    <p class="text-orange-700 dark:text-orange-300">Compras realizadas: ${comprasRealizadas}</p>
+                    <p class="text-orange-700 dark:text-orange-300">Galões vendidos: ${galoesVendidos}</p>
                     ${compraGratis ? 
-                        '<p class="text-green-700 dark:text-green-300 font-bold">🎉 Esta é a 11ª compra - GRÁTIS!</p>' : 
-                        `<p class="text-orange-700 dark:text-orange-300">Próxima grátis em: ${proximaGratis} compras (11ª compra)</p>`
+                        `<p class="text-green-700 dark:text-green-300 font-bold">🎉 Esta é a ${galoesParaGratis + 1}ª compra - GRÁTIS!</p>` : 
+                        `<p class="text-orange-700 dark:text-orange-300">Próxima grátis em: ${proximaGratis} galão(s) (${galoesParaGratis + 1}ª compra)</p>`
                     }
                 </div>
             `;
@@ -3336,13 +3399,14 @@ Estamos sempre à disposição! 🙏`,
             if (!cliente || !pedido) return;
             
             const compraGratis = isCompraGratis(cliente.id);
+            const galoesParaGratis = configuracoes.galoesParaGratis || 10;
             
             let mensagem = configuracoes.mensagemPedido;
             mensagem = mensagem.replace('{nome}', cliente.nome);
-            mensagem = mensagem.replace('{tipo_pedido}', `📦 ${pedido.quantidade} galão(ns) - R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}`);
+            mensagem = mensagem.replace('{tipo_pedido}', `📦 ${pedido.quantidade} galão(s) - R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}`);
             mensagem = mensagem.replace('{galao_foi}', pedido.galoesEntregues ? pedido.galoesEntregues.join(', ') : 'Pendente');
             mensagem = mensagem.replace('{data}', new Date(pedido.dataIda).toLocaleDateString('pt-BR'));
-            mensagem = mensagem.replace('{mensagem_fidelidade}', compraGratis ? '🎉 *PARABÉNS!* Esta é sua 11ª compra - GRÁTIS! 🎁' : '');
+            mensagem = mensagem.replace('{mensagem_fidelidade}', compraGratis ? `🎉 *PARABÉNS!* Esta é sua ${galoesParaGratis + 1}ª compra - GRÁTIS! 🎁` : '');
             
             abrirWhatsApp(cliente.telefone, mensagem);
         }
@@ -3359,7 +3423,7 @@ Estamos sempre à disposição! 🙏`,
             pedidoInfo.innerHTML = `
                 <p><strong>Cliente:</strong> ${cliente ? cliente.nome : 'N/A'}</p>
                 <p><strong>Data:</strong> ${new Date(pedido.dataIda).toLocaleDateString('pt-BR')}</p>
-                <p><strong>Quantidade:</strong> ${pedido.quantidade} galão(ns)</p>
+                <p><strong>Quantidade:</strong> ${pedido.quantidade} galão(s)</p>
                 <p><strong>Valor Total:</strong> R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}</p>
             `;
             
@@ -3399,8 +3463,8 @@ Estamos sempre à disposição! 🙏`,
                                 </select>
                             </div>
                             <div class="galao-input-group">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Galão vindo do cliente (MM/AAAA):</label>
-                                <input type="text" class="data-galao-input galao-vindo-input" data-index="${i}" placeholder="MM/AAAA" maxlength="7" onchange="handleGalaoVindoChange(this)" value="${ultimoGalaoCliente || ''}">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Galão vindo do cliente (MM-AAAA):</label>
+                                <input type="text" class="data-galao-input galao-vindo-input" data-index="${i}" placeholder="MM-AAAA" maxlength="7" onchange="handleGalaoVindoChange(this)" value="${ultimoGalaoCliente || ''}">
                             </div>
                         </div>
                     `;
@@ -3487,6 +3551,7 @@ Estamos sempre à disposição! 🙏`,
         function createPedidoElement(pedido, isAdmin) {
             const cliente = clientes.find(c => c.id == pedido.clienteId);
             const compraGratis = cliente && isCompraGratis(cliente.id);
+            const galoesParaGratis = configuracoes.galoesParaGratis || 10;
             
             const div = document.createElement('div');
             div.className = `flex flex-col md:flex-row md:items-center md:justify-between p-6 border rounded-xl transition-all duration-300 ${pedido.pago ? 'border-green-300 bg-green-50 dark:bg-green-900 dark:border-green-600' : 'border-red-300 bg-red-50 dark:bg-red-900 dark:border-red-600'}`;
@@ -3502,7 +3567,7 @@ Estamos sempre à disposição! 🙏`,
                 galoesInfo += `<p class="text-blue-600 dark:text-blue-400 mt-1 font-semibold">🏺 Galões entregues: ${pedido.galoesEntregues.join(', ')}</p>`;
             }
             if (pedido.galoesVindos && pedido.galoesVindos.length > 0) {
-                galoesInfo += `<p class="text-orange-600 dark:text-orange-400 mt-1 font-semibold">🔄 Galões vindos: ${pedido.galoesVindos.join(', ')}</p>`;
+                galoesInfo += `<p class="text-orange-600 dark:text-orange-400 mt-1 font-semibold">🔄 Galões vindo: ${pedido.galoesVindos.join(', ')}</p>`;
             }
             if (!galoesInfo) {
                 galoesInfo = '<p class="text-gray-600 dark:text-gray-400 mt-1">🪣 Galões: Pendente</p>';
@@ -3513,10 +3578,10 @@ Estamos sempre à disposição! 🙏`,
                     <h4 class="font-bold text-lg text-gray-900 dark:text-white flex items-center">
                         ${cliente ? cliente.nome : 'Cliente não encontrado'}
                         ${syncPendingItem ? '<span class="sync-pending">Pendente</span>' : ''}
-                        ${compraGratis ? '<span class="fidelidade-badge ml-2">🎉 11ª GRÁTIS!</span>' : ''}
+                        ${compraGratis ? `<span class="fidelidade-badge ml-2">🎉 ${galoesParaGratis + 1}ª GRÁTIS!</span>` : ''}
                     </h4>
                     <p class="text-gray-600 dark:text-gray-400 mt-1">
-                        📦 ${pedido.quantidade || 1} galão(ns) - R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}
+                        📦 ${pedido.quantidade || 1} galão(s) - R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}
                     </p>
                     <p class="text-gray-600 dark:text-gray-400 mt-1">📅 ${new Date(pedido.dataIda).toLocaleDateString('pt-BR')}</p>
                     ${galoesInfo}
@@ -3527,10 +3592,10 @@ Estamos sempre à disposição! 🙏`,
                         ${pedido.pago ? '✅ Pago' : '❌ Pendente'}
                     </span>
                     <div class="flex flex-col items-end space-y-2">
-                        ${!pedido.detalhesConfirmados ? `<button onclick="confirmarDetalhes('${pedido.id}')" class="btn-modern bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 px-4 py-2 text-sm">🪣 Confirmar Detalhes do Pedido</button>` : ''}
-                        ${!pedido.pago ? `<button onclick="marcarPago('${pedido.id}')" class="btn-modern bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 px-4 py-2 text-sm">💰 Marcar Pago</button>` : ''}
-                        ${cliente && cliente.telefone ? `<button onclick="enviarMensagemPedido('${cliente.id}', '${pedido.id}')" class="btn-modern bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 px-4 py-2 text-sm">📱 WhatsApp</button>` : ''}
-                        ${isAdmin ? `<button onclick="editarPedido('${pedido.id}')" class="btn-modern bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 px-4 py-2 text-sm">✏️ Editar</button>` : ''}
+                        ${!pedido.detalhesConfirmados ? `<button onclick="confirmarDetalhes('${pedido.id}')" class="btn-modern btn-uniform-size bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-sm">🪣 Confirmar</button>` : ''}
+                        ${!pedido.pago ? `<button onclick="marcarPago('${pedido.id}')" class="btn-modern btn-uniform-size bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-sm">💰 Marcar Pago</button>` : ''}
+                        ${isAdmin && cliente && cliente.telefone ? `<button onclick="enviarMensagemPedido('${cliente.id}', '${pedido.id}')" class="btn-modern btn-uniform-size bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-sm">📱 WhatsApp</button>` : ''}
+                        ${isAdmin ? `<button onclick="editarPedido('${pedido.id}')" class="btn-modern btn-uniform-size bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-sm">✏️ Editar</button>` : ''}
                     </div>
                 </div>
             `;
@@ -3564,12 +3629,15 @@ Estamos sempre à disposição! 🙏`,
                 
                 const cliente = clientes.find(c => c.id == pedido.clienteId);
                 const compraGratis = cliente && isCompraGratis(cliente.id);
+                const galoesParaGratis = configuracoes.galoesParaGratis || 10;
                 
                 const fidelidadeInfo = document.getElementById('fidelidadeInfo');
+                const fidelidadeText = document.getElementById('fidelidadeText');
                 const gratisOption = document.querySelector('[data-payment="Grátis"]');
                 
                 if (compraGratis) {
                     fidelidadeInfo.classList.remove('hidden');
+                    fidelidadeText.textContent = `Este cliente completou ${galoesParaGratis} galões. Esta é a ${galoesParaGratis + 1}ª compra grátis!`;
                     gratisOption.classList.remove('hidden');
                     document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
                     gratisOption.classList.add('selected');
@@ -3584,7 +3652,7 @@ Estamos sempre à disposição! 🙏`,
 
         async function adicionarGaloesEstoque() {
             const dataGalao = document.getElementById('novaDataGalao').value;
-            const quantidade = parseInt(document.getElementById('quantidadeGaloes').value);
+            const quantidade = parseInt(document.getElementById('novaQuantidadeGaloes').value);
             const loadingEl = document.getElementById('estoqueLoading');
             
             if (!dataGalao) {
@@ -3593,7 +3661,7 @@ Estamos sempre à disposição! 🙏`,
             }
             
             if (!isValidDataFormat(dataGalao)) {
-                alert('⚠️ Formato de data inválido! Use MM/AAAA (ex: 03/2024)');
+                alert('⚠️ Formato de data inválido! Use MM-AAAA (ex: 03-2024)');
                 return;
             }
             
@@ -3611,9 +3679,9 @@ Estamos sempre à disposição! 🙏`,
                 });
                 
                 document.getElementById('novaDataGalao').value = '';
-                document.getElementById('quantidadeGaloes').value = '1';
+                document.getElementById('novaQuantidadeGaloes').value = '1';
                 
-                alert(`✅ ${quantidade} galões adicionados para ${dataGalao}!`);
+                alert(`✅ ${quantidade} galão(s) adicionados para ${dataGalao}!`);
                 
             } catch (error) {
                 console.error('❌ Erro ao adicionar galões:', error);
@@ -3799,13 +3867,13 @@ Estamos sempre à disposição! 🙏`,
             let text = `Galões ${data} - `;
             switch (status) {
                 case 'cheio':
-                    text += `${quantidade} Cheio${quantidade > 1 ? 's' : ''} (Disponível${quantidade > 1 ? 'is' : ''})`;
+                    text += `${quantidade} Cheio(s) (Disponível)`;
                     break;
                 case 'vazio':
-                    text += `${quantidade} Vazio${quantidade > 1 ? 's' : ''} (Precisa${quantidade > 1 ? 'm' : ''} Encher)`;
+                    text += `${quantidade} Vazio(s) (Precisa Encher)`;
                     break;
                 case 'cliente':
-                    text += `${quantidade} Com Cliente${quantidade > 1 ? 's' : ''}`;
+                    text += `${quantidade} Com Cliente(s)`;
                     break;
             }
             return text;
@@ -3833,7 +3901,11 @@ Estamos sempre à disposição! 🙏`,
             document.getElementById('vendasHoje').textContent = vendasHoje;
             
             const totalCheios = Object.values(estoque).reduce((total, stock) => total + (stock.cheio || 0), 0);
+            const totalVazios = Object.values(estoque).reduce((total, stock) => total + (stock.vazio || 0), 0);
+            
             document.getElementById('galoesEstoque').textContent = totalCheios;
+            document.getElementById('totalGaloesCheios').textContent = totalCheios;
+            document.getElementById('totalGaloesVazios').textContent = totalVazios;
             
             const pendentes = pedidos.filter(p => !p.pago).length;
             document.getElementById('pedidosPendentes').textContent = pendentes;
@@ -4025,7 +4097,7 @@ Estamos sempre à disposição! 🙏`,
                     const galoesInfo = (pedido.galoesEntregues && pedido.galoesEntregues.length > 0) ? 
                         `Entregues: ${pedido.galoesEntregues.join(', ')}` : 'Pendente';
                     const galoesVindos = (pedido.galoesVindos && pedido.galoesVindos.length > 0) ? 
-                        ` | Vindos: ${pedido.galoesVindos.join(', ')}` : '';
+                        ` | Vindo: ${pedido.galoesVindos.join(', ')}` : '';
                     
                     html += `
                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
@@ -4059,7 +4131,7 @@ Estamos sempre à disposição! 🙏`,
             try {
                 // Verificar se jsPDF está carregado
                 if (!window.jsPDF) {
-                    alert('❌ Biblioteca PDF não carregada. Recarregue a página e tente novamente.');
+                    alert('❌ Biblioteca PDF não carregada. Aguarde alguns segundos e tente novamente.');
                     return;
                 }
 
@@ -4133,7 +4205,7 @@ Estamos sempre à disposição! 🙏`,
                     // Verificar se autoTable está disponível
                     if (doc.autoTable) {
                         doc.autoTable({
-                            head: [['Data', 'Cliente', 'Qtd', 'Valor', 'Status', 'Pagamento', 'Galões Entregues', 'Galões Vindos']],
+                            head: [['Data', 'Cliente', 'Qtd', 'Valor', 'Status', 'Pagamento', 'Galões Entregues', 'Galões Vindo']],
                             body: tableData,
                             startY: yPosition,
                             margin: { left: margin, right: margin },
@@ -4215,7 +4287,7 @@ Estamos sempre à disposição! 🙏`,
                 
             } catch (error) {
                 console.error('❌ Erro ao gerar PDF:', error);
-                alert('❌ Erro ao gerar PDF. Verifique se a biblioteca está carregada corretamente.');
+                alert('❌ Erro ao gerar PDF: ' + error.message);
             }
         }
 
@@ -4226,8 +4298,6 @@ Estamos sempre à disposição! 🙏`,
             if (authStateListener) authStateListener();
         });
     </script>
-
-
 
 
 
