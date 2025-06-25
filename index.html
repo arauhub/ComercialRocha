@@ -1,115 +1,111 @@
 <!DOCTYPE html><html lang="pt-BR"><head>
 <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="
-default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:
-https://cdnjs.cloudflare.com
-https://cdn.jsdelivr.net
-https://code.jquery.com
-https://unpkg.com
-https://d3js.org
-https://threejs.org
-https://cdn.plot.ly
-https://stackpath.bootstrapcdn.com
-https://maps.googleapis.com
-https://cdn.tailwindcss.com
-https://ajax.googleapis.com
-https://kit.fontawesome.com
-https://cdn.datatables.net
-https://maxcdn.bootstrapcdn.com
-https://code.highcharts.com
-https://tako-static-assets-production.s3.amazonaws.com
-https://www.youtube.com
-https://fonts.googleapis.com
-https://fonts.gstatic.com
-https://pfst.cf2.poecdn.net
-https://puc.poecdn.net
-https://i.imgur.com
-https://wikimedia.org
-https://*.icons8.com
-https://*.giphy.com
-https://picsum.photos
-https://images.unsplash.com
-https://www.gstatic.com
-https://*.firebaseapp.com
-https://*.googleapis.com
-https://securetoken.googleapis.com
-https://identitytoolkit.googleapis.com
-https://firebase.googleapis.com
-https://*.cloudfunctions.net
-https://firebaseinstallations.googleapis.com
-https://nominatim.openstreetmap.org
-https://1.1.1.1
-https://www.google.com;
+    <meta http-equiv="Content-Security-Policy" content="
+default-src 'self' data: blob: 'unsafe-inline' 'unsafe-eval'
+  https://cdnjs.cloudflare.com
+  https://cdn.jsdelivr.net
+  https://code.jquery.com
+  https://unpkg.com
+  https://d3js.org
+  https://threejs.org
+  https://cdn.plot.ly
+  https://stackpath.bootstrapcdn.com
+  https://maps.googleapis.com
+  https://cdn.tailwindcss.com
+  https://ajax.googleapis.com
+  https://kit.fontawesome.com
+  https://cdn.datatables.net
+  https://maxcdn.bootstrapcdn.com
+  https://code.highcharts.com
+  https://tako-static-assets-production.s3.amazonaws.com
+  https://www.youtube.com
+  https://fonts.googleapis.com
+  https://fonts.gstatic.com
+  https://pfst.cf2.poecdn.net
+  https://puc.poecdn.net
+  https://i.imgur.com
+  https://wikimedia.org
+  https://*.icons8.com
+  https://*.giphy.com
+  https://picsum.photos
+  https://images.unsplash.com
+  https://www.gstatic.com
+  https://*.firebaseapp.com
+  https://*.googleapis.com
+  https://securetoken.googleapis.com
+  https://identitytoolkit.googleapis.com
+  https://firebase.googleapis.com
+  https://*.cloudfunctions.net
+  https://firebaseinstallations.googleapis.com
+  https://nominatim.openstreetmap.org
+  https://1.1.1.1
+  https://www.google.com;
 
 script-src 'self' 'unsafe-inline' 'unsafe-eval'
-https://www.gstatic.com
-https://*.firebaseapp.com
-https://*.googleapis.com
-https://securetoken.googleapis.com
-https://identitytoolkit.googleapis.com
-https://firebase.googleapis.com
-https://*.cloudfunctions.net
-https://firebaseinstallations.googleapis.com
-https://cdn.tailwindcss.com
-https://cdnjs.cloudflare.com
-https://cdn.jsdelivr.net
-https://code.jquery.com
-https://unpkg.com
-https://kit.fontawesome.com
-https://cdn.plot.ly
-https://code.highcharts.com;
+  https://www.gstatic.com
+  https://*.firebaseapp.com
+  https://*.googleapis.com
+  https://securetoken.googleapis.com
+  https://identitytoolkit.googleapis.com
+  https://firebase.googleapis.com
+  https://*.cloudfunctions.net
+  https://firebaseinstallations.googleapis.com
+  https://cdn.tailwindcss.com
+  https://cdnjs.cloudflare.com
+  https://cdn.jsdelivr.net
+  https://code.jquery.com
+  https://unpkg.com
+  https://kit.fontawesome.com
+  https://cdn.plot.ly
+  https://code.highcharts.com;
 
 connect-src 'self'
-https://www.gstatic.com
-https://*.firebaseapp.com
-https://*.googleapis.com
-https://securetoken.googleapis.com
-https://identitytoolkit.googleapis.com
-https://firebase.googleapis.com
-https://*.cloudfunctions.net
-https://firebaseinstallations.googleapis.com
-https://nominatim.openstreetmap.org
-https://1.1.1.1
-https://www.google.com;
+  https://www.gstatic.com
+  https://*.firebaseapp.com
+  https://*.googleapis.com
+  https://securetoken.googleapis.com
+  https://identitytoolkit.googleapis.com
+  https://firebase.googleapis.com
+  https://*.cloudfunctions.net
+  https://firebaseinstallations.googleapis.com
+  https://nominatim.openstreetmap.org
+  https://1.1.1.1
+  https://www.google.com;
 
 img-src 'self' data: blob:
-https://www.gstatic.com
-https://cdnjs.cloudflare.com
-https://cdn.jsdelivr.net
-https://code.jquery.com
-https://unpkg.com
-https://images.unsplash.com
-https://i.imgur.com
-https://wikimedia.org
-https://*.icons8.com
-https://*.giphy.com
-https://picsum.photos
-https://cdn.plot.ly
-https://code.highcharts.com;
+  https://www.gstatic.com
+  https://cdnjs.cloudflare.com
+  https://cdn.jsdelivr.net
+  https://code.jquery.com
+  https://unpkg.com
+  https://images.unsplash.com
+  https://i.imgur.com
+  https://wikimedia.org
+  https://*.icons8.com
+  https://*.giphy.com
+  https://picsum.photos
+  https://cdn.plot.ly
+  https://code.highcharts.com;
 
 frame-src 'self'
-https://www.youtube.com
-https://trytako.com
-https://*.firebaseapp.com;
+  https://www.youtube.com
+  https://trytako.com
+  https://*.firebaseapp.com;
 
 child-src 'self';
-
 manifest-src 'self';
-
 worker-src 'self';
-
 upgrade-insecure-requests;
-
 block-all-mixed-content;
 ">
-  
+
 
     <title>Comercial Rocha - Controle de Galões</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- jsPDF para gerar PDF -->
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <script defer="" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script defer="" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <!-- Firebase SDKs -->
     <script type="module">
         // Try to load Firebase, but don't block the app if it fails
@@ -236,6 +232,12 @@ block-all-mixed-content;
             background: linear-gradient(135deg, #f59e0b, #d97706);
             color: white;
             box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+        }
+
+        .galao-emprestado {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);
         }
         
         .galao-icon {
@@ -380,7 +382,7 @@ block-all-mixed-content;
             border: 1px solid #60a5fa;
         }
         
-        .payment-modal, .return-galao-modal, .edit-cliente-modal, .edit-estoque-modal, .add-cliente-modal, .config-modal, .confirm-details-modal, .edit-pedido-modal {
+        .payment-modal, .return-galao-modal, .edit-cliente-modal, .edit-estoque-modal, .add-cliente-modal, .config-modal, .confirm-details-modal, .edit-pedido-modal, .emprestimo-modal, .receive-galao-modal {
             position: fixed;
             inset: 0;
             background: rgba(0, 0, 0, 0.5);
@@ -390,7 +392,7 @@ block-all-mixed-content;
             z-index: 1000;
         }
         
-        .payment-modal-content, .return-galao-modal-content, .edit-cliente-modal-content, .edit-estoque-modal-content, .add-cliente-modal-content, .config-modal-content, .confirm-details-modal-content, .edit-pedido-modal-content {
+        .payment-modal-content, .return-galao-modal-content, .edit-cliente-modal-content, .edit-estoque-modal-content, .add-cliente-modal-content, .config-modal-content, .confirm-details-modal-content, .edit-pedido-modal-content, .emprestimo-modal-content, .receive-galao-modal-content {
             background: white;
             border-radius: 16px;
             padding: 24px;
@@ -401,7 +403,7 @@ block-all-mixed-content;
             overflow-y: auto;
         }
         
-        .dark .payment-modal-content, .dark .return-galao-modal-content, .dark .edit-cliente-modal-content, .dark .edit-estoque-modal-content, .dark .add-cliente-modal-content, .dark .config-modal-content, .dark .confirm-details-modal-content, .dark .edit-pedido-modal-content {
+        .dark .payment-modal-content, .dark .return-galao-modal-content, .dark .edit-cliente-modal-content, .dark .edit-estoque-modal-content, .dark .add-cliente-modal-content, .dark .config-modal-content, .dark .confirm-details-modal-content, .dark .edit-pedido-modal-content, .dark .emprestimo-modal-content, .dark .receive-galao-modal-content {
             background: #1f2937;
         }
         
@@ -694,6 +696,15 @@ block-all-mixed-content;
             background: #dc2626;
         }
 
+        .btn-emprestar {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .btn-emprestar:hover {
+            background: #7c3aed;
+        }
+
         .galao-dates-display {
             font-size: 12px;
             color: #6b7280;
@@ -723,6 +734,73 @@ block-all-mixed-content;
             padding: 24px;
             text-align: center;
             box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .cliente-inativo {
+            opacity: 0.6;
+            background: #f5f5f5;
+        }
+
+        .dark .cliente-inativo {
+            background: #374151;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #5D5CDE;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .emprestimo-item {
+            background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+            border: 1px solid #8b5cf6;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+        }
+
+        .dark .emprestimo-item {
+            background: linear-gradient(135deg, #581c87, #7c3aed);
+            border: 1px solid #a855f7;
         }
     </style>
 </head>
@@ -786,7 +864,51 @@ block-all-mixed-content;
     <!-- Context Menu -->
     <div id="contextMenu" class="context-menu hidden">
         <div class="context-menu-item" onclick="editarEstoque()">✏️ Editar Quantidade</div>
+        <div class="context-menu-item" onclick="emprestarGalao()">🤝 Emprestar</div>
         <div class="context-menu-item" onclick="excluirEstoqueItem()">🗑️ Excluir</div>
+    </div>
+
+    <!-- Empréstimo Modal -->
+    <div id="emprestimoModal" class="emprestimo-modal hidden">
+        <div class="emprestimo-modal-content">
+            <h3 class="text-xl font-bold mb-6 text-gray-900 dark:text-white text-center">🤝 Emprestar Galão</h3>
+            <form id="formEmprestimo" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Cliente</label>
+                    <input type="text" id="emprestimoCliente" list="clientesEmprestimoList" placeholder="Digite ou selecione um cliente" class="input-modern w-full" required="">
+                    <datalist id="clientesEmprestimoList"></datalist>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Data do Galão</label>
+                        <input type="text" id="emprestimoDataGalao" readonly="" class="input-modern w-full bg-gray-100 dark:bg-gray-600">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Tipo do Galão</label>
+                        <select id="emprestimoTipo" class="input-modern w-full" required="">
+                            <option value="">Selecione...</option>
+                            <option value="cheio">Cheio</option>
+                            <option value="vazio">Vazio</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Observações</label>
+                    <textarea id="emprestimoObservacoes" class="input-modern w-full" rows="3" placeholder="Observações sobre o empréstimo..."></textarea>
+                </div>
+                
+                <div class="flex space-x-3 mt-6">
+                    <button type="submit" class="btn-modern flex-1 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700">
+                        ✅ Emprestar
+                    </button>
+                    <button type="button" id="cancelEmprestimo" class="btn-modern flex-1 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700">
+                        ❌ Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- Configurações Modal -->
@@ -798,16 +920,21 @@ block-all-mixed-content;
                     <h4 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">⚙️ Configurações Gerais</h4>
                     
                     <div class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Dias para Notificação</label>
                                 <input type="number" id="configDiasNotificacao" min="1" max="30" class="input-modern w-full" placeholder="7">
                                 <p class="text-xs text-gray-500 mt-1">Quantos dias sem comprar para notificar</p>
                             </div>
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Preço do Galão (R$)</label>
-                                <input type="number" id="configPrecoGalao" step="0.01" min="0" class="input-modern w-full" placeholder="10.00">
-                                <p class="text-xs text-gray-500 mt-1">Valor unitário do galão</p>
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Preço do Galão de Água (R$)</label>
+                                <input type="number" id="configPrecoGalao" step="0.01" min="0" class="input-modern w-full" placeholder="15.00">
+                                <p class="text-xs text-gray-500 mt-1">Valor unitário do galão de água</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Preço do Galão Vazio (R$)</label>
+                                <input type="number" id="configPrecoGalaoVazio" step="0.01" min="0" class="input-modern w-full" placeholder="25.00">
+                                <p class="text-xs text-gray-500 mt-1">Valor unitário do galão vazio</p>
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Galões para Grátis</label>
@@ -865,10 +992,10 @@ block-all-mixed-content;
         </div>
     </div>
 
-    <!-- Confirm Details Modal -->
+    <!-- Confirm Details Modal (Enviado) -->
     <div id="confirmDetailsModal" class="confirm-details-modal hidden">
         <div class="confirm-details-modal-content">
-            <h3 class="text-xl font-bold mb-6 text-gray-900 dark:text-white text-center">🪣 Confirmar Detalhes do Pedido</h3>
+            <h3 class="text-xl font-bold mb-6 text-gray-900 dark:text-white text-center">🚚 Confirmar Envio do Pedido</h3>
             <div class="space-y-4">
                 <div class="bg-blue-100 dark:bg-blue-900 p-4 rounded-lg">
                     <h4 class="font-semibold text-blue-800 dark:text-blue-200 mb-2">Informações do Pedido</h4>
@@ -884,9 +1011,37 @@ block-all-mixed-content;
             </div>
             <div class="flex space-x-3 mt-6">
                 <button id="confirmDetailsBtn" class="btn-modern flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
-                    ✅ Confirmar
+                    ✅ Confirmar Envio
                 </button>
                 <button id="cancelDetailsBtn" class="btn-modern flex-1 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700">
+                    ❌ Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receive Galão Modal (Recebido) -->
+    <div id="receiveGalaoModal" class="receive-galao-modal hidden">
+        <div class="receive-galao-modal-content">
+            <h3 class="text-xl font-bold mb-6 text-gray-900 dark:text-white text-center">📦 Confirmar Recebimento de Galões</h3>
+            <div class="space-y-4">
+                <div class="bg-orange-100 dark:bg-orange-900 p-4 rounded-lg">
+                    <h4 class="font-semibold text-orange-800 dark:text-orange-200 mb-2">Informações do Pedido</h4>
+                    <div id="receiveDetailsInfo"></div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Galões Vindos do Cliente</h4>
+                    <div id="galaoVindosList" class="space-y-4">
+                        <!-- Lista de galões vindos será preenchida aqui -->
+                    </div>
+                </div>
+            </div>
+            <div class="flex space-x-3 mt-6">
+                <button id="confirmReceiveBtn" class="btn-modern flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
+                    ✅ Confirmar Recebimento
+                </button>
+                <button id="cancelReceiveBtn" class="btn-modern flex-1 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700">
                     ❌ Cancelar
                 </button>
             </div>
@@ -908,10 +1063,14 @@ block-all-mixed-content;
                         <input type="date" id="editPedidoData" class="input-modern w-full">
                     </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Quantidade</label>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Quantidade Galões de Água</label>
                         <input type="number" id="editPedidoQuantidade" min="1" class="input-modern w-full">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Quantidade Galões Vazios</label>
+                        <input type="number" id="editPedidoQuantidadeVazios" min="0" class="input-modern w-full">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Valor Total (R$)</label>
@@ -1048,6 +1207,16 @@ block-all-mixed-content;
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Endereço Completo</label>
                     <input type="text" id="editEnderecoCliente" class="input-modern w-full">
+                </div>
+                <div>
+                    <label class="flex items-center space-x-3">
+                        <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Cliente Inativo</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="editClienteInativo">
+                            <span class="slider"></span>
+                        </label>
+                    </label>
+                    <p class="text-xs text-gray-500 mt-1">Marque para inativar o cliente (não aparecerá na lista principal)</p>
                 </div>
                 <div class="flex space-x-3 mt-6">
                     <button type="submit" class="btn-modern flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
@@ -1232,10 +1401,19 @@ block-all-mixed-content;
 
                 <!-- Lista de Clientes -->
                 <div class="card-modern p-6">
-                    <h3 class="text-xl font-semibold mb-6 text-gray-900 dark:text-white flex items-center">
-                        <span class="text-2xl mr-3">📋</span>
-                        Clientes Cadastrados
-                    </h3>
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
+                            <span class="text-2xl mr-3">📋</span>
+                            Clientes Cadastrados
+                        </h3>
+                        <label class="flex items-center space-x-3">
+                            <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Mostrar Inativos</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="mostrarInativos" onchange="toggleMostrarInativos()">
+                                <span class="slider"></span>
+                            </label>
+                        </label>
+                    </div>
                     <div id="listaClientes" class="space-y-4">
                         <div class="text-center py-8">
                             <div class="loading-indicator mx-auto mb-4"></div>
@@ -1277,13 +1455,18 @@ block-all-mixed-content;
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Quantidade de Galões</label>
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Quantidade Galões de Água</label>
                                 <input type="number" id="quantidadeGaloes" value="1" min="1" class="input-modern w-full" onchange="calcularValorTotal()">
                             </div>
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Valor Total (R$)</label>
-                                <input type="number" id="valorTotal" step="0.01" readonly="" class="input-modern w-full bg-gray-100 dark:bg-gray-600">
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Quantidade Galões Vazios</label>
+                                <input type="number" id="quantidadeGaloesVazios" value="0" min="0" class="input-modern w-full" onchange="calcularValorTotal()">
                             </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Valor Total (R$)</label>
+                            <input type="number" id="valorTotal" step="0.01" readonly="" class="input-modern w-full bg-gray-100 dark:bg-gray-600">
                         </div>
 
                         <button type="submit" class="btn-modern w-full md:w-auto">
@@ -1370,6 +1553,19 @@ block-all-mixed-content;
                         </div>
                     </div>
                 </div>
+
+                <!-- Galões Emprestados -->
+                <div class="card-modern p-6">
+                    <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center">
+                        <span class="text-2xl mr-3">🤝</span>
+                        Galões Emprestados
+                    </h3>
+                    <div id="galoesEmprestados" class="space-y-3">
+                        <div class="text-center py-4">
+                            <p class="text-gray-500 text-sm">Nenhum galão emprestado no momento.</p>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <!-- Relatórios -->
@@ -1384,14 +1580,24 @@ block-all-mixed-content;
                             Relatórios de Vendas
                         </h3>
                         <div class="space-y-4">
-                            <button onclick="gerarRelatorio('diario')" class="btn-modern w-full bg-gradient-to-r from-blue-500 to-blue-600">
-                                📅 Relatório Diário
-                            </button>
-                            <button onclick="gerarRelatorio('mensal')" class="btn-modern w-full bg-gradient-to-r from-blue-500 to-blue-600">
-                                📆 Relatório Mensal
-                            </button>
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Relatório Diário - Selecionar Data:</label>
+                                <input type="date" id="dataDiario" class="input-modern w-full">
+                                <button onclick="gerarRelatorio('diario')" class="btn-modern w-full bg-gradient-to-r from-blue-500 to-blue-600">
+                                    📅 Gerar Relatório Diário
+                                </button>
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Relatório Mensal - Selecionar Mês:</label>
+                                <input type="month" id="mesMensal" class="input-modern w-full">
+                                <button onclick="gerarRelatorio('mensal')" class="btn-modern w-full bg-gradient-to-r from-blue-500 to-blue-600">
+                                    📆 Gerar Relatório Mensal
+                                </button>
+                            </div>
+                            
                             <button onclick="gerarRelatorio('anual')" class="btn-modern w-full bg-gradient-to-r from-blue-500 to-blue-600">
-                                📈 Relatório Anual
+                                📈 Relatório Anual (Este Ano)
                             </button>
                         </div>
                     </div>
@@ -1448,12 +1654,15 @@ block-all-mixed-content;
         let clientes = [];
         let pedidos = [];
         let estoque = {};
+        let emprestimos = []; // Nova variável para controlar empréstimos
         let currentPedidoForPayment = null;
         let currentPedidoForDetails = null;
+        let currentPedidoForReceive = null; // Nova variável para receber galões
         let currentEditingCliente = null;
         let currentEditingPedido = null;
         let currentEditingEstoque = null;
         let currentContextMenuData = null;
+        let currentEmprestimoData = null;
         let firebaseConnected = false;
         let currentUser = null;
         let isOfflineMode = false;
@@ -1461,6 +1670,7 @@ block-all-mixed-content;
         let isOnline = navigator.onLine;
         let currentRelatorioData = null;
         let currentRelatorioTitulo = '';
+        let mostrandoInativos = false;
         let configuracoes = {
             mensagemPedido: `🪣 *Comercial Rocha*
 
@@ -1486,7 +1696,8 @@ Já faz alguns dias que você não faz seu pedido de água.
 
 Estamos sempre à disposição! 🙏`,
             diasNotificacao: 7,
-            precoGalao: 10.00,
+            precoGalao: 15.00,
+            precoGalaoVazio: 25.00,
             galoesParaGratis: 10
         };
 
@@ -1494,6 +1705,7 @@ Estamos sempre à disposição! 🙏`,
         let clientesListener = null;
         let pedidosListener = null;
         let estoqueListener = null;
+        let emprestimosListener = null;
         let authStateListener = null;
 
         // Local storage keys
@@ -1501,6 +1713,7 @@ Estamos sempre à disposição! 🙏`,
             clientes: 'comercialrocha_clientes',
             pedidos: 'comercialrocha_pedidos', 
             estoque: 'comercialrocha_estoque',
+            emprestimos: 'comercialrocha_emprestimos',
             user: 'comercialrocha_user',
             pendingSync: 'comercialrocha_pending_sync',
             configuracoes: 'comercialrocha_configuracoes'
@@ -1658,6 +1871,7 @@ Estamos sempre à disposição! 🙏`,
                 clientes = JSON.parse(localStorage.getItem(STORAGE_KEYS.clientes) || '[]');
                 pedidos = JSON.parse(localStorage.getItem(STORAGE_KEYS.pedidos) || '[]');
                 estoque = JSON.parse(localStorage.getItem(STORAGE_KEYS.estoque) || '{}');
+                emprestimos = JSON.parse(localStorage.getItem(STORAGE_KEYS.emprestimos) || '[]');
                 pendingSync = JSON.parse(localStorage.getItem(STORAGE_KEYS.pendingSync) || '[]');
                 
                 const savedUser = localStorage.getItem(STORAGE_KEYS.user);
@@ -1671,6 +1885,7 @@ Estamos sempre à disposição! 🙏`,
                     clientes: clientes.length,
                     pedidos: pedidos.length,
                     estoque: Object.keys(estoque).length,
+                    emprestimos: emprestimos.length,
                     pendingSync: pendingSync.length
                 });
                 
@@ -1678,9 +1893,11 @@ Estamos sempre à disposição! 🙏`,
                 updateListaPedidos();
                 updateVisualizacaoEstoque();
                 updateEstoqueDetalhado();
+                updateGaloesEmprestados();
                 updateDashboard();
                 loadClienteOptions();
                 loadClienteOptionsRelatorio();
+                loadClienteOptionsEmprestimo();
                 
             } catch (error) {
                 console.error('❌ Erro ao carregar dados locais:', error);
@@ -1711,6 +1928,7 @@ Estamos sempre à disposição! 🙏`,
                 localStorage.setItem(STORAGE_KEYS.clientes, JSON.stringify(clientes));
                 localStorage.setItem(STORAGE_KEYS.pedidos, JSON.stringify(pedidos));
                 localStorage.setItem(STORAGE_KEYS.estoque, JSON.stringify(estoque));
+                localStorage.setItem(STORAGE_KEYS.emprestimos, JSON.stringify(emprestimos));
                 localStorage.setItem(STORAGE_KEYS.pendingSync, JSON.stringify(pendingSync));
                 
                 if (currentUser) {
@@ -1771,6 +1989,12 @@ Estamos sempre à disposição! 🙏`,
                             break;
                         case 'delete_estoque':
                             await excluirEstoque(item.data.dataGalao);
+                            break;
+                        case 'add_emprestimo':
+                            await salvarEmprestimoFirebase(item.data);
+                            break;
+                        case 'update_emprestimo':
+                            await atualizarEmprestimo(item.data.id, item.data.updates);
                             break;
                     }
                 }
@@ -1842,13 +2066,19 @@ Estamos sempre à disposição! 🙏`,
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('dataIda').value = today;
             
+            // Definir datas padrão para relatórios
+            document.getElementById('dataDiario').value = today;
+            document.getElementById('mesMensal').value = new Date().toISOString().substring(0, 7);
+            
             setupPaymentModal();
             setupEditClienteModal();
             setupEditEstoqueModal();
             setupAddClienteModal();
             setupConfigModal();
             setupConfirmDetailsModal();
+            setupReceiveGalaoModal(); // Nova função para o modal de recebimento
             setupEditPedidoModal();
+            setupEmprestimoModal();
             setupDataInputMasks();
             setupMobileMenu();
             setupContextMenu();
@@ -1861,15 +2091,14 @@ Estamos sempre à disposição! 🙏`,
         }
 
         function setupPDFButton() {
-    document.getElementById('salvarPDF').addEventListener('click', function() {
-        // ✅ VERIFICAÇÃO CORRIGIDA
-        if (typeof window.jspdf?.jsPDF !== 'undefined' && currentRelatorioData && currentRelatorioTitulo) {
-            gerarPDF(currentRelatorioTitulo, currentRelatorioData);
-        } else {
-            alert('❌ Erro: Biblioteca PDF não está disponível ou dados não carregados.');
+            document.getElementById('salvarPDF').addEventListener('click', function() {
+                if (typeof window.jspdf?.jsPDF !== 'undefined' && currentRelatorioData && currentRelatorioTitulo) {
+                    gerarPDF(currentRelatorioTitulo, currentRelatorioData);
+                } else {
+                    alert('❌ Erro: Biblioteca PDF não está disponível ou dados não carregados.');
+                }
+            });
         }
-    });
-}
 
         function setupLoginForm() {
             const form = document.getElementById('authForm');
@@ -1942,10 +2171,12 @@ Estamos sempre à disposição! 🙏`,
                 if (clientesListener) clientesListener();
                 if (pedidosListener) pedidosListener();
                 if (estoqueListener) estoqueListener();
+                if (emprestimosListener) emprestimosListener();
                 
                 clientes = [];
                 pedidos = [];
                 estoque = {};
+                emprestimos = [];
                 
                 alert('✅ Logout realizado com sucesso!');
             } catch (error) {
@@ -1954,39 +2185,51 @@ Estamos sempre à disposição! 🙏`,
             }
         }
 
-        // Sistema de Fidelidade - Corrigido para reiniciar contagem
+        // Sistema de Fidelidade - Corrigido para não contar os galões grátis no total
         function contarGaloesVendidos(clienteId) {
             return pedidos.filter(p => p.clienteId === clienteId && p.pago)
-                          .reduce((total, pedido) => total + (pedido.quantidade || 1) - (pedido.galoesGratis || 0), 0);
+                          .reduce((total, pedido) => total + (pedido.quantidade || 1), 0);
+        }
+
+        function contarGaloesGratisRecebidos(clienteId) {
+            return pedidos.filter(p => p.clienteId === clienteId && p.pago)
+                          .reduce((total, pedido) => total + (pedido.galoesGratis || 0), 0);
         }
 
         function calcularGaloesGratis(clienteId, quantidadePedido) {
             const galoesVendidos = contarGaloesVendidos(clienteId);
+            const galoesGratisJaRecebidos = contarGaloesGratisRecebidos(clienteId);
             const galoesParaGratis = configuracoes.galoesParaGratis || 10;
             
-            let galoesGratis = 0;
-            let galoesRestantes = galoesVendidos % galoesParaGratis;
+            // Total de galões pagos (não conta os grátis)
+            const galoesPagos = galoesVendidos - galoesGratisJaRecebidos;
             
-            for (let i = 0; i < quantidadePedido; i++) {
-                galoesRestantes++;
-                if (galoesRestantes >= galoesParaGratis) {
-                    galoesGratis++;
-                    galoesRestantes = 0;
-                }
-            }
+            let galoesGratis = 0;
+            let totalGaloesPagosComPedido = galoesPagos + quantidadePedido;
+            
+            // Calcular quantos grupos de galoesParaGratis temos
+            const gruposCompletos = Math.floor(totalGaloesPagosComPedido / galoesParaGratis);
+            const gruposCompletosAntes = Math.floor(galoesPagos / galoesParaGratis);
+            
+            galoesGratis = gruposCompletos - gruposCompletosAntes;
             
             return galoesGratis;
         }
 
         function proximaCompraGratis(clienteId) {
             const galoesVendidos = contarGaloesVendidos(clienteId);
+            const galoesGratisJaRecebidos = contarGaloesGratisRecebidos(clienteId);
             const galoesParaGratis = configuracoes.galoesParaGratis || 10;
-            return galoesParaGratis - (galoesVendidos % galoesParaGratis);
+            
+            const galoesPagos = galoesVendidos - galoesGratisJaRecebidos;
+            return galoesParaGratis - (galoesPagos % galoesParaGratis);
         }
 
         function calcularValorTotal() {
             const quantidade = parseInt(document.getElementById('quantidadeGaloes').value) || 1;
-            const valorUnitario = configuracoes.precoGalao || 10.00;
+            const quantidadeVazios = parseInt(document.getElementById('quantidadeGaloesVazios').value) || 0;
+            const valorUnitario = configuracoes.precoGalao || 15.00;
+            const valorUnitarioVazio = configuracoes.precoGalaoVazio || 25.00;
             const clienteId = document.getElementById('clientePedido').value;
             
             let galoesGratis = 0;
@@ -1994,7 +2237,10 @@ Estamos sempre à disposição! 🙏`,
                 galoesGratis = calcularGaloesGratis(clienteId, quantidade);
             }
             
-            const valorTotal = (quantidade - galoesGratis) * valorUnitario;
+            const valorGaloes = (quantidade - galoesGratis) * valorUnitario;
+            const valorVazios = quantidadeVazios * valorUnitarioVazio;
+            const valorTotal = valorGaloes + valorVazios;
+            
             document.getElementById('valorTotal').value = valorTotal.toFixed(2);
             
             // Atualizar informações do cliente para mostrar galões grátis
@@ -2008,13 +2254,14 @@ Estamos sempre à disposição! 🙏`,
             
             if (pedidosCliente.length === 0) return null;
             
-            // Retornar apenas o último pedido
             const ultimoPedido = pedidosCliente[0];
             return {
                 dataEntrega: new Date(ultimoPedido.dataIda).toLocaleDateString('pt-BR'),
                 quantidade: ultimoPedido.quantidade || 1,
+                quantidadeVazios: ultimoPedido.quantidadeVazios || 0,
                 galoes: ultimoPedido.galoesEntregues || [],
-                galoesGratis: ultimoPedido.galoesGratis || 0
+                galoesGratis: ultimoPedido.galoesGratis || 0,
+                valorTotal: ultimoPedido.valorTotal || 0
             };
         }
 
@@ -2023,10 +2270,10 @@ Estamos sempre à disposição! 🙏`,
             
             if (pedidosCliente.length === 0) return [];
             
-            // Pegar últimos 3 pedidos mesmo sem galões entregues
             return pedidosCliente.slice(0, 3).map(p => ({
                 dataEntrega: new Date(p.dataIda).toLocaleDateString('pt-BR'),
                 quantidade: p.quantidade || 1,
+                quantidadeVazios: p.quantidadeVazios || 0,
                 galoes: p.galoesEntregues || []
             }));
         }
@@ -2041,7 +2288,6 @@ Estamos sempre à disposição! 🙏`,
             
             if (pedidosCliente.length === 0) return null;
             
-            // Retornar o primeiro galão do último pedido
             return pedidosCliente[0].galoesEntregues[0];
         }
 
@@ -2066,6 +2312,11 @@ Estamos sempre à disposição! 🙏`,
             });
             
             return melhorGalao;
+        }
+
+        function toggleMostrarInativos() {
+            mostrandoInativos = document.getElementById('mostrarInativos').checked;
+            updateListaClientes();
         }
 
         // Cliente Relatório Selection
@@ -2120,6 +2371,232 @@ Estamos sempre à disposição! 🙏`,
             });
         }
 
+        // Empréstimo Functions
+        async function salvarEmprestimo(emprestimoData) {
+            if (isOfflineMode) {
+                const id = generateId();
+                const emprestimo = { id, ...emprestimoData, dataEmprestimo: new Date().toISOString() };
+                emprestimos.push(emprestimo);
+                addToPendingSync('add_emprestimo', 'emprestimos', emprestimoData);
+                updateGaloesEmprestados();
+                saveLocalData();
+                return id;
+            } else {
+                return await salvarEmprestimoFirebase(emprestimoData);
+            }
+        }
+
+        async function salvarEmprestimoFirebase(emprestimoData) {
+            if (!firebaseConnected || !currentUser) {
+                throw new Error('Usuário não autenticado');
+            }
+
+            try {
+                const { addDoc, collection } = window.firebaseUtils;
+                const docRef = await addDoc(collection(window.db, 'emprestimos'), {
+                    ...emprestimoData,
+                    userId: currentUser.uid,
+                    dataEmprestimo: new Date().toISOString()
+                });
+                return docRef.id;
+            } catch (error) {
+                console.error('❌ Erro ao salvar empréstimo:', error);
+                throw error;
+            }
+        }
+
+        async function atualizarEmprestimo(emprestimoId, dadosAtualizacao) {
+            if (isOfflineMode) {
+                const emprestimoIndex = emprestimos.findIndex(e => e.id === emprestimoId);
+                if (emprestimoIndex !== -1) {
+                    emprestimos[emprestimoIndex] = { ...emprestimos[emprestimoIndex], ...dadosAtualizacao };
+                    addToPendingSync('update_emprestimo', 'emprestimos', { id: emprestimoId, updates: dadosAtualizacao });
+                    updateGaloesEmprestados();
+                    saveLocalData();
+                }
+                return;
+            }
+
+            if (!firebaseConnected || !currentUser) {
+                throw new Error('Usuário não autenticado');
+            }
+
+            try {
+                const { updateDoc, doc } = window.firebaseUtils;
+                await updateDoc(doc(window.db, 'emprestimos', emprestimoId), {
+                    ...dadosAtualizacao,
+                    updatedAt: new Date().toISOString()
+                });
+            } catch (error) {
+                console.error('❌ Erro ao atualizar empréstimo:', error);
+                throw error;
+            }
+        }
+
+        function setupEmprestimoModal() {
+            const modal = document.getElementById('emprestimoModal');
+            const form = document.getElementById('formEmprestimo');
+            const cancelBtn = document.getElementById('cancelEmprestimo');
+            
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                if (!currentEmprestimoData) return;
+                
+                try {
+                    const clienteNome = document.getElementById('emprestimoCliente').value;
+                    const cliente = clientes.find(c => c.nome === clienteNome);
+                    
+                    if (!cliente) {
+                        alert('⚠️ Cliente não encontrado!');
+                        return;
+                    }
+                    
+                    const tipo = document.getElementById('emprestimoTipo').value;
+                    const observacoes = document.getElementById('emprestimoObservacoes').value;
+                    
+                    const emprestimo = {
+                        clienteId: cliente.id,
+                        clienteNome: cliente.nome,
+                        dataGalao: currentEmprestimoData.dataGalao,
+                        tipo: tipo,
+                        observacoes: observacoes,
+                        devolvido: false,
+                        dataEmprestimo: new Date().toISOString(),
+                        dataDevolucao: null
+                    };
+                    
+                    await salvarEmprestimo(emprestimo);
+                    
+                    // Atualizar estoque - remover galão emprestado
+                    const currentAmount = estoque[currentEmprestimoData.dataGalao]?.[tipo] || 0;
+                    if (currentAmount > 0) {
+                        const updateData = {};
+                        updateData[tipo] = currentAmount - 1;
+                        updateData.emprestado = (estoque[currentEmprestimoData.dataGalao]?.emprestado || 0) + 1;
+                        
+                        await atualizarEstoque(currentEmprestimoData.dataGalao, updateData);
+                    }
+                    
+                    modal.classList.add('hidden');
+                    form.reset();
+                    currentEmprestimoData = null;
+                    
+                    alert('✅ Galão emprestado com sucesso!');
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao emprestar galão:', error);
+                    alert('❌ Erro ao emprestar galão. Tente novamente.');
+                }
+            });
+            
+            cancelBtn.addEventListener('click', () => {
+                modal.classList.add('hidden');
+                form.reset();
+                currentEmprestimoData = null;
+            });
+        }
+
+        function emprestarGalao() {
+            if (!currentContextMenuData) return;
+            
+            const { dataGalao, status } = currentContextMenuData;
+            
+            if (status !== 'cheio' && status !== 'vazio') {
+                alert('⚠️ Só é possível emprestar galões cheios ou vazios!');
+                return;
+            }
+            
+            currentEmprestimoData = { dataGalao, status };
+            
+            document.getElementById('emprestimoDataGalao').value = dataGalao;
+            document.getElementById('emprestimoTipo').value = status;
+            
+            loadClienteOptionsEmprestimo();
+            document.getElementById('emprestimoModal').classList.remove('hidden');
+            document.getElementById('contextMenu').classList.add('hidden');
+        }
+
+        function loadClienteOptionsEmprestimo() {
+            const datalist = document.getElementById('clientesEmprestimoList');
+            datalist.innerHTML = '';
+            
+            clientes.filter(c => !c.inativo).forEach(cliente => {
+                const option = document.createElement('option');
+                option.value = cliente.nome;
+                datalist.appendChild(option);
+            });
+        }
+
+        async function marcarDevolvido(emprestimoId) {
+            const emprestimo = emprestimos.find(e => e.id === emprestimoId);
+            if (!emprestimo) return;
+            
+            try {
+                await atualizarEmprestimo(emprestimoId, {
+                    devolvido: true,
+                    dataDevolucao: new Date().toISOString()
+                });
+                
+                // Retornar galão ao estoque
+                const currentAmount = estoque[emprestimo.dataGalao]?.[emprestimo.tipo] || 0;
+                const currentEmprestado = estoque[emprestimo.dataGalao]?.emprestado || 0;
+                
+                const updateData = {};
+                updateData[emprestimo.tipo] = currentAmount + 1;
+                updateData.emprestado = Math.max(0, currentEmprestado - 1);
+                
+                await atualizarEstoque(emprestimo.dataGalao, updateData);
+                
+                alert('✅ Galão marcado como devolvido!');
+                
+            } catch (error) {
+                console.error('❌ Erro ao marcar como devolvido:', error);
+                alert('❌ Erro ao marcar como devolvido. Tente novamente.');
+            }
+        }
+
+        function updateGaloesEmprestados() {
+            const container = document.getElementById('galoesEmprestados');
+            container.innerHTML = '';
+            
+            const emprestimosAtivos = emprestimos.filter(e => !e.devolvido);
+            
+            if (emprestimosAtivos.length === 0) {
+                container.innerHTML = '<div class="text-center py-4"><p class="text-gray-500 text-sm">Nenhum galão emprestado no momento.</p></div>';
+                return;
+            }
+            
+            emprestimosAtivos.forEach(emprestimo => {
+                const div = document.createElement('div');
+                div.className = 'emprestimo-item';
+                
+                const dataEmprestimo = new Date(emprestimo.dataEmprestimo).toLocaleDateString('pt-BR');
+                
+                div.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-purple-800 dark:text-purple-200">
+                                ${emprestimo.clienteNome}
+                            </h4>
+                            <p class="text-sm text-purple-700 dark:text-purple-300 mt-1">
+                                📅 Emprestado em: ${dataEmprestimo}
+                            </p>
+                            <p class="text-sm text-purple-700 dark:text-purple-300">
+                                🪣 Galão: ${emprestimo.dataGalao} (${emprestimo.tipo === 'cheio' ? 'Cheio' : 'Vazio'})
+                            </p>
+                            ${emprestimo.observacoes ? `<p class="text-sm text-purple-600 dark:text-purple-400 mt-1">💬 ${emprestimo.observacoes}</p>` : ''}
+                        </div>
+                        <button onclick="marcarDevolvido('${emprestimo.id}')" class="btn-modern bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-sm">
+                            ✅ Devolvido
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(div);
+            });
+        }
+
         // Firebase CRUD Operations with offline support
         async function salvarCliente(clienteData) {
             if (isOfflineMode) {
@@ -2130,6 +2607,7 @@ Estamos sempre à disposição! 🙏`,
                 updateDashboard();
                 loadClienteOptions();
                 loadClienteOptionsRelatorio();
+                loadClienteOptionsEmprestimo();
                 saveLocalData();
                 return id;
             } else {
@@ -2192,6 +2670,7 @@ Estamos sempre à disposição! 🙏`,
                 updateDashboard();
                 loadClienteOptions();
                 loadClienteOptionsRelatorio();
+                loadClienteOptionsEmprestimo();
                 saveLocalData();
                 return;
             }
@@ -2325,6 +2804,7 @@ Estamos sempre à disposição! 🙏`,
                     cheio: 0,
                     vazio: 0,
                     cliente: 0,
+                    emprestado: 0,
                     ...estoque[dataGalao],
                     ...dadosEstoque,
                     updatedAt: new Date().toISOString()
@@ -2349,7 +2829,7 @@ Estamos sempre à disposição! 🙏`,
                 const { doc, setDoc, getDoc } = window.firebaseUtils;
                 const estoqueDocRef = doc(window.db, 'estoque', dataGalao.replace(/[-\/]/g, '_'));
                 
-                let dadosExistentes = { cheio: 0, vazio: 0, cliente: 0 };
+                let dadosExistentes = { cheio: 0, vazio: 0, cliente: 0, emprestado: 0 };
                 
                 try {
                     const docSnapshot = await getDoc(estoqueDocRef);
@@ -2370,6 +2850,7 @@ Estamos sempre à disposição! 🙏`,
                     cheio: 0,
                     vazio: 0,
                     cliente: 0,
+                    emprestado: 0,
                     ...dadosExistentes,
                     ...dadosEstoque,
                     userId: currentUser.uid,
@@ -2486,7 +2967,8 @@ Estamos sempre à disposição! 🙏`,
                 }
                 
                 const clientesFiltrados = clientes.filter(cliente => 
-                    cliente.nome.toLowerCase().includes(termo)
+                    cliente.nome.toLowerCase().includes(termo) && 
+                    (mostrandoInativos || !cliente.inativo)
                 );
                 
                 // Filtrar lista exibida
@@ -2510,10 +2992,9 @@ Estamos sempre à disposição! 🙏`,
             const ultimaCompra = getClienteUltimaCompra(cliente.id);
             const galoesVendidos = contarGaloesVendidos(cliente.id);
             const proximaGratis = proximaCompraGratis(cliente.id);
-            const galoesParaGratis = configuracoes.galoesParaGratis || 10;
             
             const div = document.createElement('div');
-            div.className = 'flex items-center justify-between p-6 border border-gray-200 dark:border-gray-600 rounded-xl hover:shadow-lg transition-all duration-300';
+            div.className = `flex items-center justify-between p-6 border border-gray-200 dark:border-gray-600 rounded-xl hover:shadow-lg transition-all duration-300 ${cliente.inativo ? 'cliente-inativo' : ''}`;
             
             const syncPendingItem = pendingSync.find(item => 
                 item.collection === 'clientes' && 
@@ -2525,8 +3006,10 @@ Estamos sempre à disposição! 🙏`,
                 ultimaCompraHtml = `<div class="bg-blue-100 dark:bg-blue-800 p-3 rounded-lg mt-2">
                     <p class="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-1">Última compra:</p>
                     <p class="text-xs text-blue-700 dark:text-blue-300">
-                        ${ultimaCompra.dataEntrega} - ${ultimaCompra.quantidade} galão(s)
+                        ${ultimaCompra.dataEntrega} - ${ultimaCompra.quantidade} galão(s) de água
+                        ${ultimaCompra.quantidadeVazios > 0 ? ` + ${ultimaCompra.quantidadeVazios} galão(s) vazio(s)` : ''}
                         ${ultimaCompra.galoesGratis > 0 ? ` (${ultimaCompra.galoesGratis} grátis)` : ''}
+                        - R$ ${ultimaCompra.valorTotal.toFixed(2)}
                         ${ultimaCompra.galoes.length > 0 ? ` - ${ultimaCompra.galoes.join(', ')}` : ''}
                     </p>
                 </div>`;
@@ -2538,6 +3021,7 @@ Estamos sempre à disposição! 🙏`,
                 <div class="flex-1">
                     <h4 class="font-bold text-lg text-gray-900 dark:text-white flex items-center">
                         ${cliente.nome}
+                        ${cliente.inativo ? '<span class="ml-2 text-xs bg-red-500 text-white px-2 py-1 rounded">INATIVO</span>' : ''}
                         ${syncPendingItem ? '<span class="sync-pending">Pendente</span>' : ''}
                     </h4>
                     ${cliente.endereco ? `<p class="text-gray-600 dark:text-gray-400 flex items-center mt-1">
@@ -2583,7 +3067,8 @@ Estamos sempre à disposição! 🙏`,
                         telefone: telefone === '(33) ' ? '' : telefone,
                         endereco: endereco,
                         ultimaCompra: null,
-                        galaoAtual: null
+                        galaoAtual: null,
+                        inativo: false
                     };
                     
                     await salvarCliente(dadosCliente);
@@ -2627,7 +3112,8 @@ Estamos sempre à disposição! 🙏`,
                     const dadosAtualizacao = {
                         nome: document.getElementById('editNomeCliente').value,
                         telefone: telefone === '(33) ' ? '' : telefone,
-                        endereco: endereco
+                        endereco: endereco,
+                        inativo: document.getElementById('editClienteInativo').checked
                     };
                     
                     await atualizarCliente(currentEditingCliente, dadosAtualizacao);
@@ -2656,6 +3142,7 @@ Estamos sempre à disposição! 🙏`,
             document.getElementById('editNomeCliente').value = cliente.nome;
             document.getElementById('editTelefoneCliente').value = cliente.telefone || '';
             document.getElementById('editEnderecoCliente').value = cliente.endereco || '';
+            document.getElementById('editClienteInativo').checked = cliente.inativo || false;
             
             document.getElementById('editClienteModal').classList.remove('hidden');
         }
@@ -2679,6 +3166,7 @@ Estamos sempre à disposição! 🙏`,
         function abrirConfiguracoes() {
             document.getElementById('configDiasNotificacao').value = configuracoes.diasNotificacao;
             document.getElementById('configPrecoGalao').value = configuracoes.precoGalao;
+            document.getElementById('configPrecoGalaoVazio').value = configuracoes.precoGalaoVazio;
             document.getElementById('configGaloesParaGratis').value = configuracoes.galoesParaGratis;
             document.getElementById('configMensagemPedido').value = configuracoes.mensagemPedido;
             document.getElementById('configMensagemNotificacao').value = configuracoes.mensagemNotificacao;
@@ -2695,7 +3183,8 @@ Estamos sempre à disposição! 🙏`,
             
             salvarBtn.addEventListener('click', () => {
                 configuracoes.diasNotificacao = parseInt(document.getElementById('configDiasNotificacao').value) || 7;
-                configuracoes.precoGalao = parseFloat(document.getElementById('configPrecoGalao').value) || 10.00;
+                configuracoes.precoGalao = parseFloat(document.getElementById('configPrecoGalao').value) || 15.00;
+                configuracoes.precoGalaoVazio = parseFloat(document.getElementById('configPrecoGalaoVazio').value) || 25.00;
                 configuracoes.galoesParaGratis = parseInt(document.getElementById('configGaloesParaGratis').value) || 10;
                 configuracoes.mensagemPedido = document.getElementById('configMensagemPedido').value;
                 configuracoes.mensagemNotificacao = document.getElementById('configMensagemNotificacao').value;
@@ -2734,11 +3223,13 @@ Já faz alguns dias que você não faz seu pedido de água.
 
 Estamos sempre à disposição! 🙏`,
                         diasNotificacao: 7,
-                        precoGalao: 10.00,
+                        precoGalao: 15.00,
+                        precoGalaoVazio: 25.00,
                         galoesParaGratis: 10
                     };
                     document.getElementById('configDiasNotificacao').value = configuracoes.diasNotificacao;
                     document.getElementById('configPrecoGalao').value = configuracoes.precoGalao;
+                    document.getElementById('configPrecoGalaoVazio').value = configuracoes.precoGalaoVazio;
                     document.getElementById('configGaloesParaGratis').value = configuracoes.galoesParaGratis;
                     document.getElementById('configMensagemPedido').value = configuracoes.mensagemPedido;
                     document.getElementById('configMensagemNotificacao').value = configuracoes.mensagemNotificacao;
@@ -2765,6 +3256,7 @@ Estamos sempre à disposição! 🙏`,
                 clientes,
                 pedidos,
                 estoque,
+                emprestimos,
                 configuracoes,
                 exportDate: new Date().toISOString()
             };
@@ -2803,6 +3295,7 @@ Estamos sempre à disposição! 🙏`,
                     if (dados.clientes) clientes = dados.clientes;
                     if (dados.pedidos) pedidos = dados.pedidos;
                     if (dados.estoque) estoque = dados.estoque;
+                    if (dados.emprestimos) emprestimos = dados.emprestimos;
                     if (dados.configuracoes) configuracoes = dados.configuracoes;
                     
                     saveLocalData();
@@ -2813,9 +3306,11 @@ Estamos sempre à disposição! 🙏`,
                     updateListaPedidos();
                     updateVisualizacaoEstoque();
                     updateEstoqueDetalhado();
+                    updateGaloesEmprestados();
                     updateDashboard();
                     loadClienteOptions();
                     loadClienteOptionsRelatorio();
+                    loadClienteOptionsEmprestimo();
                     
                     document.getElementById('configModal').classList.add('hidden');
                     alert('✅ Dados importados com sucesso!');
@@ -2844,6 +3339,7 @@ Estamos sempre à disposição! 🙏`,
                 updateDashboard();
                 loadClienteOptions();
                 loadClienteOptionsRelatorio();
+                loadClienteOptionsEmprestimo();
                 saveLocalData();
             }, (error) => {
                 console.error('❌ Erro ao escutar clientes:', error);
@@ -2878,6 +3374,19 @@ Estamos sempre à disposição! 🙏`,
                 saveLocalData();
             }, (error) => {
                 console.error('❌ Erro ao escutar estoque:', error);
+                updateConnectionStatus('❌ Erro', 'error');
+            });
+
+            const emprestimosRef = collection(window.db, 'emprestimos');
+            emprestimosListener = onSnapshot(emprestimosRef, (snapshot) => {
+                emprestimos = [];
+                snapshot.forEach((doc) => {
+                    emprestimos.push({ id: doc.id, ...doc.data() });
+                });
+                updateGaloesEmprestados();
+                saveLocalData();
+            }, (error) => {
+                console.error('❌ Erro ao escutar empréstimos:', error);
                 updateConnectionStatus('❌ Erro', 'error');
             });
         }
@@ -2995,6 +3504,7 @@ Estamos sempre à disposição! 🙏`,
                 case 'cheio': return 'Cheio (Disponível)';
                 case 'vazio': return 'Vazio (Precisa Encher)';
                 case 'cliente': return 'Com Cliente';
+                case 'emprestado': return 'Emprestado';
                 default: return status;
             }
         }
@@ -3008,19 +3518,11 @@ Estamos sempre à disposição! 🙏`,
                 if (!currentPedidoForDetails) return;
                 
                 const selectedGaloes = [];
-                const galoesVindos = [];
                 
                 // Coletar galões selecionados
                 document.querySelectorAll('#galaoSelectionList select').forEach(select => {
                     if (select.value) {
                         selectedGaloes.push(select.value);
-                    }
-                });
-                
-                // Coletar galões vindos
-                document.querySelectorAll('#galaoSelectionList .galao-input-group input').forEach(input => {
-                    if (input.value.trim() && isValidDataFormat(input.value.trim())) {
-                        galoesVindos.push(input.value.trim());
                     }
                 });
                 
@@ -3030,10 +3532,9 @@ Estamos sempre à disposição! 🙏`,
                 }
                 
                 try {
-                    // Atualizar pedido com os galões selecionados
+                    // Atualizar pedido com os galões selecionados e marcar como enviado
                     await atualizarPedido(currentPedidoForDetails.id, {
                         galoesEntregues: selectedGaloes,
-                        galoesVindos: galoesVindos,
                         detalhesConfirmados: true
                     });
                     
@@ -3050,6 +3551,47 @@ Estamos sempre à disposição! 🙏`,
                         }
                     }
                     
+                    modal.classList.add('hidden');
+                    currentPedidoForDetails = null;
+                    alert('✅ Envio confirmado com sucesso!');
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao confirmar envio:', error);
+                    alert('❌ Erro ao confirmar envio. Tente novamente.');
+                }
+            });
+            
+            cancelBtn.addEventListener('click', function() {
+                modal.classList.add('hidden');
+                currentPedidoForDetails = null;
+            });
+        }
+
+        // Novo modal para receber galões vindos do cliente
+        function setupReceiveGalaoModal() {
+            const modal = document.getElementById('receiveGalaoModal');
+            const confirmBtn = document.getElementById('confirmReceiveBtn');
+            const cancelBtn = document.getElementById('cancelReceiveBtn');
+            
+            confirmBtn.addEventListener('click', async function() {
+                if (!currentPedidoForReceive) return;
+                
+                const galoesVindos = [];
+                
+                // Coletar galões vindos
+                document.querySelectorAll('#galaoVindosList input').forEach(input => {
+                    if (input.value.trim() && isValidDataFormat(input.value.trim())) {
+                        galoesVindos.push(input.value.trim());
+                    }
+                });
+                
+                try {
+                    // Atualizar pedido com os galões vindos
+                    await atualizarPedido(currentPedidoForReceive.id, {
+                        galoesVindos: galoesVindos,
+                        galoesRecebidos: true
+                    });
+                    
                     // Adicionar galões vindos como vazios - Processados individualmente
                     const galoesVindosContados = {};
                     galoesVindos.forEach(dataGalao => {
@@ -3064,18 +3606,18 @@ Estamos sempre à disposição! 🙏`,
                     }
                     
                     modal.classList.add('hidden');
-                    currentPedidoForDetails = null;
-                    alert('✅ Detalhes do pedido confirmados com sucesso!');
+                    currentPedidoForReceive = null;
+                    alert('✅ Galões recebidos com sucesso!');
                     
                 } catch (error) {
-                    console.error('❌ Erro ao confirmar detalhes:', error);
-                    alert('❌ Erro ao confirmar detalhes. Tente novamente.');
+                    console.error('❌ Erro ao receber galões:', error);
+                    alert('❌ Erro ao receber galões. Tente novamente.');
                 }
             });
             
             cancelBtn.addEventListener('click', function() {
                 modal.classList.add('hidden');
-                currentPedidoForDetails = null;
+                currentPedidoForReceive = null;
             });
         }
 
@@ -3112,6 +3654,7 @@ Estamos sempre à disposição! 🙏`,
                     const dadosAtualizacao = {
                         dataIda: document.getElementById('editPedidoData').value,
                         quantidade: parseInt(document.getElementById('editPedidoQuantidade').value),
+                        quantidadeVazios: parseInt(document.getElementById('editPedidoQuantidadeVazios').value) || 0,
                         valorTotal: parseFloat(document.getElementById('editPedidoValor').value),
                         galoesEntregues: galoesEntregues,
                         galoesVindos: galoesVindos
@@ -3264,12 +3807,22 @@ Estamos sempre à disposição! 🙏`,
             const lista = document.getElementById('listaClientes');
             lista.innerHTML = '';
             
-            if (clientes.length === 0) {
-                lista.innerHTML = '<div class="text-center py-8"><p class="text-gray-500">Nenhum cliente cadastrado ainda.</p></div>';
+            // Filtrar clientes baseado no toggle de inativos
+            const clientesFiltrados = clientes.filter(cliente => {
+                if (mostrandoInativos) {
+                    return cliente.inativo === true;
+                } else {
+                    return !cliente.inativo;
+                }
+            });
+            
+            if (clientesFiltrados.length === 0) {
+                const mensagem = mostrandoInativos ? 'Nenhum cliente inativo encontrado.' : 'Nenhum cliente ativo cadastrado ainda.';
+                lista.innerHTML = `<div class="text-center py-8"><p class="text-gray-500">${mensagem}</p></div>`;
                 return;
             }
             
-            clientes.forEach(cliente => {
+            clientesFiltrados.forEach(cliente => {
                 const clienteElement = createClienteElement(cliente);
                 lista.appendChild(clienteElement);
             });
@@ -3280,7 +3833,7 @@ Estamos sempre à disposição! 🙏`,
             const hiddenInput = document.getElementById('clientePedido');
             const clienteNome = input.value;
             
-            const cliente = clientes.find(c => c.nome === clienteNome);
+            const cliente = clientes.find(c => c.nome === clienteNome && !c.inativo);
             if (cliente) {
                 hiddenInput.value = cliente.id;
                 updateClienteInfo(cliente.id);
@@ -3299,7 +3852,6 @@ Estamos sempre à disposição! 🙏`,
             const proximaGratis = proximaCompraGratis(clienteId);
             const quantidade = parseInt(document.getElementById('quantidadeGaloes').value) || 1;
             const galoesGratis = calcularGaloesGratis(clienteId, quantidade);
-            const galoesParaGratis = configuracoes.galoesParaGratis || 10;
             
             let infoHtml = `
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -3331,8 +3883,10 @@ Estamos sempre à disposição! 🙏`,
                     <div class="mt-3 p-3 bg-blue-100 dark:bg-blue-800 rounded-lg">
                         <p class="text-sm font-semibold text-blue-800 dark:text-blue-200">Última compra:</p>
                         <p class="text-blue-700 dark:text-blue-300">
-                            ${ultimaCompra.dataEntrega} - ${ultimaCompra.quantidade} galão(s)
+                            ${ultimaCompra.dataEntrega} - ${ultimaCompra.quantidade} galão(s) de água
+                            ${ultimaCompra.quantidadeVazios > 0 ? ` + ${ultimaCompra.quantidadeVazios} galão(s) vazio(s)` : ''}
                             ${ultimaCompra.galoesGratis > 0 ? ` (${ultimaCompra.galoesGratis} grátis)` : ''}
+                            - R$ ${ultimaCompra.valorTotal.toFixed(2)}
                             ${ultimaCompra.galoes.length > 0 ? ` - ${ultimaCompra.galoes.join(', ')}` : ''}
                         </p>
                     </div>
@@ -3353,7 +3907,8 @@ Estamos sempre à disposição! 🙏`,
             const datalist = document.getElementById('clientesList');
             datalist.innerHTML = '';
             
-            clientes.forEach(cliente => {
+            // Carregar apenas clientes ativos
+            clientes.filter(c => !c.inativo).forEach(cliente => {
                 const option = document.createElement('option');
                 option.value = cliente.nome;
                 datalist.appendChild(option);
@@ -3381,6 +3936,7 @@ Estamos sempre à disposição! 🙏`,
                 const clienteId = document.getElementById('clientePedido').value;
                 const cliente = clientes.find(c => c.id == clienteId);
                 const quantidade = parseInt(document.getElementById('quantidadeGaloes').value);
+                const quantidadeVazios = parseInt(document.getElementById('quantidadeGaloesVazios').value) || 0;
                 const valorTotal = parseFloat(document.getElementById('valorTotal').value);
                 const galoesGratis = calcularGaloesGratis(clienteId, quantidade);
                 
@@ -3388,11 +3944,13 @@ Estamos sempre à disposição! 🙏`,
                     clienteId: clienteId,
                     dataIda: document.getElementById('dataIda').value,
                     quantidade: quantidade,
+                    quantidadeVazios: quantidadeVazios,
                     valorTotal: valorTotal,
                     galoesGratis: galoesGratis,
                     galoesEntregues: [],
                     galoesVindos: [],
                     detalhesConfirmados: false,
+                    galoesRecebidos: false, // Nova propriedade
                     pago: false,
                     formaPagamento: null,
                     dataPagamento: null
@@ -3405,6 +3963,7 @@ Estamos sempre à disposição! 🙏`,
                 document.getElementById('clientePedidoInput').value = '';
                 document.getElementById('dataIda').value = new Date().toISOString().split('T')[0];
                 document.getElementById('quantidadeGaloes').value = '1';
+                document.getElementById('quantidadeGaloesVazios').value = '0';
                 calcularValorTotal();
                 
                 alert('✅ Pedido registrado com sucesso!');
@@ -3424,10 +3983,20 @@ Estamos sempre à disposição! 🙏`,
             if (!cliente || !pedido) return;
             
             const galoesGratis = pedido.galoesGratis || 0;
+            const quantidadeVazios = pedido.quantidadeVazios || 0;
+            
+            let tipoPedido = `📦 ${pedido.quantidade} galão(s) de água`;
+            if (quantidadeVazios > 0) {
+                tipoPedido += ` + ${quantidadeVazios} galão(s) vazio(s)`;
+            }
+            if (galoesGratis > 0) {
+                tipoPedido += ` (${galoesGratis} grátis)`;
+            }
+            tipoPedido += ` - R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}`;
             
             let mensagem = configuracoes.mensagemPedido;
             mensagem = mensagem.replace('{nome}', cliente.nome);
-            mensagem = mensagem.replace('{tipo_pedido}', `📦 ${pedido.quantidade} galão(s)${galoesGratis > 0 ? ` (${galoesGratis} grátis)` : ''} - R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}`);
+            mensagem = mensagem.replace('{tipo_pedido}', tipoPedido);
             mensagem = mensagem.replace('{galao_foi}', pedido.galoesEntregues ? pedido.galoesEntregues.join(', ') : 'Pendente');
             mensagem = mensagem.replace('{data}', new Date(pedido.dataIda).toLocaleDateString('pt-BR'));
             mensagem = mensagem.replace('{mensagem_fidelidade}', galoesGratis > 0 ? `🎉 *PARABÉNS!* ${galoesGratis} galão(s) GRÁTIS pelo sistema de fidelidade! 🎁` : '');
@@ -3447,7 +4016,7 @@ Estamos sempre à disposição! 🙏`,
             pedidoInfo.innerHTML = `
                 <p><strong>Cliente:</strong> ${cliente ? cliente.nome : 'N/A'}</p>
                 <p><strong>Data:</strong> ${new Date(pedido.dataIda).toLocaleDateString('pt-BR')}</p>
-                <p><strong>Quantidade:</strong> ${pedido.quantidade} galão(s)${pedido.galoesGratis > 0 ? ` (${pedido.galoesGratis} grátis)` : ''}</p>
+                <p><strong>Quantidade:</strong> ${pedido.quantidade} galão(s) de água${pedido.quantidadeVazios > 0 ? ` + ${pedido.quantidadeVazios} galão(s) vazio(s)` : ''}${pedido.galoesGratis > 0 ? ` (${pedido.galoesGratis} grátis)` : ''}</p>
                 <p><strong>Valor Total:</strong> R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}</p>
             `;
             
@@ -3478,17 +4047,13 @@ Estamos sempre à disposição! 🙏`,
                         <h5 class="font-semibold mb-3">Galão ${i + 1}:</h5>
                         <div class="space-y-3">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Selecionar galão do estoque (indo para o cliente):</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Selecionar galão do estoque (sendo enviado):</label>
                                 <select class="input-modern w-full galao-estoque-select" data-index="${i}" required onchange="handleGalaoEstoqueChange(this)">
                                     <option value="">Escolha um galão...</option>
                                     ${galoesDisponiveis.map(data => `
                                         <option value="${data}" ${data === galaoSugerido ? 'selected' : ''}>${data} (${estoque[data].cheio} disponíveis)</option>
                                     `).join('')}
                                 </select>
-                            </div>
-                            <div class="galao-input-group">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Galão vindo do cliente (MM-AAAA):</label>
-                                <input type="text" class="data-galao-input galao-vindo-input" data-index="${i}" placeholder="MM-AAAA" maxlength="7" onchange="handleGalaoVindoChange(this)" value="${ultimoGalaoCliente || ''}">
                             </div>
                         </div>
                     `;
@@ -3497,6 +4062,43 @@ Estamos sempre à disposição! 🙏`,
             }
             
             document.getElementById('confirmDetailsModal').classList.remove('hidden');
+        }
+
+        // Nova função para receber galões
+        function receberGaloes(pedidoId) {
+            const pedido = pedidos.find(p => p.id === pedidoId);
+            if (!pedido) return;
+            
+            const cliente = clientes.find(c => c.id == pedido.clienteId);
+            currentPedidoForReceive = pedido;
+            
+            // Preencher informações do pedido
+            const receiveInfo = document.getElementById('receiveDetailsInfo');
+            receiveInfo.innerHTML = `
+                <p><strong>Cliente:</strong> ${cliente ? cliente.nome : 'N/A'}</p>
+                <p><strong>Data:</strong> ${new Date(pedido.dataIda).toLocaleDateString('pt-BR')}</p>
+                <p><strong>Galões enviados:</strong> ${pedido.galoesEntregues ? pedido.galoesEntregues.join(', ') : 'Nenhum'}</p>
+            `;
+            
+            // Limpar e preparar a lista de galões vindos
+            const galaoVindosList = document.getElementById('galaoVindosList');
+            galaoVindosList.innerHTML = '';
+            
+            // Pegar último galão do cliente como referência
+            const ultimoGalaoCliente = cliente ? getClienteUltimoGalao(cliente.id) : '';
+            
+            // Adicionar campos padrão baseado na quantidade
+            for (let i = 0; i < (pedido.quantidade || 1); i++) {
+                const div = document.createElement('div');
+                div.className = 'flex items-center gap-2';
+                div.innerHTML = `
+                    <input type="text" class="data-galao-input flex-1" placeholder="MM-AAAA" maxlength="7" value="${ultimoGalaoCliente || ''}">
+                    <button type="button" class="btn-delete-estoque" onclick="this.parentElement.remove()">🗑️</button>
+                `;
+                galaoVindosList.appendChild(div);
+            }
+            
+            document.getElementById('receiveGalaoModal').classList.remove('hidden');
         }
 
         function handleGalaoEstoqueChange(select) {
@@ -3513,20 +4115,6 @@ Estamos sempre à disposição! 🙏`,
             }
         }
 
-        function handleGalaoVindoChange(input) {
-            const index = input.dataset.index;
-            const selectedValue = input.value;
-            
-            if (index === '0') {
-                // Se for o primeiro galão, auto-preencher os outros
-                document.querySelectorAll('.galao-vindo-input').forEach((otherInput, idx) => {
-                    if (idx > 0) {
-                        otherInput.value = selectedValue;
-                    }
-                });
-            }
-        }
-
         function editarPedido(pedidoId) {
             const pedido = pedidos.find(p => p.id === pedidoId);
             if (!pedido) return;
@@ -3537,6 +4125,7 @@ Estamos sempre à disposição! 🙏`,
             document.getElementById('editPedidoCliente').value = cliente ? cliente.nome : 'N/A';
             document.getElementById('editPedidoData').value = pedido.dataIda;
             document.getElementById('editPedidoQuantidade').value = pedido.quantidade || 1;
+            document.getElementById('editPedidoQuantidadeVazios').value = pedido.quantidadeVazios || 0;
             document.getElementById('editPedidoValor').value = pedido.valorTotal || 0;
             
             // Preencher galões entregues
@@ -3575,6 +4164,7 @@ Estamos sempre à disposição! 🙏`,
         function createPedidoElement(pedido, isAdmin) {
             const cliente = clientes.find(c => c.id == pedido.clienteId);
             const galoesGratis = pedido.galoesGratis || 0;
+            const quantidadeVazios = pedido.quantidadeVazios || 0;
             
             const div = document.createElement('div');
             div.className = `flex flex-col md:flex-row md:items-center md:justify-between p-6 border rounded-xl transition-all duration-300 ${pedido.pago ? 'border-green-300 bg-green-50 dark:bg-green-900 dark:border-green-600' : 'border-red-300 bg-red-50 dark:bg-red-900 dark:border-red-600'}`;
@@ -3596,6 +4186,15 @@ Estamos sempre à disposição! 🙏`,
                 galoesInfo = '<p class="text-gray-600 dark:text-gray-400 mt-1">🪣 Galões: Pendente</p>';
             }
             
+            let quantidadeTexto = `📦 ${pedido.quantidade || 1} galão(s) de água`;
+            if (quantidadeVazios > 0) {
+                quantidadeTexto += ` + ${quantidadeVazios} galão(s) vazio(s)`;
+            }
+            if (galoesGratis > 0) {
+                quantidadeTexto += ` (${galoesGratis} grátis)`;
+            }
+            quantidadeTexto += ` - R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}`;
+            
             div.innerHTML = `
                 <div class="flex-1 mb-4 md:mb-0">
                     <h4 class="font-bold text-lg text-gray-900 dark:text-white flex items-center">
@@ -3604,7 +4203,7 @@ Estamos sempre à disposição! 🙏`,
                         ${galoesGratis > 0 ? `<span class="fidelidade-badge ml-2">🎉 ${galoesGratis} Grátis!</span>` : ''}
                     </h4>
                     <p class="text-gray-600 dark:text-gray-400 mt-1">
-                        📦 ${pedido.quantidade || 1} galão(s)${galoesGratis > 0 ? ` (${galoesGratis} grátis)` : ''} - R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}
+                        ${quantidadeTexto}
                     </p>
                     <p class="text-gray-600 dark:text-gray-400 mt-1">📅 ${new Date(pedido.dataIda).toLocaleDateString('pt-BR')}</p>
                     ${galoesInfo}
@@ -3615,7 +4214,8 @@ Estamos sempre à disposição! 🙏`,
                         ${pedido.pago ? '✅ Pago' : '❌ Pendente'}
                     </span>
                     <div class="flex flex-col items-end space-y-2">
-                        ${!pedido.detalhesConfirmados ? `<button onclick="confirmarDetalhes('${pedido.id}')" class="btn-modern btn-uniform-size bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-sm">🪣 Confirmar</button>` : ''}
+                        ${!pedido.detalhesConfirmados ? `<button onclick="confirmarDetalhes('${pedido.id}')" class="btn-modern btn-uniform-size bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-sm">🚚 Enviado</button>` : ''}
+                        ${pedido.detalhesConfirmados && !pedido.galoesRecebidos ? `<button onclick="receberGaloes('${pedido.id}')" class="btn-modern btn-uniform-size bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white text-sm">📦 Recebido</button>` : ''}
                         ${!pedido.pago ? `<button onclick="marcarPago('${pedido.id}')" class="btn-modern btn-uniform-size bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-sm">💰 Marcar Pago</button>` : ''}
                         ${isAdmin && cliente && cliente.telefone ? `<button onclick="enviarMensagemPedido('${cliente.id}', '${pedido.id}')" class="btn-modern btn-uniform-size bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-sm">📱 WhatsApp</button>` : ''}
                         ${isAdmin ? `<button onclick="editarPedido('${pedido.id}')" class="btn-modern btn-uniform-size bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-sm">✏️ Editar</button>` : ''}
@@ -3734,7 +4334,7 @@ Estamos sempre à disposição! 🙏`,
             datasSortidas.forEach(data => {
                 const stockData = estoque[data];
                 
-                if (stockData.cheio > 0 || stockData.vazio > 0 || stockData.cliente > 0) {
+                if (stockData.cheio > 0 || stockData.vazio > 0 || stockData.cliente > 0 || stockData.emprestado > 0) {
                     if (stockData.cheio > 0) {
                         const div = createGalaoVisual(data, 'cheio', stockData.cheio);
                         visual.appendChild(div);
@@ -3747,6 +4347,11 @@ Estamos sempre à disposição! 🙏`,
                     
                     if (stockData.cliente > 0) {
                         const div = createGalaoVisual(data, 'cliente', stockData.cliente);
+                        visual.appendChild(div);
+                    }
+
+                    if (stockData.emprestado > 0) {
+                        const div = createGalaoVisual(data, 'emprestado', stockData.emprestado);
                         visual.appendChild(div);
                     }
                 }
@@ -3773,7 +4378,7 @@ Estamos sempre à disposição! 🙏`,
             
             datasSortidas.forEach(data => {
                 const stockData = estoque[data];
-                const total = stockData.cheio + stockData.vazio + stockData.cliente;
+                const total = stockData.cheio + stockData.vazio + stockData.cliente + (stockData.emprestado || 0);
                 
                 if (total > 0) {
                     const div = document.createElement('div');
@@ -3799,7 +4404,7 @@ Estamos sempre à disposição! 🙏`,
                                 ` : ''}
                             </div>
                         </div>
-                        <div class="grid grid-cols-3 gap-2 text-sm">
+                        <div class="grid grid-cols-4 gap-2 text-sm">
                             <div class="text-center">
                                 <div class="text-green-600 font-semibold">${stockData.cheio}</div>
                                 <div class="text-gray-600 dark:text-gray-400">Cheios</div>
@@ -3811,6 +4416,10 @@ Estamos sempre à disposição! 🙏`,
                             <div class="text-center">
                                 <div class="text-orange-600 font-semibold">${stockData.cliente}</div>
                                 <div class="text-gray-600 dark:text-gray-400">Cliente</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-purple-600 font-semibold">${stockData.emprestado || 0}</div>
+                                <div class="text-gray-600 dark:text-gray-400">Emprestado</div>
                             </div>
                         </div>
                     `;
@@ -3840,6 +4449,9 @@ Estamos sempre à disposição! 🙏`,
                     break;
                 case 'cliente':
                     icon = '🚚';
+                    break;
+                case 'emprestado':
+                    icon = '🤝';
                     break;
             }
             
@@ -3885,6 +4497,7 @@ Estamos sempre à disposição! 🙏`,
                 case 'cheio': return 'galao-cheio';
                 case 'vazio': return 'galao-vazio';
                 case 'cliente': return 'galao-cliente';
+                case 'emprestado': return 'galao-emprestado';
                 default: return 'galao-vazio';
             }
         }
@@ -3900,6 +4513,9 @@ Estamos sempre à disposição! 🙏`,
                     break;
                 case 'cliente':
                     text += `${quantidade} Com Cliente(s)`;
+                    break;
+                case 'emprestado':
+                    text += `${quantidade} Emprestado(s)`;
                     break;
             }
             return text;
@@ -3920,7 +4536,9 @@ Estamos sempre à disposição! 🙏`,
         }
 
         function updateDashboard() {
-            document.getElementById('totalClientes').textContent = clientes.length;
+            // Contar apenas clientes ativos
+            const clientesAtivos = clientes.filter(c => !c.inativo);
+            document.getElementById('totalClientes').textContent = clientesAtivos.length;
             
             const hoje = new Date().toDateString();
             const vendasHoje = pedidos.filter(p => new Date(p.data).toDateString() === hoje).length;
@@ -3948,7 +4566,9 @@ Estamos sempre à disposição! 🙏`,
             const agora = new Date();
             const diasLimite = configuracoes.diasNotificacao || 7;
             
+            // Considerar apenas clientes ativos
             const clientesParaNotificar = clientes.filter(cliente => {
+                if (cliente.inativo) return false;
                 if (!cliente.ultimaCompra) return true;
                 
                 const ultimaCompra = new Date(cliente.ultimaCompra);
@@ -3995,6 +4615,7 @@ Estamos sempre à disposição! 🙏`,
             const diasLimite = configuracoes.diasNotificacao || 7;
             
             const clientesParaNotificar = clientes.filter(cliente => {
+                if (cliente.inativo) return false;
                 if (!cliente.ultimaCompra) return true;
                 
                 const ultimaCompra = new Date(cliente.ultimaCompra);
@@ -4015,29 +4636,37 @@ Estamos sempre à disposição! 🙏`,
         }
 
         function gerarRelatorio(tipo) {
-            const agora = new Date();
             let pedidosFiltrados = [];
             let titulo = '';
             
             switch (tipo) {
                 case 'diario':
-                    const hoje = agora.toDateString();
-                    pedidosFiltrados = pedidos.filter(p => new Date(p.data).toDateString() === hoje);
-                    titulo = 'Relatório Diário - ' + agora.toLocaleDateString('pt-BR');
+                    const dataSelecionada = document.getElementById('dataDiario').value;
+                    if (!dataSelecionada) {
+                        alert('⚠️ Selecione uma data para o relatório diário!');
+                        return;
+                    }
+                    const dataComparacao = new Date(dataSelecionada).toDateString();
+                    pedidosFiltrados = pedidos.filter(p => new Date(p.data).toDateString() === dataComparacao);
+                    titulo = 'Relatório Diário - ' + new Date(dataSelecionada).toLocaleDateString('pt-BR');
                     break;
                 case 'mensal':
-                    const mesAtual = agora.getMonth();
-                    const anoAtual = agora.getFullYear();
+                    const mesSelecionado = document.getElementById('mesMensal').value;
+                    if (!mesSelecionado) {
+                        alert('⚠️ Selecione um mês para o relatório mensal!');
+                        return;
+                    }
+                    const [ano, mes] = mesSelecionado.split('-');
                     pedidosFiltrados = pedidos.filter(p => {
                         const data = new Date(p.data);
-                        return data.getMonth() === mesAtual && data.getFullYear() === anoAtual;
+                        return data.getMonth() === parseInt(mes) - 1 && data.getFullYear() === parseInt(ano);
                     });
-                    titulo = 'Relatório Mensal - ' + agora.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+                    titulo = 'Relatório Mensal - ' + new Date(parseInt(ano), parseInt(mes) - 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
                     break;
                 case 'anual':
-                    const ano = agora.getFullYear();
-                    pedidosFiltrados = pedidos.filter(p => new Date(p.data).getFullYear() === ano);
-                    titulo = 'Relatório Anual - ' + ano;
+                    const anoAtual = new Date().getFullYear();
+                    pedidosFiltrados = pedidos.filter(p => new Date(p.data).getFullYear() === anoAtual);
+                    titulo = 'Relatório Anual - ' + anoAtual;
                     break;
             }
             
@@ -4075,9 +4704,11 @@ Estamos sempre à disposição! 🙏`,
                 const totalPendente = totalVendas - totalPago;
                 const totalValor = pedidosList.reduce((sum, p) => sum + (p.valorTotal || 0), 0);
                 const totalGaloes = pedidosList.reduce((sum, p) => sum + (p.quantidade || 1), 0);
+                const totalGaloesVazios = pedidosList.reduce((sum, p) => sum + (p.quantidadeVazios || 0), 0);
+                const totalGaloesGratis = pedidosList.reduce((sum, p) => sum + (p.galoesGratis || 0), 0);
                 
                 html += `
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-6 mb-8">
                         <div class="card-modern bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 p-6 text-center">
                             <div class="text-4xl mb-3">📊</div>
                             <h5 class="font-bold text-blue-800 dark:text-blue-200 text-lg">Total de Vendas</h5>
@@ -4095,8 +4726,18 @@ Estamos sempre à disposição! 🙏`,
                         </div>
                         <div class="card-modern bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900 dark:to-purple-800 p-6 text-center">
                             <div class="text-4xl mb-3">🪣</div>
-                            <h5 class="font-bold text-purple-800 dark:text-purple-200 text-lg">Total Galões</h5>
+                            <h5 class="font-bold text-purple-800 dark:text-purple-200 text-lg">Galões Água</h5>
                             <p class="text-3xl font-bold text-purple-900 dark:text-purple-100">${totalGaloes}</p>
+                        </div>
+                        <div class="card-modern bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6 text-center">
+                            <div class="text-4xl mb-3">🫙</div>
+                            <h5 class="font-bold text-gray-800 dark:text-gray-200 text-lg">Galões Vazios</h5>
+                            <p class="text-3xl font-bold text-gray-900 dark:text-gray-100">${totalGaloesVazios}</p>
+                        </div>
+                        <div class="card-modern bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900 dark:to-orange-800 p-6 text-center">
+                            <div class="text-4xl mb-3">🎁</div>
+                            <h5 class="font-bold text-orange-800 dark:text-orange-200 text-lg">Galões Grátis</h5>
+                            <p class="text-3xl font-bold text-orange-900 dark:text-orange-100">${totalGaloesGratis}</p>
                         </div>
                         <div class="card-modern bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900 dark:to-yellow-800 p-6 text-center">
                             <div class="text-4xl mb-3">💰</div>
@@ -4113,7 +4754,9 @@ Estamos sempre à disposição! 🙏`,
                                     <tr class="bg-gray-100 dark:bg-gray-700">
                                         <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Data</th>
                                         <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Cliente</th>
-                                        <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Quantidade</th>
+                                        <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Galões Água</th>
+                                        <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Galões Vazios</th>
+                                        <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Galões Grátis</th>
                                         <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Valor</th>
                                         <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Status</th>
                                         <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Pagamento</th>
@@ -4134,7 +4777,9 @@ Estamos sempre à disposição! 🙏`,
                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
                             <td class="border border-gray-300 dark:border-gray-600 p-4">${new Date(pedido.data).toLocaleDateString('pt-BR')}</td>
                             <td class="border border-gray-300 dark:border-gray-600 p-4 font-semibold">${cliente ? cliente.nome : 'N/A'}</td>
-                            <td class="border border-gray-300 dark:border-gray-600 p-4">${pedido.quantidade || 1}${pedido.galoesGratis > 0 ? ` (${pedido.galoesGratis} grátis)` : ''}</td>
+                            <td class="border border-gray-300 dark:border-gray-600 p-4">${pedido.quantidade || 1}</td>
+                            <td class="border border-gray-300 dark:border-gray-600 p-4">${pedido.quantidadeVazios || 0}</td>
+                            <td class="border border-gray-300 dark:border-gray-600 p-4 font-bold text-orange-600">${pedido.galoesGratis || 0}</td>
                             <td class="border border-gray-300 dark:border-gray-600 p-4">R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}</td>
                             <td class="border border-gray-300 dark:border-gray-600 p-4">
                                 <span class="${pedido.pago ? 'text-green-600 bg-green-100 dark:bg-green-800' : 'text-red-600 bg-red-100 dark:bg-red-800'} font-bold px-3 py-1 rounded-full text-sm">
@@ -4159,183 +4804,191 @@ Estamos sempre à disposição! 🙏`,
         }
 
         function gerarPDF(titulo, pedidosList) {
-    try {
-        // --- INÍCIO DA CORREÇÃO ---
-        
-        // 1. A verificação foi alterada de 'window.jsPDF' para 'window.jspdf.jsPDF'.
-        if (typeof window.jspdf?.jsPDF === 'undefined') {
-            alert('❌ Biblioteca PDF não carregada. Aguarde alguns segundos e tente novamente.');
-            return;
-        }
+            try {
+                if (typeof window.jspdf?.jsPDF === 'undefined') {
+                    alert('❌ Biblioteca PDF não carregada. Aguarde alguns segundos e tente novamente.');
+                    return;
+                }
 
-        // 2. A criação do documento foi corrigida para usar o construtor correto.
-        //    As linhas 'const { jsPDF } = window.jsPDF;' e 'const doc = new jsPDF();' foram substituídas.
-        const doc = new window.jspdf.jsPDF();
-        
-        // --- FIM DA CORREÇÃO ---
-
-        // O restante do seu código original permanece o mesmo, pois já estava correto.
-        
-        // Configurações
-        const margin = 20;
-        let yPosition = margin;
-        const pageWidth = doc.internal.pageSize.getWidth();
-        
-        // Título principal
-        doc.setFontSize(18);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Comercial Rocha', margin, yPosition);
-        yPosition += 10;
-        
-        doc.setFontSize(14);
-        doc.text(titulo, margin, yPosition);
-        yPosition += 15;
-        
-        if (pedidosList.length === 0) {
-            doc.setFontSize(12);
-            doc.setFont('helvetica', 'normal');
-            doc.text('Nenhum pedido encontrado para o período selecionado.', margin, yPosition);
-        } else {
-            // Estatísticas resumidas
-            const totalVendas = pedidosList.length;
-            const totalPago = pedidosList.filter(p => p.pago).length;
-            const totalPendente = totalVendas - totalPago;
-            const totalValor = pedidosList.reduce((sum, p) => sum + (p.valorTotal || 0), 0);
-            const totalGaloes = pedidosList.reduce((sum, p) => sum + (p.quantidade || 1), 0);
-            
-            doc.setFontSize(12);
-            doc.setFont('helvetica', 'bold');
-            doc.text('Resumo:', margin, yPosition);
-            yPosition += 8;
-            
-            doc.setFont('helvetica', 'normal');
-            doc.text(`Total de Vendas: ${totalVendas}`, margin, yPosition);
-            yPosition += 6;
-            doc.text(`Pagos: ${totalPago}`, margin, yPosition);
-            yPosition += 6;
-            doc.text(`Pendentes: ${totalPendente}`, margin, yPosition);
-            yPosition += 6;
-            doc.text(`Total de Galões: ${totalGaloes}`, margin, yPosition);
-            yPosition += 6;
-            doc.text(`Valor Total: R$ ${totalValor.toFixed(2)}`, margin, yPosition);
-            yPosition += 15;
-            
-            // Preparar dados para a tabela
-            const tableData = pedidosList.map(pedido => {
-                const cliente = clientes.find(c => c.id == pedido.clienteId);
-                const galoesInfo = (pedido.galoesEntregues && pedido.galoesEntregues.length > 0) ? 
-                    pedido.galoesEntregues.join(', ') : 'Pendente';
-                const galoesVindos = (pedido.galoesVindos && pedido.galoesVindos.length > 0) ? 
-                    pedido.galoesVindos.join(', ') : '-';
+                const doc = new window.jspdf.jsPDF('landscape'); // Modo paisagem para mais colunas
                 
-                return [
-                    new Date(pedido.data).toLocaleDateString('pt-BR'),
-                    cliente ? cliente.nome.substring(0, 20) : 'N/A',
-                    `${(pedido.quantidade || 1)}${pedido.galoesGratis > 0 ? ` (${pedido.galoesGratis})` : ''}`,
-                    `R$ ${(pedido.valorTotal || 0).toFixed(2)}`,
-                    pedido.pago ? 'Pago' : 'Pendente',
-                    pedido.formaPagamento || '-',
-                    galoesInfo,
-                    galoesVindos
-                ];
-            });
-            
-            if (doc.autoTable) {
-                doc.autoTable({
-                    head: [['Data', 'Cliente', 'Qtd', 'Valor', 'Status', 'Pagamento', 'Galões Entregues', 'Galões Vindo']],
-                    body: tableData,
-                    startY: yPosition,
-                    margin: { left: margin, right: margin },
-                    styles: { fontSize: 8 },
-                    headStyles: { fillColor: [93, 92, 222] },
-                    columnStyles: {
-                        0: { cellWidth: 20 },
-                        1: { cellWidth: 30 },
-                        2: { cellWidth: 15 },
-                        3: { cellWidth: 20 },
-                        4: { cellWidth: 20 },
-                        5: { cellWidth: 25 },
-                        6: { cellWidth: 30 },
-                        7: { cellWidth: 30 }
-                    }
-                });
-            } else {
-                // Fallback para tabela manual se autoTable não estiver disponível
+                // Configurações
+                const margin = 15;
+                let yPosition = margin;
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                
+                // Cabeçalho moderno
+                doc.setFillColor(93, 92, 222);
+                doc.rect(0, 0, pageWidth, 25, 'F');
+                
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(20);
                 doc.setFont('helvetica', 'bold');
-                doc.text('Detalhes dos Pedidos:', margin, yPosition);
-                yPosition += 10;
+                doc.text('COMERCIAL ROCHA', margin, 17);
+                
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'normal');
+                doc.text('Sistema de Gestão de Galões', pageWidth - margin - 60, 17);
+                
+                yPosition = 35;
+                
+                // Título do relatório
+                doc.setTextColor(0, 0, 0);
+                doc.setFontSize(16);
+                doc.setFont('helvetica', 'bold');
+                doc.text(titulo, margin, yPosition);
+                yPosition += 15;
                 
                 doc.setFontSize(10);
-                const headers = ['Data', 'Cliente', 'Qtd', 'Valor', 'Status', 'Pagamento'];
-                const columnWidths = [25, 50, 15, 25, 25, 30];
-                let xPosition = margin;
-                
-                headers.forEach((header, index) => {
-                    doc.text(header, xPosition, yPosition);
-                    xPosition += columnWidths[index];
-                });
-                
-                yPosition += 8;
                 doc.setFont('helvetica', 'normal');
+                doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, margin, yPosition);
+                yPosition += 15;
                 
-                pedidosList.forEach(pedido => {
-                    if (yPosition > 270) {
-                        doc.addPage();
-                        yPosition = margin;
-                    }
+                if (pedidosList.length === 0) {
+                    doc.setFontSize(12);
+                    doc.text('Nenhum pedido encontrado para o período selecionado.', margin, yPosition);
+                } else {
+                    // Estatísticas resumidas em caixas coloridas
+                    const totalVendas = pedidosList.length;
+                    const totalPago = pedidosList.filter(p => p.pago).length;
+                    const totalPendente = totalVendas - totalPago;
+                    const totalValor = pedidosList.reduce((sum, p) => sum + (p.valorTotal || 0), 0);
+                    const totalGaloes = pedidosList.reduce((sum, p) => sum + (p.quantidade || 1), 0);
+                    const totalGaloesVazios = pedidosList.reduce((sum, p) => sum + (p.quantidadeVazios || 0), 0);
+                    const totalGaloesGratis = pedidosList.reduce((sum, p) => sum + (p.galoesGratis || 0), 0);
                     
-                    const cliente = clientes.find(c => c.id == pedido.clienteId);
-                    xPosition = margin;
+                    // Cards de estatísticas
+                    const cardWidth = 38;
+                    const cardHeight = 20;
+                    const cardSpacing = 5;
                     
-                    const rowData = [
-                        new Date(pedido.data).toLocaleDateString('pt-BR'),
-                        cliente ? cliente.nome.substring(0, 20) : 'N/A',
-                        `${(pedido.quantidade || 1)}${pedido.galoesGratis > 0 ? ` (${pedido.galoesGratis})` : ''}`,
-                        `R$ ${(pedido.valorTotal || 0).toFixed(2)}`,
-                        pedido.pago ? 'Pago' : 'Pendente',
-                        pedido.formaPagamento || '-'
+                    const stats = [
+                        { label: 'Total Vendas', value: totalVendas, color: [59, 130, 246] },
+                        { label: 'Pagos', value: totalPago, color: [16, 185, 129] },
+                        { label: 'Pendentes', value: totalPendente, color: [239, 68, 68] },
+                        { label: 'Galões Água', value: totalGaloes, color: [139, 92, 246] },
+                        { label: 'Galões Vazios', value: totalGaloesVazios, color: [107, 114, 128] },
+                        { label: 'Galões Grátis', value: totalGaloesGratis, color: [245, 158, 11] },
+                        { label: 'Valor Total', value: `R$ ${totalValor.toFixed(2)}`, color: [34, 197, 94] }
                     ];
                     
-                    rowData.forEach((data, index) => {
-                        doc.text(data, xPosition, yPosition);
-                        xPosition += columnWidths[index];
+                    stats.forEach((stat, index) => {
+                        const x = margin + (index % 7) * (cardWidth + cardSpacing);
+                        const y = yPosition + Math.floor(index / 7) * (cardHeight + cardSpacing);
+                        
+                        // Card background
+                        doc.setFillColor(...stat.color);
+                        doc.roundedRect(x, y, cardWidth, cardHeight, 3, 3, 'F');
+                        
+                        // Text
+                        doc.setTextColor(255, 255, 255);
+                        doc.setFontSize(8);
+                        doc.setFont('helvetica', 'normal');
+                        doc.text(stat.label, x + 2, y + 6);
+                        
+                        doc.setFontSize(12);
+                        doc.setFont('helvetica', 'bold');
+                        doc.text(String(stat.value), x + 2, y + 14);
                     });
                     
-                    yPosition += 6;
-                });
+                    yPosition += 35;
+                    
+                    // Preparar dados para a tabela
+                    const tableData = pedidosList.map(pedido => {
+                        const cliente = clientes.find(c => c.id == pedido.clienteId);
+                        const galoesInfo = (pedido.galoesEntregues && pedido.galoesEntregues.length > 0) ? 
+                            pedido.galoesEntregues.join(', ') : 'Pendente';
+                        const galoesVindos = (pedido.galoesVindos && pedido.galoesVindos.length > 0) ? 
+                            pedido.galoesVindos.join(', ') : '-';
+                        
+                        return [
+                            new Date(pedido.data).toLocaleDateString('pt-BR'),
+                            cliente ? cliente.nome.substring(0, 20) : 'N/A',
+                            `${(pedido.quantidade || 1)}`,
+                            `${(pedido.quantidadeVazios || 0)}`,
+                            `${(pedido.galoesGratis || 0)}`,
+                            `R$ ${(pedido.valorTotal || 0).toFixed(2)}`,
+                            pedido.pago ? 'Pago' : 'Pendente',
+                            pedido.formaPagamento || '-',
+                            galoesInfo.substring(0, 15),
+                            galoesVindos.substring(0, 15)
+                        ];
+                    });
+                    
+                    if (doc.autoTable) {
+                        doc.setTextColor(0, 0, 0);
+                        doc.autoTable({
+                            head: [['Data', 'Cliente', 'Água', 'Vazios', 'Grátis', 'Valor', 'Status', 'Pagamento', 'Entregues', 'Vindo']],
+                            body: tableData,
+                            startY: yPosition,
+                            margin: { left: margin, right: margin },
+                            styles: { 
+                                fontSize: 7,
+                                cellPadding: 2
+                            },
+                            headStyles: { 
+                                fillColor: [93, 92, 222],
+                                textColor: [255, 255, 255],
+                                fontStyle: 'bold'
+                            },
+                            alternateRowStyles: {
+                                fillColor: [248, 250, 252]
+                            },
+                            columnStyles: {
+                                0: { cellWidth: 20 },
+                                1: { cellWidth: 35 },
+                                2: { cellWidth: 15 },
+                                3: { cellWidth: 15 },
+                                4: { cellWidth: 15 },
+                                5: { cellWidth: 25 },
+                                6: { cellWidth: 20 },
+                                7: { cellWidth: 25 },
+                                8: { cellWidth: 30 },
+                                9: { cellWidth: 30 }
+                            }
+                        });
+                    }
+                }
+                
+                // Rodapé moderno
+                const pageCount = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= pageCount; i++) {
+                    doc.setPage(i);
+                    
+                    // Linha do rodapé
+                    doc.setDrawColor(93, 92, 222);
+                    doc.setLineWidth(1);
+                    doc.line(margin, pageHeight - 20, pageWidth - margin, pageHeight - 20);
+                    
+                    doc.setFontSize(8);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(107, 114, 128);
+                    doc.text(`Página ${i} de ${pageCount}`, pageWidth - 30, pageHeight - 10);
+                    doc.text('© Comercial Rocha - Sistema de Gestão', margin, pageHeight - 10);
+                    doc.text(`Relatório: ${titulo}`, margin, pageHeight - 5);
+                }
+                
+                // Salvar PDF
+                const fileName = `${titulo.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+                doc.save(fileName);
+                
+                alert('✅ PDF gerado com sucesso!');
+                
+            } catch (error) {
+                console.error('❌ Erro ao gerar PDF:', error);
+                alert('❌ Erro ao gerar PDF: ' + error.message);
             }
         }
-        
-        // Rodapé
-        const pageCount = doc.internal.getNumberOfPages();
-        for (let i = 1; i <= pageCount; i++) {
-            doc.setPage(i);
-            doc.setFontSize(8);
-            doc.setFont('helvetica', 'normal');
-            doc.text(`Página ${i} de ${pageCount}`, pageWidth - 30, 290);
-            doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, margin, 290);
-        }
-        
-        // Salvar PDF
-        const fileName = `${titulo.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
-        doc.save(fileName);
-        
-        alert('✅ PDF gerado com sucesso!');
-        
-    } catch (error) {
-        console.error('❌ Erro ao gerar PDF:', error);
-        alert('❌ Erro ao gerar PDF: ' + error.message);
-    }
-}
 
         window.addEventListener('beforeunload', function() {
             if (clientesListener) clientesListener();
             if (pedidosListener) pedidosListener();
             if (estoqueListener) estoqueListener();
+            if (emprestimosListener) emprestimosListener();
             if (authStateListener) authStateListener();
         });
     </script>
-
 
 
 </body></html>
