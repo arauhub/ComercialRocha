@@ -100,7 +100,6 @@ upgrade-insecure-requests;
 block-all-mixed-content;
 ">
 
-
     <title>Comercial Rocha - Controle de Galões</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- jsPDF para gerar PDF -->
@@ -802,6 +801,79 @@ block-all-mixed-content;
             background: linear-gradient(135deg, #581c87, #7c3aed);
             border: 1px solid #a855f7;
         }
+
+        .filter-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .filter-item label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #4b5563;
+        }
+
+        .filter-btn:hover {
+            background: #e5e7eb;
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #5D5CDE, #7c3aed);
+            color: white;
+            border-color: #5D5CDE;
+        }
+
+        .dark .filter-btn {
+            background: #374151;
+            border-color: #4b5563;
+            color: #9ca3af;
+        }
+
+        .dark .filter-btn:hover {
+            background: #4b5563;
+        }
+
+        .dark .filter-btn.active {
+            background: linear-gradient(135deg, #5D5CDE, #7c3aed);
+            color: white;
+            border-color: #5D5CDE;
+        }
+
+        .pedido-gratis {
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+            border: 2px solid #047857 !important;
+        }
+
+        .dark .pedido-gratis {
+            background: linear-gradient(135deg, #065f46, #047857) !important;
+        }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
@@ -952,7 +1024,13 @@ block-all-mixed-content;
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Mensagem de Confirmação do Pedido</label>
                             <textarea id="configMensagemPedido" rows="8" class="input-modern w-full text-sm" placeholder="Digite a mensagem..."></textarea>
-                            <p class="text-xs text-gray-500 mt-1">Variáveis disponíveis: {nome}, {tipo_pedido}, {galao_foi}, {data}, {mensagem_fidelidade}</p>
+                            <p class="text-xs text-gray-500 mt-1">Variáveis disponíveis: {nome}, {tipo_pedido}, {galao_foi}, {data}</p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Mensagem de Pedido Grátis</label>
+                            <textarea id="configMensagemGratis" rows="6" class="input-modern w-full text-sm" placeholder="Digite a mensagem..."></textarea>
+                            <p class="text-xs text-gray-500 mt-1">Variáveis disponíveis: {nome}, {galao_foi}, {data}</p>
                         </div>
                         
                         <div>
@@ -1121,9 +1199,9 @@ block-all-mixed-content;
             <h3 class="text-xl font-bold mb-6 text-gray-900 dark:text-white text-center">💰 Selecione a Forma de Pagamento</h3>
             <div id="fidelidadeInfo" class="mb-4 p-4 bg-orange-100 dark:bg-orange-900 rounded-lg hidden">
                 <div class="fidelidade-badge">
-                    🎉 GALÃO GRÁTIS! 🎉
+                    🎉 GALÃO GRÁTIS DISPONÍVEL! 🎉
                 </div>
-                <p class="text-orange-800 dark:text-orange-200 mt-2 text-sm" id="fidelidadeText">Este pedido tem galões grátis!</p>
+                <p class="text-orange-800 dark:text-orange-200 mt-2 text-sm" id="fidelidadeText">Cliente tem galão grátis disponível!</p>
             </div>
             <div id="paymentOptions" class="space-y-3">
                 <div class="payment-option" data-payment="Dinheiro">
@@ -1141,10 +1219,6 @@ block-all-mixed-content;
                 <div class="payment-option" data-payment="Crédito">
                     <span class="text-2xl mr-3">💎</span>
                     <span class="font-semibold text-gray-700 dark:text-gray-300">Cartão de Crédito</span>
-                </div>
-                <div class="payment-option" data-payment="Grátis">
-                    <span class="text-2xl mr-3">🎁</span>
-                    <span class="font-semibold text-gray-700 dark:text-gray-300">Grátis (Fidelidade)</span>
                 </div>
                 <div class="payment-option" data-payment="Pagar na Nota">
                     <span class="text-2xl mr-3">📄</span>
@@ -1456,11 +1530,11 @@ block-all-mixed-content;
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Quantidade Galões de Água</label>
-                                <input type="number" id="quantidadeGaloes" value="1" min="1" class="input-modern w-full" onchange="calcularValorTotal()">
+                                <input type="number" id="quantidadeGaloes" value="1" min="1" class="input-modern w-full" oninput="calcularValorTotal()">
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Quantidade Galões Vazios</label>
-                                <input type="number" id="quantidadeGaloesVazios" value="0" min="0" class="input-modern w-full" onchange="calcularValorTotal()">
+                                <input type="number" id="quantidadeGaloesVazios" value="0" min="0" class="input-modern w-full" oninput="calcularValorTotal()">
                             </div>
                         </div>
 
@@ -1483,8 +1557,32 @@ block-all-mixed-content;
                             <span class="text-2xl mr-3">📝</span>
                             Pedidos Recentes
                         </h3>
-                        <div class="search-container">
-                            <input type="text" id="buscaPedido" placeholder="Buscar por nome do cliente..." class="input-modern w-full md:w-80">
+                        
+                        <!-- Filtros de Data -->
+                        <div class="filter-container">
+                            <div class="filter-item">
+                                <label>Filtrar por:</label>
+                                <div class="filter-buttons">
+                                    <button type="button" class="filter-btn active" onclick="setFiltroData('hoje')">Hoje</button>
+                                    <button type="button" class="filter-btn" onclick="setFiltroData('customDay')">Dia Específico</button>
+                                    <button type="button" class="filter-btn" onclick="setFiltroData('customMonth')">Mês Específico</button>
+                                    <button type="button" class="filter-btn" onclick="setFiltroData('todos')">Todos</button>
+                                </div>
+                            </div>
+                            
+                            <div class="filter-item hidden" id="customDayFilter">
+                                <label>Data:</label>
+                                <input type="date" id="filtroDataEspecifica" class="input-modern" onchange="aplicarFiltroData()">
+                            </div>
+                            
+                            <div class="filter-item hidden" id="customMonthFilter">
+                                <label>Mês:</label>
+                                <input type="month" id="filtroMesEspecifico" class="input-modern" onchange="aplicarFiltroData()">
+                            </div>
+                            
+                            <div class="search-container flex-1 md:w-80">
+                                <input type="text" id="buscaPedido" placeholder="Buscar por nome do cliente..." class="input-modern w-full">
+                            </div>
                         </div>
                     </div>
                     <div id="listaPedidos" class="space-y-4">
@@ -1671,6 +1769,7 @@ block-all-mixed-content;
         let currentRelatorioData = null;
         let currentRelatorioTitulo = '';
         let mostrandoInativos = false;
+        let filtroDataAtual = 'hoje'; // Novo: filtro de data atual
         let configuracoes = {
             mensagemPedido: `🪣 *Comercial Rocha*
 
@@ -1681,9 +1780,18 @@ Olá {nome}! 😊
 📦 Galão entregue: {galao_foi}
 📅 Data: {data}
 
-{mensagem_fidelidade}
-
 Obrigado pela confiança! 🙏💧`,
+            mensagemGratis: `🪣 *Comercial Rocha*
+
+Olá {nome}! 😊
+
+🎉 *PARABÉNS!* 🎉
+Você ganhou um GALÃO GRÁTIS pelo nosso sistema de fidelidade!
+
+📦 Galão grátis entregue: {galao_foi}
+📅 Data: {data}
+
+Obrigado pela sua fidelidade! 🙏💧`,
             mensagemNotificacao: `🪣 *Comercial Rocha*
 
 Olá {nome}! 😊
@@ -1718,6 +1826,115 @@ Estamos sempre à disposição! 🙏`,
             pendingSync: 'comercialrocha_pending_sync',
             configuracoes: 'comercialrocha_configuracoes'
         };
+
+        // Função para criar data local sem problemas de fuso horário
+        function createLocalDate(dateString) {
+            if (!dateString) return new Date();
+            
+            // Se for apenas uma data (YYYY-MM-DD), criar como data local
+            if (dateString.length === 10 && dateString.includes('-')) {
+                const [year, month, day] = dateString.split('-');
+                return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+            }
+            
+            // Para outros formatos, usar o construtor padrão
+            return new Date(dateString);
+        }
+
+        // Função para formatar data como string local
+        function formatLocalDate(date) {
+            if (!date) return '';
+            
+            const localDate = new Date(date);
+            return localDate.toLocaleDateString('pt-BR');
+        }
+
+        // Função para formatar data para input type="date"
+        function formatDateForInput(date) {
+            if (!date) return '';
+            
+            const localDate = new Date(date);
+            return localDate.toISOString().split('T')[0];
+        }
+
+        // Função para obter data/hora atual em formato consistente
+        function getCurrentDateTime() {
+            return new Date().toISOString();
+        }
+
+        // Função para comparar datas ignorando horário
+        function isSameDate(date1, date2) {
+            if (!date1 || !date2) return false;
+            
+            const d1 = new Date(date1);
+            const d2 = new Date(date2);
+            
+            return d1.getFullYear() === d2.getFullYear() &&
+                   d1.getMonth() === d2.getMonth() &&
+                   d1.getDate() === d2.getDate();
+        }
+
+        // Função para comparar mês/ano
+        function isSameMonth(date, monthString) {
+            if (!date || !monthString) return false;
+            
+            const d = new Date(date);
+            const [year, month] = monthString.split('-');
+            
+            return d.getFullYear() === parseInt(year) && 
+                   (d.getMonth() + 1) === parseInt(month);
+        }
+
+        // Novas funções de filtro de data
+        function setFiltroData(tipo) {
+            // Atualizar botões ativos
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Mostrar/esconder campos específicos
+            document.getElementById('customDayFilter').classList.add('hidden');
+            document.getElementById('customMonthFilter').classList.add('hidden');
+            
+            if (tipo === 'customDay') {
+                document.getElementById('customDayFilter').classList.remove('hidden');
+                // Definir data de hoje como padrão
+                document.getElementById('filtroDataEspecifica').value = formatDateForInput(new Date());
+            } else if (tipo === 'customMonth') {
+                document.getElementById('customMonthFilter').classList.remove('hidden');
+                // Definir mês atual como padrão
+                document.getElementById('filtroMesEspecifico').value = new Date().toISOString().substring(0, 7);
+            }
+            
+            filtroDataAtual = tipo;
+            aplicarFiltroData();
+        }
+
+        function aplicarFiltroData() {
+            updateListaPedidos();
+        }
+
+        function filtrarPedidosPorData(pedidosList) {
+            const hoje = new Date();
+            
+            switch (filtroDataAtual) {
+                case 'hoje':
+                    return pedidosList.filter(p => isSameDate(p.data, hoje));
+                
+                case 'customDay':
+                    const dataEspecifica = document.getElementById('filtroDataEspecifica').value;
+                    if (!dataEspecifica) return pedidosList;
+                    return pedidosList.filter(p => isSameDate(p.data, dataEspecifica));
+                
+                case 'customMonth':
+                    const mesEspecifico = document.getElementById('filtroMesEspecifico').value;
+                    if (!mesEspecifico) return pedidosList;
+                    return pedidosList.filter(p => isSameMonth(p.data, mesEspecifico));
+                
+                case 'todos':
+                default:
+                    return pedidosList;
+            }
+        }
 
         // Connection detection functions
         function handleConnectionSuccess() {
@@ -1944,7 +2161,7 @@ Estamos sempre à disposição! 🙏`,
                 action,
                 collection,
                 data,
-                timestamp: new Date().toISOString(),
+                timestamp: getCurrentDateTime(),
                 id: generateId()
             });
             saveLocalData();
@@ -2063,8 +2280,10 @@ Estamos sempre à disposição! 🙏`,
             document.getElementById('splashScreen').classList.add('hidden');
             document.getElementById('mainApp').classList.remove('hidden');
             
-            const today = new Date().toISOString().split('T')[0];
+            const today = formatDateForInput(new Date());
             document.getElementById('dataIda').value = today;
+            document.getElementById('filtroDataEspecifica').value = today;
+            document.getElementById('filtroMesEspecifico').value = new Date().toISOString().substring(0, 7);
             
             // Definir datas padrão para relatórios
             document.getElementById('dataDiario').value = today;
@@ -2185,43 +2404,86 @@ Estamos sempre à disposição! 🙏`,
             }
         }
 
-        // Sistema de Fidelidade - Corrigido para não contar os galões grátis no total
-        function contarGaloesVendidos(clienteId) {
-            return pedidos.filter(p => p.clienteId === clienteId && p.pago)
+        // Sistema de Fidelidade - MODIFICADO: Verificar fidelidade no momento de criar pedido
+        function contarGaloesPagos(clienteId) {
+            return pedidos.filter(p => p.clienteId === clienteId && !p.isGratis)
                           .reduce((total, pedido) => total + (pedido.quantidade || 1), 0);
         }
 
         function contarGaloesGratisRecebidos(clienteId) {
-            return pedidos.filter(p => p.clienteId === clienteId && p.pago)
-                          .reduce((total, pedido) => total + (pedido.galoesGratis || 0), 0);
+            return pedidos.filter(p => p.clienteId === clienteId && p.isGratis && p.pago)
+                          .reduce((total, pedido) => total + (pedido.quantidade || 1), 0);
         }
 
-        function calcularGaloesGratis(clienteId, quantidadePedido) {
-            const galoesVendidos = contarGaloesVendidos(clienteId);
-            const galoesGratisJaRecebidos = contarGaloesGratisRecebidos(clienteId);
+        function verificarFidelidade(clienteId) {
+            const galoesPagos = contarGaloesPagos(clienteId);
+            const galoesGratis = contarGaloesGratisRecebidos(clienteId);
             const galoesParaGratis = configuracoes.galoesParaGratis || 10;
             
-            // Total de galões pagos (não conta os grátis)
-            const galoesPagos = galoesVendidos - galoesGratisJaRecebidos;
+            // Quantos galões grátis o cliente deveria ter baseado nos pagos
+            const galoesGratisMerecidos = Math.floor(galoesPagos / galoesParaGratis);
             
-            let galoesGratis = 0;
-            let totalGaloesPagosComPedido = galoesPagos + quantidadePedido;
+            // Quantos galões grátis ainda faltam para o cliente
+            return Math.max(0, galoesGratisMerecidos - galoesGratis);
+        }
+
+        // NOVO: Função para verificar e criar pedidos grátis quando o cliente tiver crédito suficiente
+        async function verificarECriarPedidosGratis(clienteId) {
+            const galoesGratisDevidos = verificarFidelidade(clienteId);
             
-            // Calcular quantos grupos de galoesParaGratis temos
-            const gruposCompletos = Math.floor(totalGaloesPagosComPedido / galoesParaGratis);
-            const gruposCompletosAntes = Math.floor(galoesPagos / galoesParaGratis);
-            
-            galoesGratis = gruposCompletos - gruposCompletosAntes;
-            
-            return galoesGratis;
+            if (galoesGratisDevidos > 0) {
+                // Criar pedidos grátis automaticamente
+                for (let i = 0; i < galoesGratisDevidos; i++) {
+                    await criarPedidoGratis(clienteId);
+                }
+                
+                const cliente = clientes.find(c => c.id === clienteId);
+                alert(`🎉 GALÃO GRÁTIS!\n\nO cliente ${cliente?.nome} tinha ${galoesGratisDevidos} galão(s) grátis disponível(s)!\n\n${galoesGratisDevidos} pedido(s) grátis foi(ram) criado(s) automaticamente.`);
+            }
+        }
+
+        async function criarPedidoGratis(clienteId) {
+            const cliente = clientes.find(c => c.id === clienteId);
+            if (!cliente) return;
+
+            try {
+                // Criar pedido grátis
+                const pedidoGratis = {
+                    clienteId: clienteId,
+                    dataIda: formatDateForInput(new Date()),
+                    quantidade: 1,
+                    quantidadeVazios: 0,
+                    valorTotal: 0,
+                    isGratis: true, // Marca que é um pedido grátis
+                    galoesEntregues: [],
+                    galoesVindos: [],
+                    detalhesConfirmados: false,
+                    galoesRecebidos: false,
+                    pago: true, // Já considerado como pago (grátis)
+                    formaPagamento: 'Grátis (Fidelidade)',
+                    dataPagamento: getCurrentDateTime()
+                };
+
+                const pedidoId = await salvarPedido(pedidoGratis);
+                
+                // Atualizar última compra do cliente
+                await atualizarCliente(clienteId, {
+                    ultimaCompra: getCurrentDateTime()
+                });
+
+                console.log('🎉 Pedido grátis criado para o cliente:', cliente.nome);
+                
+                return pedidoId;
+
+            } catch (error) {
+                console.error('❌ Erro ao criar pedido grátis:', error);
+                alert('❌ Erro ao criar pedido grátis. Tente novamente.');
+            }
         }
 
         function proximaCompraGratis(clienteId) {
-            const galoesVendidos = contarGaloesVendidos(clienteId);
-            const galoesGratisJaRecebidos = contarGaloesGratisRecebidos(clienteId);
+            const galoesPagos = contarGaloesPagos(clienteId);
             const galoesParaGratis = configuracoes.galoesParaGratis || 10;
-            
-            const galoesPagos = galoesVendidos - galoesGratisJaRecebidos;
             return galoesParaGratis - (galoesPagos % galoesParaGratis);
         }
 
@@ -2230,23 +2492,12 @@ Estamos sempre à disposição! 🙏`,
             const quantidadeVazios = parseInt(document.getElementById('quantidadeGaloesVazios').value) || 0;
             const valorUnitario = configuracoes.precoGalao || 15.00;
             const valorUnitarioVazio = configuracoes.precoGalaoVazio || 25.00;
-            const clienteId = document.getElementById('clientePedido').value;
             
-            let galoesGratis = 0;
-            if (clienteId) {
-                galoesGratis = calcularGaloesGratis(clienteId, quantidade);
-            }
-            
-            const valorGaloes = (quantidade - galoesGratis) * valorUnitario;
+            const valorGaloes = quantidade * valorUnitario;
             const valorVazios = quantidadeVazios * valorUnitarioVazio;
             const valorTotal = valorGaloes + valorVazios;
             
             document.getElementById('valorTotal').value = valorTotal.toFixed(2);
-            
-            // Atualizar informações do cliente para mostrar galões grátis
-            if (clienteId && galoesGratis > 0) {
-                updateClienteInfo(clienteId);
-            }
         }
 
         function getClienteUltimaCompra(clienteId) {
@@ -2256,11 +2507,11 @@ Estamos sempre à disposição! 🙏`,
             
             const ultimoPedido = pedidosCliente[0];
             return {
-                dataEntrega: new Date(ultimoPedido.dataIda).toLocaleDateString('pt-BR'),
+                dataEntrega: formatLocalDate(ultimoPedido.dataIda),
                 quantidade: ultimoPedido.quantidade || 1,
                 quantidadeVazios: ultimoPedido.quantidadeVazios || 0,
                 galoes: ultimoPedido.galoesEntregues || [],
-                galoesGratis: ultimoPedido.galoesGratis || 0,
+                isGratis: ultimoPedido.isGratis || false,
                 valorTotal: ultimoPedido.valorTotal || 0
             };
         }
@@ -2271,10 +2522,11 @@ Estamos sempre à disposição! 🙏`,
             if (pedidosCliente.length === 0) return [];
             
             return pedidosCliente.slice(0, 3).map(p => ({
-                dataEntrega: new Date(p.dataIda).toLocaleDateString('pt-BR'),
+                dataEntrega: formatLocalDate(p.dataIda),
                 quantidade: p.quantidade || 1,
                 quantidadeVazios: p.quantidadeVazios || 0,
-                galoes: p.galoesEntregues || []
+                galoes: p.galoesEntregues || [],
+                isGratis: p.isGratis || false
             }));
         }
 
@@ -2345,10 +2597,13 @@ Estamos sempre à disposição! 🙏`,
                     return;
                 }
                 
-                const pedidosFiltrados = pedidos.filter(pedido => {
+                let pedidosFiltrados = pedidos.filter(pedido => {
                     const cliente = clientes.find(c => c.id == pedido.clienteId);
                     return cliente && cliente.nome.toLowerCase().includes(termo);
                 });
+
+                // Aplicar filtro de data também
+                pedidosFiltrados = filtrarPedidosPorData(pedidosFiltrados);
                 
                 updateListaPedidosFiltered(pedidosFiltrados);
             });
@@ -2375,7 +2630,7 @@ Estamos sempre à disposição! 🙏`,
         async function salvarEmprestimo(emprestimoData) {
             if (isOfflineMode) {
                 const id = generateId();
-                const emprestimo = { id, ...emprestimoData, dataEmprestimo: new Date().toISOString() };
+                const emprestimo = { id, ...emprestimoData, dataEmprestimo: getCurrentDateTime() };
                 emprestimos.push(emprestimo);
                 addToPendingSync('add_emprestimo', 'emprestimos', emprestimoData);
                 updateGaloesEmprestados();
@@ -2396,7 +2651,7 @@ Estamos sempre à disposição! 🙏`,
                 const docRef = await addDoc(collection(window.db, 'emprestimos'), {
                     ...emprestimoData,
                     userId: currentUser.uid,
-                    dataEmprestimo: new Date().toISOString()
+                    dataEmprestimo: getCurrentDateTime()
                 });
                 return docRef.id;
             } catch (error) {
@@ -2425,7 +2680,7 @@ Estamos sempre à disposição! 🙏`,
                 const { updateDoc, doc } = window.firebaseUtils;
                 await updateDoc(doc(window.db, 'emprestimos', emprestimoId), {
                     ...dadosAtualizacao,
-                    updatedAt: new Date().toISOString()
+                    updatedAt: getCurrentDateTime()
                 });
             } catch (error) {
                 console.error('❌ Erro ao atualizar empréstimo:', error);
@@ -2462,7 +2717,7 @@ Estamos sempre à disposição! 🙏`,
                         tipo: tipo,
                         observacoes: observacoes,
                         devolvido: false,
-                        dataEmprestimo: new Date().toISOString(),
+                        dataEmprestimo: getCurrentDateTime(),
                         dataDevolucao: null
                     };
                     
@@ -2495,6 +2750,26 @@ Estamos sempre à disposição! 🙏`,
                 form.reset();
                 currentEmprestimoData = null;
             });
+        }
+
+        // MODIFICADO: Função para emprestar galão diretamente de uma data específica
+        function emprestarGalaoDetalhado(dataGalao) {
+            const stockData = estoque[dataGalao];
+            if (!stockData) return;
+            
+            // Verificar se há galões disponíveis (cheios ou vazios)
+            if ((stockData.cheio || 0) === 0 && (stockData.vazio || 0) === 0) {
+                alert('⚠️ Não há galões disponíveis para emprestar nesta data!');
+                return;
+            }
+            
+            currentEmprestimoData = { dataGalao };
+            
+            document.getElementById('emprestimoDataGalao').value = dataGalao;
+            document.getElementById('emprestimoTipo').value = '';
+            
+            loadClienteOptionsEmprestimo();
+            document.getElementById('emprestimoModal').classList.remove('hidden');
         }
 
         function emprestarGalao() {
@@ -2535,7 +2810,7 @@ Estamos sempre à disposição! 🙏`,
             try {
                 await atualizarEmprestimo(emprestimoId, {
                     devolvido: true,
-                    dataDevolucao: new Date().toISOString()
+                    dataDevolucao: getCurrentDateTime()
                 });
                 
                 // Retornar galão ao estoque
@@ -2571,7 +2846,7 @@ Estamos sempre à disposição! 🙏`,
                 const div = document.createElement('div');
                 div.className = 'emprestimo-item';
                 
-                const dataEmprestimo = new Date(emprestimo.dataEmprestimo).toLocaleDateString('pt-BR');
+                const dataEmprestimo = formatLocalDate(emprestimo.dataEmprestimo);
                 
                 div.innerHTML = `
                     <div class="flex justify-between items-start">
@@ -2625,7 +2900,7 @@ Estamos sempre à disposição! 🙏`,
                 const docRef = await addDoc(collection(window.db, 'clientes'), {
                     ...clienteData,
                     userId: currentUser.uid,
-                    createdAt: new Date().toISOString()
+                    createdAt: getCurrentDateTime()
                 });
                 return docRef.id;
             } catch (error) {
@@ -2654,7 +2929,7 @@ Estamos sempre à disposição! 🙏`,
                 const { updateDoc, doc } = window.firebaseUtils;
                 await updateDoc(doc(window.db, 'clientes', clienteId), {
                     ...dadosAtualizacao,
-                    updatedAt: new Date().toISOString()
+                    updatedAt: getCurrentDateTime()
                 });
             } catch (error) {
                 console.error('❌ Erro ao atualizar cliente:', error);
@@ -2691,7 +2966,7 @@ Estamos sempre à disposição! 🙏`,
         async function salvarPedido(pedidoData) {
             if (isOfflineMode) {
                 const id = generateId();
-                const pedido = { id, ...pedidoData, data: new Date().toISOString() };
+                const pedido = { id, ...pedidoData, data: getCurrentDateTime() };
                 pedidos.unshift(pedido);
                 addToPendingSync('add_pedido', 'pedidos', pedidoData);
                 updateListaPedidos();
@@ -2713,7 +2988,7 @@ Estamos sempre à disposição! 🙏`,
                 const docRef = await addDoc(collection(window.db, 'pedidos'), {
                     ...pedidoData,
                     userId: currentUser.uid,
-                    data: new Date().toISOString()
+                    data: getCurrentDateTime()
                 });
                 return docRef.id;
             } catch (error) {
@@ -2736,7 +3011,7 @@ Estamos sempre à disposição! 🙏`,
                         const pedido = pedidos[pedidoIndex];
                         const clienteIndex = clientes.findIndex(c => c.id === pedido.clienteId);
                         if (clienteIndex !== -1) {
-                            clientes[clienteIndex].ultimaCompra = new Date().toISOString();
+                            clientes[clienteIndex].ultimaCompra = getCurrentDateTime();
                             clientes[clienteIndex].galaoAtual = pedido.galoesEntregues ? pedido.galoesEntregues[0] : null;
                             updateListaClientes();
                         }
@@ -2755,7 +3030,7 @@ Estamos sempre à disposição! 🙏`,
                 const { updateDoc, doc } = window.firebaseUtils;
                 await updateDoc(doc(window.db, 'pedidos', pedidoId), {
                     ...dadosAtualizacao,
-                    updatedAt: new Date().toISOString()
+                    updatedAt: getCurrentDateTime()
                 });
                 
                 // Atualizar informações do cliente no Firebase também
@@ -2763,7 +3038,7 @@ Estamos sempre à disposição! 🙏`,
                     const pedido = pedidos.find(p => p.id === pedidoId);
                     if (pedido) {
                         await atualizarCliente(pedido.clienteId, {
-                            ultimaCompra: new Date().toISOString(),
+                            ultimaCompra: getCurrentDateTime(),
                             galaoAtual: pedido.galoesEntregues ? pedido.galoesEntregues[0] : null
                         });
                     }
@@ -2807,7 +3082,7 @@ Estamos sempre à disposição! 🙏`,
                     emprestado: 0,
                     ...estoque[dataGalao],
                     ...dadosEstoque,
-                    updatedAt: new Date().toISOString()
+                    updatedAt: getCurrentDateTime()
                 };
                 
                 estoque[dataGalao] = dadosCompletos;
@@ -2854,7 +3129,7 @@ Estamos sempre à disposição! 🙏`,
                     ...dadosExistentes,
                     ...dadosEstoque,
                     userId: currentUser.uid,
-                    updatedAt: new Date().toISOString()
+                    updatedAt: getCurrentDateTime()
                 };
                 
                 console.log('💾 Salvando dados completos:', dadosCompletos);
@@ -2990,8 +3265,9 @@ Estamos sempre à disposição! 🙏`,
 
         function createClienteElement(cliente) {
             const ultimaCompra = getClienteUltimaCompra(cliente.id);
-            const galoesVendidos = contarGaloesVendidos(cliente.id);
+            const galoesPagos = contarGaloesPagos(cliente.id);
             const proximaGratis = proximaCompraGratis(cliente.id);
+            const galoesGratisDevidos = verificarFidelidade(cliente.id);
             
             const div = document.createElement('div');
             div.className = `flex items-center justify-between p-6 border border-gray-200 dark:border-gray-600 rounded-xl hover:shadow-lg transition-all duration-300 ${cliente.inativo ? 'cliente-inativo' : ''}`;
@@ -3008,13 +3284,17 @@ Estamos sempre à disposição! 🙏`,
                     <p class="text-xs text-blue-700 dark:text-blue-300">
                         ${ultimaCompra.dataEntrega} - ${ultimaCompra.quantidade} galão(s) de água
                         ${ultimaCompra.quantidadeVazios > 0 ? ` + ${ultimaCompra.quantidadeVazios} galão(s) vazio(s)` : ''}
-                        ${ultimaCompra.galoesGratis > 0 ? ` (${ultimaCompra.galoesGratis} grátis)` : ''}
-                        - R$ ${ultimaCompra.valorTotal.toFixed(2)}
+                        ${ultimaCompra.isGratis ? ' (GRÁTIS)' : ` - R$ ${ultimaCompra.valorTotal.toFixed(2)}`}
                         ${ultimaCompra.galoes.length > 0 ? ` - ${ultimaCompra.galoes.join(', ')}` : ''}
                     </p>
                 </div>`;
             } else {
                 ultimaCompraHtml = '<p class="text-gray-500 dark:text-gray-400 mt-2">Nenhuma compra realizada</p>';
+            }
+            
+            let fidelidadeStatus = '';
+            if (galoesGratisDevidos > 0) {
+                fidelidadeStatus = `<span class="fidelidade-badge ml-2">🎉 ${galoesGratisDevidos} GRÁTIS DISPONÍVEL!</span>`;
             }
             
             div.innerHTML = `
@@ -3023,6 +3303,7 @@ Estamos sempre à disposição! 🙏`,
                         ${cliente.nome}
                         ${cliente.inativo ? '<span class="ml-2 text-xs bg-red-500 text-white px-2 py-1 rounded">INATIVO</span>' : ''}
                         ${syncPendingItem ? '<span class="sync-pending">Pendente</span>' : ''}
+                        ${fidelidadeStatus}
                     </h4>
                     ${cliente.endereco ? `<p class="text-gray-600 dark:text-gray-400 flex items-center mt-1">
                         <span class="mr-2">📍</span>${cliente.endereco}
@@ -3031,7 +3312,7 @@ Estamos sempre à disposição! 🙏`,
                         <span class="mr-2">📞</span>${cliente.telefone}
                     </p>` : ''}
                     <p class="text-orange-600 dark:text-orange-400 flex items-center mt-1 font-semibold">
-                        <span class="mr-2">🎯</span>Galões vendidos: ${galoesVendidos} | Próxima grátis em: ${proximaGratis} galão(s)
+                        <span class="mr-2">🎯</span>Galões pagos: ${galoesPagos} | Próxima grátis em: ${proximaGratis} galão(s)
                     </p>
                     ${ultimaCompraHtml}
                 </div>
@@ -3169,6 +3450,7 @@ Estamos sempre à disposição! 🙏`,
             document.getElementById('configPrecoGalaoVazio').value = configuracoes.precoGalaoVazio;
             document.getElementById('configGaloesParaGratis').value = configuracoes.galoesParaGratis;
             document.getElementById('configMensagemPedido').value = configuracoes.mensagemPedido;
+            document.getElementById('configMensagemGratis').value = configuracoes.mensagemGratis || '';
             document.getElementById('configMensagemNotificacao').value = configuracoes.mensagemNotificacao;
             document.getElementById('configModal').classList.remove('hidden');
         }
@@ -3187,6 +3469,7 @@ Estamos sempre à disposição! 🙏`,
                 configuracoes.precoGalaoVazio = parseFloat(document.getElementById('configPrecoGalaoVazio').value) || 25.00;
                 configuracoes.galoesParaGratis = parseInt(document.getElementById('configGaloesParaGratis').value) || 10;
                 configuracoes.mensagemPedido = document.getElementById('configMensagemPedido').value;
+                configuracoes.mensagemGratis = document.getElementById('configMensagemGratis').value;
                 configuracoes.mensagemNotificacao = document.getElementById('configMensagemNotificacao').value;
                 saveConfiguracoes();
                 modal.classList.add('hidden');
@@ -3208,9 +3491,18 @@ Olá {nome}! 😊
 📦 Galão entregue: {galao_foi}
 📅 Data: {data}
 
-{mensagem_fidelidade}
-
 Obrigado pela confiança! 🙏💧`,
+                        mensagemGratis: `🪣 *Comercial Rocha*
+
+Olá {nome}! 😊
+
+🎉 *PARABÉNS!* 🎉
+Você ganhou um GALÃO GRÁTIS pelo nosso sistema de fidelidade!
+
+📦 Galão grátis entregue: {galao_foi}
+📅 Data: {data}
+
+Obrigado pela sua fidelidade! 🙏💧`,
                         mensagemNotificacao: `🪣 *Comercial Rocha*
 
 Olá {nome}! 😊
@@ -3232,6 +3524,7 @@ Estamos sempre à disposição! 🙏`,
                     document.getElementById('configPrecoGalaoVazio').value = configuracoes.precoGalaoVazio;
                     document.getElementById('configGaloesParaGratis').value = configuracoes.galoesParaGratis;
                     document.getElementById('configMensagemPedido').value = configuracoes.mensagemPedido;
+                    document.getElementById('configMensagemGratis').value = configuracoes.mensagemGratis;
                     document.getElementById('configMensagemNotificacao').value = configuracoes.mensagemNotificacao;
                     saveConfiguracoes();
                     alert('✅ Configurações restauradas para o padrão!');
@@ -3258,7 +3551,7 @@ Estamos sempre à disposição! 🙏`,
                 estoque,
                 emprestimos,
                 configuracoes,
-                exportDate: new Date().toISOString()
+                exportDate: getCurrentDateTime()
             };
             
             const dataStr = JSON.stringify(dados, null, 2);
@@ -3267,7 +3560,7 @@ Estamos sempre à disposição! 🙏`,
             const url = URL.createObjectURL(dataBlob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `comercial-rocha-backup-${new Date().toISOString().split('T')[0]}.json`;
+            link.download = `comercial-rocha-backup-${formatDateForInput(new Date())}.json`;
             link.click();
             URL.revokeObjectURL(url);
             
@@ -3744,14 +4037,14 @@ Estamos sempre à disposição! 🙏`,
                         await atualizarPedido(currentPedidoForPayment.id, {
                             pago: true,
                             formaPagamento: formaPagamento,
-                            dataPagamento: new Date().toISOString()
+                            dataPagamento: getCurrentDateTime()
                         });
                         
                         // Atualizar última compra do cliente
                         const cliente = clientes.find(c => c.id == currentPedidoForPayment.clienteId);
                         if (cliente) {
                             await atualizarCliente(cliente.id, {
-                                ultimaCompra: new Date().toISOString()
+                                ultimaCompra: getCurrentDateTime()
                             });
                         }
                         
@@ -3848,10 +4141,9 @@ Estamos sempre à disposição! 🙏`,
             const clienteInfoContent = document.getElementById('clienteInfoContent');
             
             const cliente = clientes.find(c => c.id == clienteId);
-            const galoesVendidos = contarGaloesVendidos(clienteId);
+            const galoesPagos = contarGaloesPagos(clienteId);
             const proximaGratis = proximaCompraGratis(clienteId);
-            const quantidade = parseInt(document.getElementById('quantidadeGaloes').value) || 1;
-            const galoesGratis = calcularGaloesGratis(clienteId, quantidade);
+            const galoesGratisDevidos = verificarFidelidade(clienteId);
             
             let infoHtml = `
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -3866,16 +4158,23 @@ Estamos sempre à disposição! 🙏`,
                 </div>
             `;
             
-            infoHtml += `
-                <div class="mt-3 p-3 bg-orange-100 dark:bg-orange-800 rounded-lg">
-                    <p class="text-sm font-semibold text-orange-800 dark:text-orange-200">Sistema de Fidelidade:</p>
-                    <p class="text-orange-700 dark:text-orange-300">Galões vendidos: ${galoesVendidos}</p>
-                    ${galoesGratis > 0 ? 
-                        `<p class="text-green-700 dark:text-green-300 font-bold">🎉 Neste pedido: ${galoesGratis} galão(s) GRÁTIS!</p>` : 
-                        `<p class="text-orange-700 dark:text-orange-300">Próxima grátis em: ${proximaGratis} galão(s)</p>`
-                    }
-                </div>
-            `;
+            if (galoesGratisDevidos > 0) {
+                infoHtml += `
+                    <div class="mt-3 p-3 bg-green-100 dark:bg-green-800 rounded-lg">
+                        <p class="text-sm font-semibold text-green-800 dark:text-green-200">🎉 FIDELIDADE:</p>
+                        <p class="text-green-700 dark:text-green-300 font-bold">Cliente tem ${galoesGratisDevidos} galão(s) grátis disponível(s)!</p>
+                        <p class="text-green-600 dark:text-green-400 text-sm">Pedidos grátis serão criados automaticamente ao registrar este pedido.</p>
+                    </div>
+                `;
+            } else {
+                infoHtml += `
+                    <div class="mt-3 p-3 bg-orange-100 dark:bg-orange-800 rounded-lg">
+                        <p class="text-sm font-semibold text-orange-800 dark:text-orange-200">Sistema de Fidelidade:</p>
+                        <p class="text-orange-700 dark:text-orange-300">Galões pagos: ${galoesPagos}</p>
+                        <p class="text-orange-700 dark:text-orange-300">Próxima grátis em: ${proximaGratis} galão(s)</p>
+                    </div>
+                `;
+            }
             
             const ultimaCompra = getClienteUltimaCompra(clienteId);
             if (ultimaCompra) {
@@ -3885,8 +4184,7 @@ Estamos sempre à disposição! 🙏`,
                         <p class="text-blue-700 dark:text-blue-300">
                             ${ultimaCompra.dataEntrega} - ${ultimaCompra.quantidade} galão(s) de água
                             ${ultimaCompra.quantidadeVazios > 0 ? ` + ${ultimaCompra.quantidadeVazios} galão(s) vazio(s)` : ''}
-                            ${ultimaCompra.galoesGratis > 0 ? ` (${ultimaCompra.galoesGratis} grátis)` : ''}
-                            - R$ ${ultimaCompra.valorTotal.toFixed(2)}
+                            ${ultimaCompra.isGratis ? ' (GRÁTIS)' : ` - R$ ${ultimaCompra.valorTotal.toFixed(2)}`}
                             ${ultimaCompra.galoes.length > 0 ? ` - ${ultimaCompra.galoes.join(', ')}` : ''}
                         </p>
                     </div>
@@ -3926,6 +4224,7 @@ Estamos sempre à disposição! 🙏`,
             });
         }
 
+        // MODIFICADO: Criar pedidos grátis automaticamente ao registrar pedido
         document.getElementById('formPedido').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -3938,7 +4237,6 @@ Estamos sempre à disposição! 🙏`,
                 const quantidade = parseInt(document.getElementById('quantidadeGaloes').value);
                 const quantidadeVazios = parseInt(document.getElementById('quantidadeGaloesVazios').value) || 0;
                 const valorTotal = parseFloat(document.getElementById('valorTotal').value);
-                const galoesGratis = calcularGaloesGratis(clienteId, quantidade);
                 
                 const pedido = {
                     clienteId: clienteId,
@@ -3946,11 +4244,11 @@ Estamos sempre à disposição! 🙏`,
                     quantidade: quantidade,
                     quantidadeVazios: quantidadeVazios,
                     valorTotal: valorTotal,
-                    galoesGratis: galoesGratis,
+                    isGratis: false, // Pedidos normais não são grátis
                     galoesEntregues: [],
                     galoesVindos: [],
                     detalhesConfirmados: false,
-                    galoesRecebidos: false, // Nova propriedade
+                    galoesRecebidos: false,
                     pago: false,
                     formaPagamento: null,
                     dataPagamento: null
@@ -3958,10 +4256,13 @@ Estamos sempre à disposição! 🙏`,
                 
                 const pedidoId = await salvarPedido(pedido);
                 
+                // NOVO: Verificar e criar pedidos grátis automaticamente
+                await verificarECriarPedidosGratis(clienteId);
+                
                 this.reset();
                 document.getElementById('clienteInfo').classList.add('hidden');
                 document.getElementById('clientePedidoInput').value = '';
-                document.getElementById('dataIda').value = new Date().toISOString().split('T')[0];
+                document.getElementById('dataIda').value = formatDateForInput(new Date());
                 document.getElementById('quantidadeGaloes').value = '1';
                 document.getElementById('quantidadeGaloesVazios').value = '0';
                 calcularValorTotal();
@@ -3982,24 +4283,24 @@ Estamos sempre à disposição! 🙏`,
             
             if (!cliente || !pedido) return;
             
-            const galoesGratis = pedido.galoesGratis || 0;
             const quantidadeVazios = pedido.quantidadeVazios || 0;
             
             let tipoPedido = `📦 ${pedido.quantidade} galão(s) de água`;
             if (quantidadeVazios > 0) {
                 tipoPedido += ` + ${quantidadeVazios} galão(s) vazio(s)`;
             }
-            if (galoesGratis > 0) {
-                tipoPedido += ` (${galoesGratis} grátis)`;
+            if (pedido.isGratis) {
+                tipoPedido += ' (GRÁTIS)';
+            } else {
+                tipoPedido += ` - R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}`;
             }
-            tipoPedido += ` - R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}`;
             
-            let mensagem = configuracoes.mensagemPedido;
+            // Escolher mensagem baseada no tipo de pedido
+            let mensagem = pedido.isGratis ? configuracoes.mensagemGratis : configuracoes.mensagemPedido;
             mensagem = mensagem.replace('{nome}', cliente.nome);
             mensagem = mensagem.replace('{tipo_pedido}', tipoPedido);
             mensagem = mensagem.replace('{galao_foi}', pedido.galoesEntregues ? pedido.galoesEntregues.join(', ') : 'Pendente');
-            mensagem = mensagem.replace('{data}', new Date(pedido.dataIda).toLocaleDateString('pt-BR'));
-            mensagem = mensagem.replace('{mensagem_fidelidade}', galoesGratis > 0 ? `🎉 *PARABÉNS!* ${galoesGratis} galão(s) GRÁTIS pelo sistema de fidelidade! 🎁` : '');
+            mensagem = mensagem.replace('{data}', formatLocalDate(pedido.dataIda));
             
             abrirWhatsApp(cliente.telefone, mensagem);
         }
@@ -4015,9 +4316,9 @@ Estamos sempre à disposição! 🙏`,
             const pedidoInfo = document.getElementById('pedidoDetailsInfo');
             pedidoInfo.innerHTML = `
                 <p><strong>Cliente:</strong> ${cliente ? cliente.nome : 'N/A'}</p>
-                <p><strong>Data:</strong> ${new Date(pedido.dataIda).toLocaleDateString('pt-BR')}</p>
-                <p><strong>Quantidade:</strong> ${pedido.quantidade} galão(s) de água${pedido.quantidadeVazios > 0 ? ` + ${pedido.quantidadeVazios} galão(s) vazio(s)` : ''}${pedido.galoesGratis > 0 ? ` (${pedido.galoesGratis} grátis)` : ''}</p>
-                <p><strong>Valor Total:</strong> R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}</p>
+                <p><strong>Data:</strong> ${formatLocalDate(pedido.dataIda)}</p>
+                <p><strong>Quantidade:</strong> ${pedido.quantidade} galão(s) de água${pedido.quantidadeVazios > 0 ? ` + ${pedido.quantidadeVazios} galão(s) vazio(s)` : ''}${pedido.isGratis ? ' (GRÁTIS)' : ''}</p>
+                <p><strong>Valor Total:</strong> ${pedido.isGratis ? 'GRÁTIS' : `R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}`}</p>
             `;
             
             // Preencher lista de galões disponíveis
@@ -4076,7 +4377,7 @@ Estamos sempre à disposição! 🙏`,
             const receiveInfo = document.getElementById('receiveDetailsInfo');
             receiveInfo.innerHTML = `
                 <p><strong>Cliente:</strong> ${cliente ? cliente.nome : 'N/A'}</p>
-                <p><strong>Data:</strong> ${new Date(pedido.dataIda).toLocaleDateString('pt-BR')}</p>
+                <p><strong>Data:</strong> ${formatLocalDate(pedido.dataIda)}</p>
                 <p><strong>Galões enviados:</strong> ${pedido.galoesEntregues ? pedido.galoesEntregues.join(', ') : 'Nenhum'}</p>
             `;
             
@@ -4123,7 +4424,7 @@ Estamos sempre à disposição! 🙏`,
             currentEditingPedido = pedidoId;
             
             document.getElementById('editPedidoCliente').value = cliente ? cliente.nome : 'N/A';
-            document.getElementById('editPedidoData').value = pedido.dataIda;
+            document.getElementById('editPedidoData').value = formatDateForInput(pedido.dataIda);
             document.getElementById('editPedidoQuantidade').value = pedido.quantidade || 1;
             document.getElementById('editPedidoQuantidadeVazios').value = pedido.quantidadeVazios || 0;
             document.getElementById('editPedidoValor').value = pedido.valorTotal || 0;
@@ -4163,11 +4464,10 @@ Estamos sempre à disposição! 🙏`,
 
         function createPedidoElement(pedido, isAdmin) {
             const cliente = clientes.find(c => c.id == pedido.clienteId);
-            const galoesGratis = pedido.galoesGratis || 0;
             const quantidadeVazios = pedido.quantidadeVazios || 0;
             
             const div = document.createElement('div');
-            div.className = `flex flex-col md:flex-row md:items-center md:justify-between p-6 border rounded-xl transition-all duration-300 ${pedido.pago ? 'border-green-300 bg-green-50 dark:bg-green-900 dark:border-green-600' : 'border-red-300 bg-red-50 dark:bg-red-900 dark:border-red-600'}`;
+            div.className = `flex flex-col md:flex-row md:items-center md:justify-between p-6 border rounded-xl transition-all duration-300 ${pedido.pago ? 'border-green-300 bg-green-50 dark:bg-green-900 dark:border-green-600' : 'border-red-300 bg-red-50 dark:bg-red-900 dark:border-red-600'} ${pedido.isGratis ? 'pedido-gratis' : ''}`;
             
             const syncPendingItem = pendingSync.find(item => 
                 item.collection === 'pedidos' && 
@@ -4190,22 +4490,23 @@ Estamos sempre à disposição! 🙏`,
             if (quantidadeVazios > 0) {
                 quantidadeTexto += ` + ${quantidadeVazios} galão(s) vazio(s)`;
             }
-            if (galoesGratis > 0) {
-                quantidadeTexto += ` (${galoesGratis} grátis)`;
+            if (pedido.isGratis) {
+                quantidadeTexto += ' (GRÁTIS)';
+            } else {
+                quantidadeTexto += ` - R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}`;
             }
-            quantidadeTexto += ` - R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}`;
             
             div.innerHTML = `
                 <div class="flex-1 mb-4 md:mb-0">
                     <h4 class="font-bold text-lg text-gray-900 dark:text-white flex items-center">
                         ${cliente ? cliente.nome : 'Cliente não encontrado'}
                         ${syncPendingItem ? '<span class="sync-pending">Pendente</span>' : ''}
-                        ${galoesGratis > 0 ? `<span class="fidelidade-badge ml-2">🎉 ${galoesGratis} Grátis!</span>` : ''}
+                        ${pedido.isGratis ? '<span class="fidelidade-badge ml-2">🎁 GRÁTIS!</span>' : ''}
                     </h4>
                     <p class="text-gray-600 dark:text-gray-400 mt-1">
                         ${quantidadeTexto}
                     </p>
-                    <p class="text-gray-600 dark:text-gray-400 mt-1">📅 ${new Date(pedido.dataIda).toLocaleDateString('pt-BR')}</p>
+                    <p class="text-gray-600 dark:text-gray-400 mt-1">📅 ${formatLocalDate(pedido.dataIda)}</p>
                     ${galoesInfo}
                     ${pedido.pago && pedido.formaPagamento ? `<p class="text-green-600 dark:text-green-400 mt-1 font-semibold">💰 ${pedido.formaPagamento}</p>` : ''}
                 </div>
@@ -4237,9 +4538,18 @@ Estamos sempre à disposição! 🙏`,
             const isAdmin = currentUser?.email === 'adm@comercialrocha.com';
             
             // Ordenar pedidos por data mais recente primeiro
-            const pedidosOrdenados = [...pedidos].sort((a, b) => new Date(b.data) - new Date(a.data));
+            let pedidosOrdenados = [...pedidos].sort((a, b) => new Date(b.data) - new Date(a.data));
             
-            pedidosOrdenados.slice(0, 20).forEach(pedido => {
+            // Aplicar filtro de data
+            pedidosOrdenados = filtrarPedidosPorData(pedidosOrdenados);
+            
+            if (pedidosOrdenados.length === 0) {
+                const mensagem = filtroDataAtual === 'hoje' ? 'Nenhum pedido registrado hoje.' : 'Nenhum pedido encontrado para o período selecionado.';
+                lista.innerHTML = `<div class="text-center py-8"><p class="text-gray-500">${mensagem}</p></div>`;
+                return;
+            }
+            
+            pedidosOrdenados.slice(0, 50).forEach(pedido => {
                 const pedidoElement = createPedidoElement(pedido, isAdmin);
                 lista.appendChild(pedidoElement);
             });
@@ -4251,23 +4561,16 @@ Estamos sempre à disposição! 🙏`,
                 currentPedidoForPayment = pedido;
                 
                 const cliente = clientes.find(c => c.id == pedido.clienteId);
-                const galoesGratis = pedido.galoesGratis || 0;
+                const galoesGratisDevidos = verificarFidelidade(pedido.clienteId);
                 
                 const fidelidadeInfo = document.getElementById('fidelidadeInfo');
                 const fidelidadeText = document.getElementById('fidelidadeText');
-                const gratisOption = document.querySelector('[data-payment="Grátis"]');
                 
-                if (galoesGratis > 0) {
+                if (galoesGratisDevidos > 0 && !pedido.isGratis) {
                     fidelidadeInfo.classList.remove('hidden');
-                    fidelidadeText.textContent = `Este pedido tem ${galoesGratis} galão(s) grátis pelo sistema de fidelidade!`;
-                    gratisOption.classList.remove('hidden');
-                    if (pedido.valorTotal === 0) {
-                        document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
-                        gratisOption.classList.add('selected');
-                    }
+                    fidelidadeText.textContent = `Cliente já tem ${galoesGratisDevidos} galão(s) grátis disponível(s)! (Pedidos grátis já foram criados)`;
                 } else {
                     fidelidadeInfo.classList.add('hidden');
-                    gratisOption.classList.add('hidden');
                 }
                 
                 document.getElementById('paymentModal').classList.remove('hidden');
@@ -4358,6 +4661,7 @@ Estamos sempre à disposição! 🙏`,
             });
         }
 
+        // MODIFICADO: Adicionar botão de empréstimo na lista detalhada
         function updateEstoqueDetalhado() {
             const lista = document.getElementById('estoqueDetalhado');
             if (!lista) return; // Element might not exist
@@ -4388,6 +4692,9 @@ Estamos sempre à disposição! 🙏`,
                         item.collection === 'estoque' && item.data.dataGalao === data
                     );
                     
+                    // Verificar se há galões disponíveis para emprestar
+                    const galoesDisponiveis = (stockData.cheio || 0) + (stockData.vazio || 0);
+                    
                     div.innerHTML = `
                         <div class="flex justify-between items-center mb-2">
                             <h4 class="font-semibold text-gray-900 dark:text-white flex items-center">
@@ -4399,6 +4706,7 @@ Estamos sempre à disposição! 🙏`,
                                 ${isAdmin ? `
                                     <div class="estoque-item-actions">
                                         <button class="btn-edit-estoque" onclick="editarEstoqueDetalhado('${data}')">✏️</button>
+                                        ${galoesDisponiveis > 0 ? `<button class="btn-emprestar" onclick="emprestarGalaoDetalhado('${data}')" title="Emprestar galão">➡️</button>` : ''}
                                         <button class="btn-delete-estoque" onclick="excluirEstoqueDetalhado('${data}')">🗑️</button>
                                     </div>
                                 ` : ''}
@@ -4540,8 +4848,8 @@ Estamos sempre à disposição! 🙏`,
             const clientesAtivos = clientes.filter(c => !c.inativo);
             document.getElementById('totalClientes').textContent = clientesAtivos.length;
             
-            const hoje = new Date().toDateString();
-            const vendasHoje = pedidos.filter(p => new Date(p.data).toDateString() === hoje).length;
+            const hoje = formatDateForInput(new Date());
+            const vendasHoje = pedidos.filter(p => isSameDate(p.data, hoje)).length;
             document.getElementById('vendasHoje').textContent = vendasHoje;
             
             const totalCheios = Object.values(estoque).reduce((total, stock) => total + (stock.cheio || 0), 0);
@@ -4646,9 +4954,8 @@ Estamos sempre à disposição! 🙏`,
                         alert('⚠️ Selecione uma data para o relatório diário!');
                         return;
                     }
-                    const dataComparacao = new Date(dataSelecionada).toDateString();
-                    pedidosFiltrados = pedidos.filter(p => new Date(p.data).toDateString() === dataComparacao);
-                    titulo = 'Relatório Diário - ' + new Date(dataSelecionada).toLocaleDateString('pt-BR');
+                    pedidosFiltrados = pedidos.filter(p => isSameDate(p.data, dataSelecionada));
+                    titulo = 'Relatório Diário - ' + formatLocalDate(dataSelecionada);
                     break;
                 case 'mensal':
                     const mesSelecionado = document.getElementById('mesMensal').value;
@@ -4705,7 +5012,7 @@ Estamos sempre à disposição! 🙏`,
                 const totalValor = pedidosList.reduce((sum, p) => sum + (p.valorTotal || 0), 0);
                 const totalGaloes = pedidosList.reduce((sum, p) => sum + (p.quantidade || 1), 0);
                 const totalGaloesVazios = pedidosList.reduce((sum, p) => sum + (p.quantidadeVazios || 0), 0);
-                const totalGaloesGratis = pedidosList.reduce((sum, p) => sum + (p.galoesGratis || 0), 0);
+                const totalGaloesGratis = pedidosList.filter(p => p.isGratis).reduce((sum, p) => sum + (p.quantidade || 1), 0);
                 
                 html += `
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-6 mb-8">
@@ -4756,7 +5063,7 @@ Estamos sempre à disposição! 🙏`,
                                         <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Cliente</th>
                                         <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Galões Água</th>
                                         <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Galões Vazios</th>
-                                        <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Galões Grátis</th>
+                                        <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Tipo</th>
                                         <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Valor</th>
                                         <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Status</th>
                                         <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Pagamento</th>
@@ -4773,14 +5080,18 @@ Estamos sempre à disposição! 🙏`,
                     const galoesVindos = (pedido.galoesVindos && pedido.galoesVindos.length > 0) ? 
                         ` | Vindo: ${pedido.galoesVindos.join(', ')}` : '';
                     
-                    html += `
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
-                            <td class="border border-gray-300 dark:border-gray-600 p-4">${new Date(pedido.data).toLocaleDateString('pt-BR')}</td>
+                    html += `					
+						<tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                            <td class="border border-gray-300 dark:border-gray-600 p-4">${formatLocalDate(pedido.data)}</td>
                             <td class="border border-gray-300 dark:border-gray-600 p-4 font-semibold">${cliente ? cliente.nome : 'N/A'}</td>
                             <td class="border border-gray-300 dark:border-gray-600 p-4">${pedido.quantidade || 1}</td>
                             <td class="border border-gray-300 dark:border-gray-600 p-4">${pedido.quantidadeVazios || 0}</td>
-                            <td class="border border-gray-300 dark:border-gray-600 p-4 font-bold text-orange-600">${pedido.galoesGratis || 0}</td>
-                            <td class="border border-gray-300 dark:border-gray-600 p-4">R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}</td>
+                            <td class="border border-gray-300 dark:border-gray-600 p-4">
+                                <span class="${pedido.isGratis ? 'text-green-600 bg-green-100 dark:bg-green-800' : 'text-blue-600 bg-blue-100 dark:bg-blue-800'} font-bold px-3 py-1 rounded-full text-sm">
+                                    ${pedido.isGratis ? '🎁 GRÁTIS' : '💰 PAGO'}
+                                </span>
+                            </td>
+                            <td class="border border-gray-300 dark:border-gray-600 p-4">${pedido.isGratis ? 'GRÁTIS' : `R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}`}</td>
                             <td class="border border-gray-300 dark:border-gray-600 p-4">
                                 <span class="${pedido.pago ? 'text-green-600 bg-green-100 dark:bg-green-800' : 'text-red-600 bg-red-100 dark:bg-red-800'} font-bold px-3 py-1 rounded-full text-sm">
                                     ${pedido.pago ? '✅ Pago' : '❌ Pendente'}
@@ -4856,7 +5167,7 @@ Estamos sempre à disposição! 🙏`,
                     const totalValor = pedidosList.reduce((sum, p) => sum + (p.valorTotal || 0), 0);
                     const totalGaloes = pedidosList.reduce((sum, p) => sum + (p.quantidade || 1), 0);
                     const totalGaloesVazios = pedidosList.reduce((sum, p) => sum + (p.quantidadeVazios || 0), 0);
-                    const totalGaloesGratis = pedidosList.reduce((sum, p) => sum + (p.galoesGratis || 0), 0);
+                    const totalGaloesGratis = pedidosList.filter(p => p.isGratis).reduce((sum, p) => sum + (p.quantidade || 1), 0);
                     
                     // Cards de estatísticas
                     const cardWidth = 38;
@@ -4903,12 +5214,12 @@ Estamos sempre à disposição! 🙏`,
                             pedido.galoesVindos.join(', ') : '-';
                         
                         return [
-                            new Date(pedido.data).toLocaleDateString('pt-BR'),
+                            formatLocalDate(pedido.data),
                             cliente ? cliente.nome.substring(0, 20) : 'N/A',
                             `${(pedido.quantidade || 1)}`,
                             `${(pedido.quantidadeVazios || 0)}`,
-                            `${(pedido.galoesGratis || 0)}`,
-                            `R$ ${(pedido.valorTotal || 0).toFixed(2)}`,
+                            pedido.isGratis ? 'GRÁTIS' : 'PAGO',
+                            pedido.isGratis ? 'GRÁTIS' : `R$ ${(pedido.valorTotal || 0).toFixed(2)}`,
                             pedido.pago ? 'Pago' : 'Pendente',
                             pedido.formaPagamento || '-',
                             galoesInfo.substring(0, 15),
@@ -4919,7 +5230,7 @@ Estamos sempre à disposição! 🙏`,
                     if (doc.autoTable) {
                         doc.setTextColor(0, 0, 0);
                         doc.autoTable({
-                            head: [['Data', 'Cliente', 'Água', 'Vazios', 'Grátis', 'Valor', 'Status', 'Pagamento', 'Entregues', 'Vindo']],
+                            head: [['Data', 'Cliente', 'Água', 'Vazios', 'Tipo', 'Valor', 'Status', 'Pagamento', 'Entregues', 'Vindo']],
                             body: tableData,
                             startY: yPosition,
                             margin: { left: margin, right: margin },
@@ -4940,7 +5251,7 @@ Estamos sempre à disposição! 🙏`,
                                 1: { cellWidth: 35 },
                                 2: { cellWidth: 15 },
                                 3: { cellWidth: 15 },
-                                4: { cellWidth: 15 },
+                                4: { cellWidth: 20 },
                                 5: { cellWidth: 25 },
                                 6: { cellWidth: 20 },
                                 7: { cellWidth: 25 },
@@ -4970,7 +5281,7 @@ Estamos sempre à disposição! 🙏`,
                 }
                 
                 // Salvar PDF
-                const fileName = `${titulo.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+                const fileName = `${titulo.replace(/[^a-zA-Z0-9]/g, '_')}_${formatDateForInput(new Date())}.pdf`;
                 doc.save(fileName);
                 
                 alert('✅ PDF gerado com sucesso!');
@@ -4990,5 +5301,5 @@ Estamos sempre à disposição! 🙏`,
         });
     </script>
 
-
-</body></html>
+</body>
+</html>
