@@ -2431,7 +2431,7 @@ Estamos sempre à disposição! 🙏`,
             calcularValorTotal();
         }
 
-        // FUNÇÃO CORRIGIDA para melhorar o autocomplete em dispositivos móveis
+        // FUNÇÃO CORRIGIDA (V2) - Garante a abertura do teclado e a exibição do datalist
         function setupAutocompleteEnhancements() {
             const autocompleteFields = [
                 'clientePedidoInput',
@@ -2444,40 +2444,30 @@ Estamos sempre à disposição! 🙏`,
             autocompleteFields.forEach(fieldId => {
                 const field = document.getElementById(fieldId);
                 if (field) {
-                    // O atributo 'autocomplete="off"' é importante para evitar
-                    // que o autocompletar nativo do navegador entre em conflito com o datalist.
+                    // Mantém os atributos para um comportamento de input limpo
                     field.setAttribute('autocomplete', 'off');
                     field.setAttribute('autocorrect', 'off');
                     field.setAttribute('autocapitalize', 'off');
                     field.setAttribute('spellcheck', 'false');
 
-                    // Evento de 'focus' para selecionar o texto e facilitar a digitação
+                    // 1. O evento 'focus' é usado apenas para selecionar o texto, facilitando a edição.
                     field.addEventListener('focus', function() {
                         this.select();
                     });
 
-                    // Evento de 'touchstart' é a chave para dispositivos móveis.
-                    // Ele é disparado quando o usuário toca no campo.
-                    field.addEventListener('touchstart', function() {
+                    // 2. O evento 'click' (que funciona para toque no celular e clique no desktop)
+                    // será nosso gatilho principal.
+                    field.addEventListener('click', function() {
+                        // Forçar o foco garante que o teclado seja chamado.
                         this.focus();
 
-                        // --- Início do truque para forçar a exibição do datalist ---
-
-                        // 1. Brevemente tornamos o campo "somente leitura" e depois removemos.
-                        // Isso força o navegador a reavaliar o estado do campo.
-                        this.readOnly = true;
-                        setTimeout(() => {
-                            this.readOnly = false;
-                            
-                            // 2. Simulamos uma pequena alteração no valor do campo.
-                            // Isso faz o navegador pensar que o usuário digitou algo,
-                            // o que geralmente aciona a exibição da lista.
-                            const initialValue = this.value;
-                            this.value = initialValue + ' ';
-                            this.value = initialValue;
-                        }, 100);
-
-                        // --- Fim do truque ---
+                        // O truque está aqui: limpamos e reatribuímos o valor.
+                        // Para o navegador, isso simula uma edição e o incentiva
+                        // a mostrar o datalist sem bloquear o teclado.
+                        // Isso é menos invasivo que disparar eventos manualmente.
+                        const val = this.value;
+                        this.value = '';
+                        this.value = val;
                     });
                 }
             });
