@@ -2431,8 +2431,9 @@ Estamos sempre à disposição! 🙏`,
             calcularValorTotal();
         }
 
-        // FUNÇÃO CORRIGIDA (V2) - Garante a abertura do teclado e a exibição do datalist
+        // NOVA FUNÇÃO: Melhorar autocomplete para dispositivos móveis
         function setupAutocompleteEnhancements() {
+            // Lista de todos os campos que usam autocomplete
             const autocompleteFields = [
                 'clientePedidoInput',
                 'emprestimoCliente', 
@@ -2444,31 +2445,40 @@ Estamos sempre à disposição! 🙏`,
             autocompleteFields.forEach(fieldId => {
                 const field = document.getElementById(fieldId);
                 if (field) {
-                    // Mantém os atributos para um comportamento de input limpo
+                    // Adicionar this.select() no focus
+                    field.addEventListener('focus', function() {
+                        this.select();
+                        
+                        // Para dispositivos móveis, forçar a exibição do autocomplete
+                        if ('ontouchstart' in window) {
+                            setTimeout(() => {
+                                this.dispatchEvent(new Event('input', { bubbles: true }));
+                            }, 100);
+                        }
+                    });
+
+                    // Melhorar comportamento no mobile
+                    field.addEventListener('touchstart', function() {
+                        this.focus();
+                    });
+
+                    // Garantir que o autocomplete funcione corretamente
                     field.setAttribute('autocomplete', 'off');
                     field.setAttribute('autocorrect', 'off');
                     field.setAttribute('autocapitalize', 'off');
                     field.setAttribute('spellcheck', 'false');
+                }
+            });
 
-                    // 1. O evento 'focus' é usado apenas para selecionar o texto, facilitando a edição.
-                    field.addEventListener('focus', function() {
-                        this.select();
-                    });
-
-                    // 2. O evento 'click' (que funciona para toque no celular e clique no desktop)
-                    // será nosso gatilho principal.
-                    field.addEventListener('click', function() {
-                        // Forçar o foco garante que o teclado seja chamado.
-                        this.focus();
-
-                        // O truque está aqui: limpamos e reatribuímos o valor.
-                        // Para o navegador, isso simula uma edição e o incentiva
-                        // a mostrar o datalist sem bloquear o teclado.
-                        // Isso é menos invasivo que disparar eventos manualmente.
-                        const val = this.value;
-                        this.value = '';
-                        this.value = val;
-                    });
+            // Melhorar comportamento do datalist em dispositivos móveis
+            document.addEventListener('click', function(e) {
+                if (e.target.matches('input[list]')) {
+                    const input = e.target;
+                    const list = document.getElementById(input.getAttribute('list'));
+                    if (list) {
+                        // Disparar evento para mostrar opções
+                        input.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
                 }
             });
         }
