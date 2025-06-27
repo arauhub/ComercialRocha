@@ -342,6 +342,7 @@ block-all-mixed-content;
             padding: 12px 16px;
             transition: all 0.3s ease;
             font-size: 16px;
+            position: relative;
         }
         
         .input-modern:focus {
@@ -874,6 +875,48 @@ block-all-mixed-content;
         .dark .pedido-gratis {
             background: linear-gradient(135deg, #065f46, #047857) !important;
         }
+
+        /* Melhorias para autocomplete em dispositivos móveis */
+        input[list] {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Forçar autocomplete para aparecer abaixo do campo */
+        input::-webkit-calendar-picker-indicator {
+            display: none;
+        }
+
+        /* Melhorar dropdown do datalist */
+        datalist {
+            position: absolute;
+            z-index: 9999;
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark datalist {
+            background: #374151;
+            border-color: #4b5563;
+        }
+
+        /* Garantir que autocomplete funcione em dispositivos móveis */
+        @media (max-width: 768px) {
+            input[list] {
+                -webkit-appearance: none;
+                appearance: none;
+            }
+            
+            /* Força a exibição do autocomplete */
+            input[list]:focus {
+                position: relative;
+                z-index: 10;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
@@ -947,7 +990,7 @@ block-all-mixed-content;
             <form id="formEmprestimo" class="space-y-4">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Cliente</label>
-                    <input type="text" id="emprestimoCliente" list="clientesEmprestimoList" placeholder="Digite ou selecione um cliente" class="input-modern w-full" required="">
+                    <input type="text" id="emprestimoCliente" list="clientesEmprestimoList" placeholder="Digite ou selecione um cliente" class="input-modern w-full" required="" autocomplete="off">
                     <datalist id="clientesEmprestimoList"></datalist>
                 </div>
                 
@@ -1176,6 +1219,12 @@ block-all-mixed-content;
                     <button type="button" id="addGalaoVindo" class="btn-modern mt-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-sm">
                         ➕ Adicionar Galão Vindo
                     </button>
+                </div>
+
+                <!-- Observações -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Observações</label>
+                    <textarea id="editPedidoObservacoes" class="input-modern w-full" rows="3" placeholder="Observações sobre o pedido..."></textarea>
                 </div>
                 
                 <div class="flex space-x-3 mt-6">
@@ -1470,7 +1519,7 @@ block-all-mixed-content;
                         <span class="text-2xl mr-3">🔍</span>
                         Buscar Cliente
                     </h3>
-                    <input type="text" id="buscaCliente" placeholder="Digite o nome do cliente..." class="input-modern w-full">
+                    <input type="text" id="buscaCliente" placeholder="Digite o nome do cliente..." class="input-modern w-full" autocomplete="off">
                 </div>
 
                 <!-- Lista de Clientes -->
@@ -1510,7 +1559,7 @@ block-all-mixed-content;
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Cliente</label>
-                                <input type="text" id="clientePedidoInput" list="clientesList" placeholder="Digite ou selecione um cliente" class="input-modern w-full" onchange="handleClienteSelection()">
+                                <input type="text" id="clientePedidoInput" list="clientesList" placeholder="Digite ou selecione um cliente" class="input-modern w-full" onchange="handleClienteSelection()" autocomplete="off">
                                 <datalist id="clientesList">
                                 </datalist>
                                 <input type="hidden" id="clientePedido" required="">
@@ -1581,7 +1630,7 @@ block-all-mixed-content;
                             </div>
                             
                             <div class="search-container flex-1 md:w-80">
-                                <input type="text" id="buscaPedido" placeholder="Buscar por nome do cliente..." class="input-modern w-full">
+                                <input type="text" id="buscaPedido" placeholder="Buscar por nome do cliente..." class="input-modern w-full" autocomplete="off">
                             </div>
                         </div>
                     </div>
@@ -1707,7 +1756,7 @@ block-all-mixed-content;
                             Relatórios por Cliente
                         </h3>
                         <div class="space-y-4">
-                            <input type="text" id="clienteRelatorioInput" list="clientesRelatorioList" placeholder="Digite ou selecione um cliente" class="input-modern w-full">
+                            <input type="text" id="clienteRelatorioInput" list="clientesRelatorioList" placeholder="Digite ou selecione um cliente" class="input-modern w-full" autocomplete="off">
                             <datalist id="clientesRelatorioList">
                             </datalist>
                             <input type="hidden" id="clienteRelatorio">
@@ -1752,10 +1801,10 @@ block-all-mixed-content;
         let clientes = [];
         let pedidos = [];
         let estoque = {};
-        let emprestimos = []; // Nova variável para controlar empréstimos
+        let emprestimos = [];
         let currentPedidoForPayment = null;
         let currentPedidoForDetails = null;
-        let currentPedidoForReceive = null; // Nova variável para receber galões
+        let currentPedidoForReceive = null;
         let currentEditingCliente = null;
         let currentEditingPedido = null;
         let currentEditingEstoque = null;
@@ -1769,7 +1818,7 @@ block-all-mixed-content;
         let currentRelatorioData = null;
         let currentRelatorioTitulo = '';
         let mostrandoInativos = false;
-        let filtroDataAtual = 'hoje'; // Novo: filtro de data atual
+        let filtroDataAtual = 'hoje';
         let configuracoes = {
             mensagemPedido: `🪣 *Comercial Rocha*
 
@@ -1815,6 +1864,7 @@ Estamos sempre à disposição! 🙏`,
         let estoqueListener = null;
         let emprestimosListener = null;
         let authStateListener = null;
+        let configuracoesListener = null;
 
         // Local storage keys
         const STORAGE_KEYS = {
@@ -1827,63 +1877,100 @@ Estamos sempre à disposição! 🙏`,
             configuracoes: 'comercialrocha_configuracoes'
         };
 
-        // Função para criar data local sem problemas de fuso horário
+        // ================================
+        // FUNÇÕES DE DATA CORRIGIDAS
+        // ================================
+
+        // Função para criar data local - CORRIGIDA para evitar problemas de fuso horário
         function createLocalDate(dateString) {
             if (!dateString) return new Date();
             
             // Se for apenas uma data (YYYY-MM-DD), criar como data local
-            if (dateString.length === 10 && dateString.includes('-')) {
+            if (typeof dateString === 'string' && dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
                 const [year, month, day] = dateString.split('-');
                 return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
             }
             
-            // Para outros formatos, usar o construtor padrão
+            // Se for uma string ISO ou outro formato de data
+            if (typeof dateString === 'string') {
+                // Verificar se é ISO string com timezone
+                if (dateString.includes('T') && dateString.includes('Z')) {
+                    return new Date(dateString);
+                }
+                // Assumir que é uma data local
+                return new Date(dateString + 'T00:00:00');
+            }
+            
+            // Para outros casos, usar o construtor padrão
             return new Date(dateString);
         }
 
-        // Função para formatar data como string local
+        // Função para formatar data como string local - CORRIGIDA
         function formatLocalDate(date) {
             if (!date) return '';
             
-            const localDate = new Date(date);
+            const localDate = createLocalDate(date);
             return localDate.toLocaleDateString('pt-BR');
         }
 
-        // Função para formatar data para input type="date"
+        // Função para formatar data para input type="date" - CORRIGIDA
         function formatDateForInput(date) {
             if (!date) return '';
             
-            const localDate = new Date(date);
-            return localDate.toISOString().split('T')[0];
+            let localDate;
+            if (typeof date === 'string' && date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                // Se já está no formato YYYY-MM-DD, retornar como está
+                return date;
+            }
+            
+            localDate = createLocalDate(date);
+            const year = localDate.getFullYear();
+            const month = String(localDate.getMonth() + 1).padStart(2, '0');
+            const day = String(localDate.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
 
-        // Função para obter data/hora atual em formato consistente
+        // Função para obter data/hora atual - CORRIGIDA para manter consistência
         function getCurrentDateTime() {
-            return new Date().toISOString();
+            const now = new Date();
+            return now.toISOString();
         }
 
-        // Função para comparar datas ignorando horário
+        // Função para obter data local atual como string YYYY-MM-DD - NOVA
+        function getCurrentDateLocal() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Função para comparar datas ignorando horário - CORRIGIDA
         function isSameDate(date1, date2) {
             if (!date1 || !date2) return false;
             
-            const d1 = new Date(date1);
-            const d2 = new Date(date2);
+            const d1 = createLocalDate(date1);
+            const d2 = createLocalDate(date2);
             
             return d1.getFullYear() === d2.getFullYear() &&
                    d1.getMonth() === d2.getMonth() &&
                    d1.getDate() === d2.getDate();
         }
 
-        // Função para comparar mês/ano
+        // Função para comparar mês/ano - CORRIGIDA
         function isSameMonth(date, monthString) {
             if (!date || !monthString) return false;
             
-            const d = new Date(date);
+            const d = createLocalDate(date);
             const [year, month] = monthString.split('-');
             
             return d.getFullYear() === parseInt(year) && 
                    (d.getMonth() + 1) === parseInt(month);
         }
+
+        // ================================
+        // RESTO DO CÓDIGO
+        // ================================
 
         // Novas funções de filtro de data
         function setFiltroData(tipo) {
@@ -1898,11 +1985,14 @@ Estamos sempre à disposição! 🙏`,
             if (tipo === 'customDay') {
                 document.getElementById('customDayFilter').classList.remove('hidden');
                 // Definir data de hoje como padrão
-                document.getElementById('filtroDataEspecifica').value = formatDateForInput(new Date());
+                document.getElementById('filtroDataEspecifica').value = getCurrentDateLocal();
             } else if (tipo === 'customMonth') {
                 document.getElementById('customMonthFilter').classList.remove('hidden');
                 // Definir mês atual como padrão
-                document.getElementById('filtroMesEspecifico').value = new Date().toISOString().substring(0, 7);
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                document.getElementById('filtroMesEspecifico').value = `${year}-${month}`;
             }
             
             filtroDataAtual = tipo;
@@ -1914,21 +2004,21 @@ Estamos sempre à disposição! 🙏`,
         }
 
         function filtrarPedidosPorData(pedidosList) {
-            const hoje = new Date();
+            const hoje = getCurrentDateLocal();
             
             switch (filtroDataAtual) {
                 case 'hoje':
-                    return pedidosList.filter(p => isSameDate(p.data, hoje));
+                    return pedidosList.filter(p => isSameDate(p.dataIda, hoje));
                 
                 case 'customDay':
                     const dataEspecifica = document.getElementById('filtroDataEspecifica').value;
                     if (!dataEspecifica) return pedidosList;
-                    return pedidosList.filter(p => isSameDate(p.data, dataEspecifica));
+                    return pedidosList.filter(p => isSameDate(p.dataIda, dataEspecifica));
                 
                 case 'customMonth':
                     const mesEspecifico = document.getElementById('filtroMesEspecifico').value;
                     if (!mesEspecifico) return pedidosList;
-                    return pedidosList.filter(p => isSameMonth(p.data, mesEspecifico));
+                    return pedidosList.filter(p => isSameMonth(p.dataIda, mesEspecifico));
                 
                 case 'todos':
                 default:
@@ -2140,6 +2230,33 @@ Estamos sempre à disposição! 🙏`,
             }
         }
 
+        // NOVA FUNÇÃO: Salvar configurações no Firebase
+        async function saveConfiguracoesFirebase() {
+            if (isOfflineMode || !firebaseConnected || !currentUser) {
+                console.log('📱 Salvando configurações localmente (modo offline)');
+                saveConfiguracoes();
+                return;
+            }
+
+            try {
+                const { doc, setDoc } = window.firebaseUtils;
+                await setDoc(doc(window.db, 'configuracoes', 'global'), {
+                    ...configuracoes,
+                    updatedBy: currentUser.email,
+                    updatedAt: getCurrentDateTime()
+                });
+                
+                // Também salvar localmente como backup
+                saveConfiguracoes();
+                
+                console.log('✅ Configurações salvas no Firebase');
+            } catch (error) {
+                console.error('❌ Erro ao salvar configurações no Firebase:', error);
+                // Em caso de erro, salvar localmente
+                saveConfiguracoes();
+            }
+        }
+
         function saveLocalData() {
             try {
                 localStorage.setItem(STORAGE_KEYS.clientes, JSON.stringify(clientes));
@@ -2280,14 +2397,18 @@ Estamos sempre à disposição! 🙏`,
             document.getElementById('splashScreen').classList.add('hidden');
             document.getElementById('mainApp').classList.remove('hidden');
             
-            const today = formatDateForInput(new Date());
+            const today = getCurrentDateLocal();
             document.getElementById('dataIda').value = today;
             document.getElementById('filtroDataEspecifica').value = today;
-            document.getElementById('filtroMesEspecifico').value = new Date().toISOString().substring(0, 7);
+            
+            const currentDate = new Date();
+            const year = currentDate.getFullYear();
+            const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+            document.getElementById('filtroMesEspecifico').value = `${year}-${month}`;
             
             // Definir datas padrão para relatórios
             document.getElementById('dataDiario').value = today;
-            document.getElementById('mesMensal').value = new Date().toISOString().substring(0, 7);
+            document.getElementById('mesMensal').value = `${year}-${month}`;
             
             setupPaymentModal();
             setupEditClienteModal();
@@ -2295,7 +2416,7 @@ Estamos sempre à disposição! 🙏`,
             setupAddClienteModal();
             setupConfigModal();
             setupConfirmDetailsModal();
-            setupReceiveGalaoModal(); // Nova função para o modal de recebimento
+            setupReceiveGalaoModal();
             setupEditPedidoModal();
             setupEmprestimoModal();
             setupDataInputMasks();
@@ -2306,7 +2427,60 @@ Estamos sempre à disposição! 🙏`,
             setupPedidoBusca();
             setupPDFButton();
             setupTelefoneInputMasks();
+            setupAutocompleteEnhancements(); // NOVA FUNÇÃO
             calcularValorTotal();
+        }
+
+        // NOVA FUNÇÃO: Melhorar autocomplete para dispositivos móveis
+        function setupAutocompleteEnhancements() {
+            // Lista de todos os campos que usam autocomplete
+            const autocompleteFields = [
+                'clientePedidoInput',
+                'emprestimoCliente', 
+                'buscaCliente',
+                'buscaPedido',
+                'clienteRelatorioInput'
+            ];
+
+            autocompleteFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    // Adicionar this.select() no focus
+                    field.addEventListener('focus', function() {
+                        this.select();
+                        
+                        // Para dispositivos móveis, forçar a exibição do autocomplete
+                        if ('ontouchstart' in window) {
+                            setTimeout(() => {
+                                this.dispatchEvent(new Event('input', { bubbles: true }));
+                            }, 100);
+                        }
+                    });
+
+                    // Melhorar comportamento no mobile
+                    field.addEventListener('touchstart', function() {
+                        this.focus();
+                    });
+
+                    // Garantir que o autocomplete funcione corretamente
+                    field.setAttribute('autocomplete', 'off');
+                    field.setAttribute('autocorrect', 'off');
+                    field.setAttribute('autocapitalize', 'off');
+                    field.setAttribute('spellcheck', 'false');
+                }
+            });
+
+            // Melhorar comportamento do datalist em dispositivos móveis
+            document.addEventListener('click', function(e) {
+                if (e.target.matches('input[list]')) {
+                    const input = e.target;
+                    const list = document.getElementById(input.getAttribute('list'));
+                    if (list) {
+                        // Disparar evento para mostrar opções
+                        input.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                }
+            });
         }
 
         function setupPDFButton() {
@@ -2391,6 +2565,7 @@ Estamos sempre à disposição! 🙏`,
                 if (pedidosListener) pedidosListener();
                 if (estoqueListener) estoqueListener();
                 if (emprestimosListener) emprestimosListener();
+                if (configuracoesListener) configuracoesListener();
                 
                 clientes = [];
                 pedidos = [];
@@ -2404,7 +2579,7 @@ Estamos sempre à disposição! 🙏`,
             }
         }
 
-        // Sistema de Fidelidade - MODIFICADO: Verificar fidelidade no momento de criar pedido
+        // Sistema de Fidelidade
         function contarGaloesPagos(clienteId) {
             return pedidos.filter(p => p.clienteId === clienteId && !p.isGratis)
                           .reduce((total, pedido) => total + (pedido.quantidade || 1), 0);
@@ -2420,19 +2595,15 @@ Estamos sempre à disposição! 🙏`,
             const galoesGratis = contarGaloesGratisRecebidos(clienteId);
             const galoesParaGratis = configuracoes.galoesParaGratis || 10;
             
-            // Quantos galões grátis o cliente deveria ter baseado nos pagos
             const galoesGratisMerecidos = Math.floor(galoesPagos / galoesParaGratis);
             
-            // Quantos galões grátis ainda faltam para o cliente
             return Math.max(0, galoesGratisMerecidos - galoesGratis);
         }
 
-        // NOVO: Função para verificar e criar pedidos grátis quando o cliente tiver crédito suficiente
         async function verificarECriarPedidosGratis(clienteId) {
             const galoesGratisDevidos = verificarFidelidade(clienteId);
             
             if (galoesGratisDevidos > 0) {
-                // Criar pedidos grátis automaticamente
                 for (let i = 0; i < galoesGratisDevidos; i++) {
                     await criarPedidoGratis(clienteId);
                 }
@@ -2447,26 +2618,25 @@ Estamos sempre à disposição! 🙏`,
             if (!cliente) return;
 
             try {
-                // Criar pedido grátis
                 const pedidoGratis = {
                     clienteId: clienteId,
-                    dataIda: formatDateForInput(new Date()),
+                    dataIda: getCurrentDateLocal(), // CORRIGIDO: usar data local
                     quantidade: 1,
                     quantidadeVazios: 0,
                     valorTotal: 0,
-                    isGratis: true, // Marca que é um pedido grátis
+                    isGratis: true,
                     galoesEntregues: [],
                     galoesVindos: [],
                     detalhesConfirmados: false,
                     galoesRecebidos: false,
-                    pago: true, // Já considerado como pago (grátis)
+                    pago: true,
                     formaPagamento: 'Grátis (Fidelidade)',
-                    dataPagamento: getCurrentDateTime()
+                    dataPagamento: getCurrentDateTime(),
+                    observacoes: ''
                 };
 
                 const pedidoId = await salvarPedido(pedidoGratis);
                 
-                // Atualizar última compra do cliente
                 await atualizarCliente(clienteId, {
                     ultimaCompra: getCurrentDateTime()
                 });
@@ -2602,7 +2772,6 @@ Estamos sempre à disposição! 🙏`,
                     return cliente && cliente.nome.toLowerCase().includes(termo);
                 });
 
-                // Aplicar filtro de data também
                 pedidosFiltrados = filtrarPedidosPorData(pedidosFiltrados);
                 
                 updateListaPedidosFiltered(pedidosFiltrados);
@@ -2723,7 +2892,6 @@ Estamos sempre à disposição! 🙏`,
                     
                     await salvarEmprestimo(emprestimo);
                     
-                    // Atualizar estoque - remover galão emprestado
                     const currentAmount = estoque[currentEmprestimoData.dataGalao]?.[tipo] || 0;
                     if (currentAmount > 0) {
                         const updateData = {};
@@ -2752,12 +2920,10 @@ Estamos sempre à disposição! 🙏`,
             });
         }
 
-        // MODIFICADO: Função para emprestar galão diretamente de uma data específica
         function emprestarGalaoDetalhado(dataGalao) {
             const stockData = estoque[dataGalao];
             if (!stockData) return;
             
-            // Verificar se há galões disponíveis (cheios ou vazios)
             if ((stockData.cheio || 0) === 0 && (stockData.vazio || 0) === 0) {
                 alert('⚠️ Não há galões disponíveis para emprestar nesta data!');
                 return;
@@ -2813,7 +2979,6 @@ Estamos sempre à disposição! 🙏`,
                     dataDevolucao: getCurrentDateTime()
                 });
                 
-                // Retornar galão ao estoque
                 const currentAmount = estoque[emprestimo.dataGalao]?.[emprestimo.tipo] || 0;
                 const currentEmprestado = estoque[emprestimo.dataGalao]?.emprestado || 0;
                 
@@ -3001,12 +3166,20 @@ Estamos sempre à disposição! 🙏`,
             if (isOfflineMode) {
                 const pedidoIndex = pedidos.findIndex(p => p.id === pedidoId);
                 if (pedidoIndex !== -1) {
+                    // CORRIGIDO: Preservar data original ao editar pedido
+                    const dataOriginal = pedidos[pedidoIndex].dataIda;
                     pedidos[pedidoIndex] = { ...pedidos[pedidoIndex], ...dadosAtualizacao };
+                    
+                    // Se a data foi modificada explicitamente na edição, manter a nova data
+                    // Caso contrário, preservar a data original
+                    if (!dadosAtualizacao.hasOwnProperty('dataIda')) {
+                        pedidos[pedidoIndex].dataIda = dataOriginal;
+                    }
+                    
                     addToPendingSync('update_pedido', 'pedidos', { id: pedidoId, updates: dadosAtualizacao });
                     updateListaPedidos();
                     updateDashboard();
                     
-                    // Atualizar informações do cliente se o pedido foi finalizado
                     if (dadosAtualizacao.pago) {
                         const pedido = pedidos[pedidoIndex];
                         const clienteIndex = clientes.findIndex(c => c.id === pedido.clienteId);
@@ -3033,7 +3206,6 @@ Estamos sempre à disposição! 🙏`,
                     updatedAt: getCurrentDateTime()
                 });
                 
-                // Atualizar informações do cliente no Firebase também
                 if (dadosAtualizacao.pago) {
                     const pedido = pedidos.find(p => p.id === pedidoId);
                     if (pedido) {
@@ -3191,7 +3363,6 @@ Estamos sempre à disposição! 🙏`,
                 }
             });
 
-            // Máscara para campos de data de galão nos modais
             document.addEventListener('input', function(e) {
                 if (e.target.classList.contains('data-galao-input')) {
                     let value = e.target.value.replace(/\D/g, '');
@@ -3212,7 +3383,6 @@ Estamos sempre à disposição! 🙏`,
                     input.addEventListener('input', function(e) {
                         let value = e.target.value.replace(/\D/g, '');
                         
-                        // Formatação: (XX) 99999-9999
                         if (value.length >= 2) {
                             value = '(' + value.substring(0, 2) + ') ' + value.substring(2);
                         }
@@ -3227,6 +3397,7 @@ Estamos sempre à disposição! 🙏`,
                         if (e.target.value === '') {
                             e.target.value = '(33) ';
                         }
+                        e.target.select(); // ADICIONADO: Selecionar texto no focus
                     });
                 }
             });
@@ -3246,7 +3417,6 @@ Estamos sempre à disposição! 🙏`,
                     (mostrandoInativos || !cliente.inativo)
                 );
                 
-                // Filtrar lista exibida
                 const lista = document.getElementById('listaClientes');
                 lista.innerHTML = '';
                 
@@ -3255,7 +3425,6 @@ Estamos sempre à disposição! 🙏`,
                     return;
                 }
                 
-                // Mostrar clientes filtrados na lista principal
                 clientesFiltrados.forEach(cliente => {
                     const clienteElement = createClienteElement(cliente);
                     lista.appendChild(clienteElement);
@@ -3355,7 +3524,6 @@ Estamos sempre à disposição! 🙏`,
                     await salvarCliente(dadosCliente);
                     modal.classList.add('hidden');
                     form.reset();
-                    // Reset telefone default
                     document.getElementById('addTelefoneCliente').value = '(33) ';
                     alert('✅ Cliente adicionado com sucesso!');
                     
@@ -3463,7 +3631,7 @@ Estamos sempre à disposição! 🙏`,
             const exportarBtn = document.getElementById('exportarDados');
             const confirmarImportBtn = document.getElementById('confirmarImport');
             
-            salvarBtn.addEventListener('click', () => {
+            salvarBtn.addEventListener('click', async () => {
                 configuracoes.diasNotificacao = parseInt(document.getElementById('configDiasNotificacao').value) || 7;
                 configuracoes.precoGalao = parseFloat(document.getElementById('configPrecoGalao').value) || 15.00;
                 configuracoes.precoGalaoVazio = parseFloat(document.getElementById('configPrecoGalaoVazio').value) || 25.00;
@@ -3471,15 +3639,17 @@ Estamos sempre à disposição! 🙏`,
                 configuracoes.mensagemPedido = document.getElementById('configMensagemPedido').value;
                 configuracoes.mensagemGratis = document.getElementById('configMensagemGratis').value;
                 configuracoes.mensagemNotificacao = document.getElementById('configMensagemNotificacao').value;
-                saveConfiguracoes();
+                
+                // ATUALIZADO: Salvar no Firebase
+                await saveConfiguracoesFirebase();
+                
                 modal.classList.add('hidden');
                 alert('✅ Configurações salvas com sucesso!');
                 
-                // Recalcular valor total se necessário
                 calcularValorTotal();
             });
             
-            restaurarBtn.addEventListener('click', () => {
+            restaurarBtn.addEventListener('click', async () => {
                 if (confirm('⚠️ Tem certeza que deseja restaurar as configurações padrão?')) {
                     configuracoes = {
                         mensagemPedido: `🪣 *Comercial Rocha*
@@ -3526,7 +3696,9 @@ Estamos sempre à disposição! 🙏`,
                     document.getElementById('configMensagemPedido').value = configuracoes.mensagemPedido;
                     document.getElementById('configMensagemGratis').value = configuracoes.mensagemGratis;
                     document.getElementById('configMensagemNotificacao').value = configuracoes.mensagemNotificacao;
-                    saveConfiguracoes();
+                    
+                    // ATUALIZADO: Salvar no Firebase
+                    await saveConfiguracoesFirebase();
                     alert('✅ Configurações restauradas para o padrão!');
                 }
             });
@@ -3560,7 +3732,7 @@ Estamos sempre à disposição! 🙏`,
             const url = URL.createObjectURL(dataBlob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `comercial-rocha-backup-${formatDateForInput(new Date())}.json`;
+            link.download = `comercial-rocha-backup-${getCurrentDateLocal()}.json`;
             link.click();
             URL.revokeObjectURL(url);
             
@@ -3592,9 +3764,8 @@ Estamos sempre à disposição! 🙏`,
                     if (dados.configuracoes) configuracoes = dados.configuracoes;
                     
                     saveLocalData();
-                    saveConfiguracoes();
+                    await saveConfiguracoesFirebase(); // ATUALIZADO: Salvar configurações no Firebase
                     
-                    // Atualizar interface
                     updateListaClientes();
                     updateListaPedidos();
                     updateVisualizacaoEstoque();
@@ -3620,7 +3791,7 @@ Estamos sempre à disposição! 🙏`,
         function setupFirebaseListeners() {
             if (!window.db || !window.firebaseUtils || !currentUser || isOfflineMode) return;
 
-            const { collection, onSnapshot, orderBy, query } = window.firebaseUtils;
+            const { collection, onSnapshot, orderBy, query, doc } = window.firebaseUtils;
 
             const clientesRef = collection(window.db, 'clientes');
             clientesListener = onSnapshot(clientesRef, (snapshot) => {
@@ -3681,6 +3852,19 @@ Estamos sempre à disposição! 🙏`,
             }, (error) => {
                 console.error('❌ Erro ao escutar empréstimos:', error);
                 updateConnectionStatus('❌ Erro', 'error');
+            });
+
+            // NOVO: Listener para configurações
+            const configRef = doc(window.db, 'configuracoes', 'global');
+            configuracoesListener = onSnapshot(configRef, (docSnapshot) => {
+                if (docSnapshot.exists()) {
+                    const configData = docSnapshot.data();
+                    configuracoes = { ...configuracoes, ...configData };
+                    saveConfiguracoes(); // Salvar localmente também
+                    console.log('✅ Configurações atualizadas do Firebase');
+                }
+            }, (error) => {
+                console.error('❌ Erro ao escutar configurações:', error);
             });
         }
 
@@ -3812,7 +3996,6 @@ Estamos sempre à disposição! 🙏`,
                 
                 const selectedGaloes = [];
                 
-                // Coletar galões selecionados
                 document.querySelectorAll('#galaoSelectionList select').forEach(select => {
                     if (select.value) {
                         selectedGaloes.push(select.value);
@@ -3825,13 +4008,11 @@ Estamos sempre à disposição! 🙏`,
                 }
                 
                 try {
-                    // Atualizar pedido com os galões selecionados e marcar como enviado
                     await atualizarPedido(currentPedidoForDetails.id, {
                         galoesEntregues: selectedGaloes,
                         detalhesConfirmados: true
                     });
                     
-                    // Atualizar estoque - remover galões cheios
                     for (const dataGalao of selectedGaloes) {
                         const currentCheio = estoque[dataGalao]?.cheio || 0;
                         const currentCliente = estoque[dataGalao]?.cliente || 0;
@@ -3860,7 +4041,6 @@ Estamos sempre à disposição! 🙏`,
             });
         }
 
-        // Novo modal para receber galões vindos do cliente
         function setupReceiveGalaoModal() {
             const modal = document.getElementById('receiveGalaoModal');
             const confirmBtn = document.getElementById('confirmReceiveBtn');
@@ -3871,7 +4051,6 @@ Estamos sempre à disposição! 🙏`,
                 
                 const galoesVindos = [];
                 
-                // Coletar galões vindos
                 document.querySelectorAll('#galaoVindosList input').forEach(input => {
                     if (input.value.trim() && isValidDataFormat(input.value.trim())) {
                         galoesVindos.push(input.value.trim());
@@ -3879,13 +4058,11 @@ Estamos sempre à disposição! 🙏`,
                 });
                 
                 try {
-                    // Atualizar pedido com os galões vindos
                     await atualizarPedido(currentPedidoForReceive.id, {
                         galoesVindos: galoesVindos,
                         galoesRecebidos: true
                     });
                     
-                    // Adicionar galões vindos como vazios - Processados individualmente
                     const galoesVindosContados = {};
                     galoesVindos.forEach(dataGalao => {
                         galoesVindosContados[dataGalao] = (galoesVindosContados[dataGalao] || 0) + 1;
@@ -3928,7 +4105,6 @@ Estamos sempre à disposição! 🙏`,
                 if (!currentEditingPedido) return;
                 
                 try {
-                    // Coletar galões entregues
                     const galoesEntregues = [];
                     document.querySelectorAll('#editGaloesEntregues input').forEach(input => {
                         if (input.value.trim() && isValidDataFormat(input.value.trim())) {
@@ -3936,7 +4112,6 @@ Estamos sempre à disposição! 🙏`,
                         }
                     });
 
-                    // Coletar galões vindos
                     const galoesVindos = [];
                     document.querySelectorAll('#editGaloesVindos input').forEach(input => {
                         if (input.value.trim() && isValidDataFormat(input.value.trim())) {
@@ -3945,12 +4120,13 @@ Estamos sempre à disposição! 🙏`,
                     });
                     
                     const dadosAtualizacao = {
-                        dataIda: document.getElementById('editPedidoData').value,
+                        dataIda: document.getElementById('editPedidoData').value, // CORRIGIDO: Manter a data selecionada
                         quantidade: parseInt(document.getElementById('editPedidoQuantidade').value),
                         quantidadeVazios: parseInt(document.getElementById('editPedidoQuantidadeVazios').value) || 0,
                         valorTotal: parseFloat(document.getElementById('editPedidoValor').value),
                         galoesEntregues: galoesEntregues,
-                        galoesVindos: galoesVindos
+                        galoesVindos: galoesVindos,
+                        observacoes: document.getElementById('editPedidoObservacoes').value
                     };
                     
                     await atualizarPedido(currentEditingPedido, dadosAtualizacao);
@@ -4040,7 +4216,6 @@ Estamos sempre à disposição! 🙏`,
                             dataPagamento: getCurrentDateTime()
                         });
                         
-                        // Atualizar última compra do cliente
                         const cliente = clientes.find(c => c.id == currentPedidoForPayment.clienteId);
                         if (cliente) {
                             await atualizarCliente(cliente.id, {
@@ -4100,7 +4275,6 @@ Estamos sempre à disposição! 🙏`,
             const lista = document.getElementById('listaClientes');
             lista.innerHTML = '';
             
-            // Filtrar clientes baseado no toggle de inativos
             const clientesFiltrados = clientes.filter(cliente => {
                 if (mostrandoInativos) {
                     return cliente.inativo === true;
@@ -4205,7 +4379,6 @@ Estamos sempre à disposição! 🙏`,
             const datalist = document.getElementById('clientesList');
             datalist.innerHTML = '';
             
-            // Carregar apenas clientes ativos
             clientes.filter(c => !c.inativo).forEach(cliente => {
                 const option = document.createElement('option');
                 option.value = cliente.nome;
@@ -4240,29 +4413,29 @@ Estamos sempre à disposição! 🙏`,
                 
                 const pedido = {
                     clienteId: clienteId,
-                    dataIda: document.getElementById('dataIda').value,
+                    dataIda: document.getElementById('dataIda').value, // CORRIGIDO: Usar valor do campo como está
                     quantidade: quantidade,
                     quantidadeVazios: quantidadeVazios,
                     valorTotal: valorTotal,
-                    isGratis: false, // Pedidos normais não são grátis
+                    isGratis: false,
                     galoesEntregues: [],
                     galoesVindos: [],
                     detalhesConfirmados: false,
                     galoesRecebidos: false,
                     pago: false,
                     formaPagamento: null,
-                    dataPagamento: null
+                    dataPagamento: null,
+                    observacoes: ''
                 };
                 
                 const pedidoId = await salvarPedido(pedido);
                 
-                // NOVO: Verificar e criar pedidos grátis automaticamente
                 await verificarECriarPedidosGratis(clienteId);
                 
                 this.reset();
                 document.getElementById('clienteInfo').classList.add('hidden');
                 document.getElementById('clientePedidoInput').value = '';
-                document.getElementById('dataIda').value = formatDateForInput(new Date());
+                document.getElementById('dataIda').value = getCurrentDateLocal(); // CORRIGIDO: Resetar para data atual
                 document.getElementById('quantidadeGaloes').value = '1';
                 document.getElementById('quantidadeGaloesVazios').value = '0';
                 calcularValorTotal();
@@ -4295,7 +4468,6 @@ Estamos sempre à disposição! 🙏`,
                 tipoPedido += ` - R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}`;
             }
             
-            // Escolher mensagem baseada no tipo de pedido
             let mensagem = pedido.isGratis ? configuracoes.mensagemGratis : configuracoes.mensagemPedido;
             mensagem = mensagem.replace('{nome}', cliente.nome);
             mensagem = mensagem.replace('{tipo_pedido}', tipoPedido);
@@ -4312,7 +4484,6 @@ Estamos sempre à disposição! 🙏`,
             const cliente = clientes.find(c => c.id == pedido.clienteId);
             currentPedidoForDetails = pedido;
             
-            // Preencher informações do pedido
             const pedidoInfo = document.getElementById('pedidoDetailsInfo');
             pedidoInfo.innerHTML = `
                 <p><strong>Cliente:</strong> ${cliente ? cliente.nome : 'N/A'}</p>
@@ -4321,7 +4492,6 @@ Estamos sempre à disposição! 🙏`,
                 <p><strong>Valor Total:</strong> ${pedido.isGratis ? 'GRÁTIS' : `R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}`}</p>
             `;
             
-            // Preencher lista de galões disponíveis
             const galaoList = document.getElementById('galaoSelectionList');
             galaoList.innerHTML = '';
             
@@ -4332,14 +4502,12 @@ Estamos sempre à disposição! 🙏`,
             if (galoesDisponiveis.length === 0) {
                 galaoList.innerHTML = '<p class="text-red-600">Nenhum galão disponível no estoque!</p>';
             } else {
-                // Pegar último galão do cliente como referência
                 const ultimoGalaoCliente = cliente ? getClienteUltimoGalao(cliente.id) : null;
                 
                 for (let i = 0; i < pedido.quantidade; i++) {
                     const div = document.createElement('div');
                     div.className = 'border border-gray-200 rounded-lg p-4';
                     
-                    // Selecionar galão mais próximo da data do cliente
                     const galaoSugerido = ultimoGalaoCliente ? 
                         getGalaoMaisProximo(ultimoGalaoCliente, galoesDisponiveis) : 
                         galoesDisponiveis[0];
@@ -4365,7 +4533,6 @@ Estamos sempre à disposição! 🙏`,
             document.getElementById('confirmDetailsModal').classList.remove('hidden');
         }
 
-        // Nova função para receber galões
         function receberGaloes(pedidoId) {
             const pedido = pedidos.find(p => p.id === pedidoId);
             if (!pedido) return;
@@ -4373,7 +4540,6 @@ Estamos sempre à disposição! 🙏`,
             const cliente = clientes.find(c => c.id == pedido.clienteId);
             currentPedidoForReceive = pedido;
             
-            // Preencher informações do pedido
             const receiveInfo = document.getElementById('receiveDetailsInfo');
             receiveInfo.innerHTML = `
                 <p><strong>Cliente:</strong> ${cliente ? cliente.nome : 'N/A'}</p>
@@ -4381,19 +4547,17 @@ Estamos sempre à disposição! 🙏`,
                 <p><strong>Galões enviados:</strong> ${pedido.galoesEntregues ? pedido.galoesEntregues.join(', ') : 'Nenhum'}</p>
             `;
             
-            // Limpar e preparar a lista de galões vindos
             const galaoVindosList = document.getElementById('galaoVindosList');
             galaoVindosList.innerHTML = '';
             
-            // Pegar último galão do cliente como referência
             const ultimoGalaoCliente = cliente ? getClienteUltimoGalao(cliente.id) : '';
             
-            // Adicionar campos padrão baseado na quantidade
             for (let i = 0; i < (pedido.quantidade || 1); i++) {
                 const div = document.createElement('div');
                 div.className = 'flex items-center gap-2';
                 div.innerHTML = `
-                    <input type="text" class="data-galao-input flex-1" placeholder="MM-AAAA" maxlength="7" value="${ultimoGalaoCliente || ''}">
+                    <input type="text" class="data-galao-input flex-1" placeholder="MM-AAAA" maxlength="7" value="${ultimoGalaoCliente || ''}" 
+                           ${i === 0 ? 'onchange="updateOtherGalaoInputs(this.value)"' : ''}>
                     <button type="button" class="btn-delete-estoque" onclick="this.parentElement.remove()">🗑️</button>
                 `;
                 galaoVindosList.appendChild(div);
@@ -4402,12 +4566,21 @@ Estamos sempre à disposição! 🙏`,
             document.getElementById('receiveGalaoModal').classList.remove('hidden');
         }
 
+        // NOVA FUNÇÃO: Atualizar outros campos quando o primeiro é alterado
+        function updateOtherGalaoInputs(firstValue) {
+            const inputs = document.querySelectorAll('#galaoVindosList input[type="text"]');
+            inputs.forEach((input, index) => {
+                if (index > 0) { // Pular o primeiro input
+                    input.value = firstValue;
+                }
+            });
+        }
+
         function handleGalaoEstoqueChange(select) {
             const index = select.dataset.index;
             const selectedValue = select.value;
             
             if (index === '0') {
-                // Se for o primeiro galão, auto-selecionar os outros
                 document.querySelectorAll('.galao-estoque-select').forEach((otherSelect, idx) => {
                     if (idx > 0) {
                         otherSelect.value = selectedValue;
@@ -4424,12 +4597,12 @@ Estamos sempre à disposição! 🙏`,
             currentEditingPedido = pedidoId;
             
             document.getElementById('editPedidoCliente').value = cliente ? cliente.nome : 'N/A';
-            document.getElementById('editPedidoData').value = formatDateForInput(pedido.dataIda);
+            document.getElementById('editPedidoData').value = formatDateForInput(pedido.dataIda); // CORRIGIDO: Manter data original
             document.getElementById('editPedidoQuantidade').value = pedido.quantidade || 1;
             document.getElementById('editPedidoQuantidadeVazios').value = pedido.quantidadeVazios || 0;
             document.getElementById('editPedidoValor').value = pedido.valorTotal || 0;
+            document.getElementById('editPedidoObservacoes').value = pedido.observacoes || '';
             
-            // Preencher galões entregues
             const galoesEntreguesContainer = document.getElementById('editGaloesEntregues');
             galoesEntreguesContainer.innerHTML = '';
             if (pedido.galoesEntregues && pedido.galoesEntregues.length > 0) {
@@ -4444,7 +4617,6 @@ Estamos sempre à disposição! 🙏`,
                 });
             }
 
-            // Preencher galões vindos
             const galoesVindosContainer = document.getElementById('editGaloesVindos');
             galoesVindosContainer.innerHTML = '';
             if (pedido.galoesVindos && pedido.galoesVindos.length > 0) {
@@ -4474,7 +4646,6 @@ Estamos sempre à disposição! 🙏`,
                 (item.data.id === pedido.id || (item.action === 'add_pedido' && pedido.id.startsWith('offline_')))
             );
 
-            // Exibir datas dos galões
             let galoesInfo = '';
             if (pedido.galoesEntregues && pedido.galoesEntregues.length > 0) {
                 galoesInfo += `<p class="text-blue-600 dark:text-blue-400 mt-1 font-semibold">🏺 Galões entregues: ${pedido.galoesEntregues.join(', ')}</p>`;
@@ -4495,6 +4666,11 @@ Estamos sempre à disposição! 🙏`,
             } else {
                 quantidadeTexto += ` - R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}`;
             }
+
+            let observacoesHtml = '';
+            if (pedido.observacoes && pedido.observacoes.trim()) {
+                observacoesHtml = `<p class="text-gray-600 dark:text-gray-400 mt-1 font-semibold">💬 Obs: ${pedido.observacoes}</p>`;
+            }
             
             div.innerHTML = `
                 <div class="flex-1 mb-4 md:mb-0">
@@ -4508,6 +4684,7 @@ Estamos sempre à disposição! 🙏`,
                     </p>
                     <p class="text-gray-600 dark:text-gray-400 mt-1">📅 ${formatLocalDate(pedido.dataIda)}</p>
                     ${galoesInfo}
+                    ${observacoesHtml}
                     ${pedido.pago && pedido.formaPagamento ? `<p class="text-green-600 dark:text-green-400 mt-1 font-semibold">💰 ${pedido.formaPagamento}</p>` : ''}
                 </div>
                 <div class="flex flex-col items-end space-y-2">
@@ -4537,10 +4714,8 @@ Estamos sempre à disposição! 🙏`,
             
             const isAdmin = currentUser?.email === 'adm@comercialrocha.com';
             
-            // Ordenar pedidos por data mais recente primeiro
             let pedidosOrdenados = [...pedidos].sort((a, b) => new Date(b.data) - new Date(a.data));
             
-            // Aplicar filtro de data
             pedidosOrdenados = filtrarPedidosPorData(pedidosOrdenados);
             
             if (pedidosOrdenados.length === 0) {
@@ -4620,7 +4795,7 @@ Estamos sempre à disposição! 🙏`,
 
         function updateVisualizacaoEstoque() {
             const visual = document.getElementById('visualEstoque');
-            if (!visual) return; // Element might not exist
+            if (!visual) return;
             visual.innerHTML = '';
             
             if (Object.keys(estoque).length === 0) {
@@ -4661,10 +4836,9 @@ Estamos sempre à disposição! 🙏`,
             });
         }
 
-        // MODIFICADO: Adicionar botão de empréstimo na lista detalhada
         function updateEstoqueDetalhado() {
             const lista = document.getElementById('estoqueDetalhado');
-            if (!lista) return; // Element might not exist
+            if (!lista) return;
             lista.innerHTML = '';
             
             if (Object.keys(estoque).length === 0) {
@@ -4692,7 +4866,6 @@ Estamos sempre à disposição! 🙏`,
                         item.collection === 'estoque' && item.data.dataGalao === data
                     );
                     
-                    // Verificar se há galões disponíveis para emprestar
                     const galoesDisponiveis = (stockData.cheio || 0) + (stockData.vazio || 0);
                     
                     div.innerHTML = `
@@ -4844,12 +5017,11 @@ Estamos sempre à disposição! 🙏`,
         }
 
         function updateDashboard() {
-            // Contar apenas clientes ativos
             const clientesAtivos = clientes.filter(c => !c.inativo);
             document.getElementById('totalClientes').textContent = clientesAtivos.length;
             
-            const hoje = formatDateForInput(new Date());
-            const vendasHoje = pedidos.filter(p => isSameDate(p.data, hoje)).length;
+            const hoje = getCurrentDateLocal();
+            const vendasHoje = pedidos.filter(p => isSameDate(p.dataIda, hoje)).length;
             document.getElementById('vendasHoje').textContent = vendasHoje;
             
             const totalCheios = Object.values(estoque).reduce((total, stock) => total + (stock.cheio || 0), 0);
@@ -4874,7 +5046,6 @@ Estamos sempre à disposição! 🙏`,
             const agora = new Date();
             const diasLimite = configuracoes.diasNotificacao || 7;
             
-            // Considerar apenas clientes ativos
             const clientesParaNotificar = clientes.filter(cliente => {
                 if (cliente.inativo) return false;
                 if (!cliente.ultimaCompra) return true;
@@ -4954,7 +5125,7 @@ Estamos sempre à disposição! 🙏`,
                         alert('⚠️ Selecione uma data para o relatório diário!');
                         return;
                     }
-                    pedidosFiltrados = pedidos.filter(p => isSameDate(p.data, dataSelecionada));
+                    pedidosFiltrados = pedidos.filter(p => isSameDate(p.dataIda, dataSelecionada));
                     titulo = 'Relatório Diário - ' + formatLocalDate(dataSelecionada);
                     break;
                 case 'mensal':
@@ -4965,14 +5136,16 @@ Estamos sempre à disposição! 🙏`,
                     }
                     const [ano, mes] = mesSelecionado.split('-');
                     pedidosFiltrados = pedidos.filter(p => {
-                        const data = new Date(p.data);
-                        return data.getMonth() === parseInt(mes) - 1 && data.getFullYear() === parseInt(ano);
+                        return isSameMonth(p.dataIda, mesSelecionado);
                     });
                     titulo = 'Relatório Mensal - ' + new Date(parseInt(ano), parseInt(mes) - 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
                     break;
                 case 'anual':
                     const anoAtual = new Date().getFullYear();
-                    pedidosFiltrados = pedidos.filter(p => new Date(p.data).getFullYear() === anoAtual);
+                    pedidosFiltrados = pedidos.filter(p => {
+                        const dataIda = createLocalDate(p.dataIda);
+                        return dataIda.getFullYear() === anoAtual;
+                    });
                     titulo = 'Relatório Anual - ' + anoAtual;
                     break;
             }
@@ -4997,7 +5170,6 @@ Estamos sempre à disposição! 🙏`,
             const container = document.getElementById('resultadosRelatorio');
             const conteudo = document.getElementById('conteudoRelatorio');
             
-            // Armazenar dados para PDF
             currentRelatorioTitulo = titulo;
             currentRelatorioData = pedidosList;
             
@@ -5028,7 +5200,7 @@ Estamos sempre à disposição! 🙏`,
                         </div>
                         <div class="card-modern bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900 dark:to-red-800 p-6 text-center">
                             <div class="text-4xl mb-3">⏳</div>
-                            <h5 class="font-bold text-red-800 dark:text-red-200 text-lg">Pendentes</h5>
+							<h5 class="font-bold text-red-800 dark:text-red-200 text-lg">Pendentes</h5>
                             <p class="text-3xl font-bold text-red-900 dark:text-red-100">${totalPendente}</p>
                         </div>
                         <div class="card-modern bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900 dark:to-purple-800 p-6 text-center">
@@ -5067,22 +5239,23 @@ Estamos sempre à disposição! 🙏`,
                                         <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Valor</th>
                                         <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Status</th>
                                         <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Pagamento</th>
-                                        <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Galões</th>
+                                        <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Galões Entregues</th>
+                                        <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Galões Recebidos</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+								<tbody>
                 `;
                 
                 pedidosList.forEach(pedido => {
                     const cliente = clientes.find(c => c.id == pedido.clienteId);
-                    const galoesInfo = (pedido.galoesEntregues && pedido.galoesEntregues.length > 0) ? 
-                        `Entregues: ${pedido.galoesEntregues.join(', ')}` : 'Pendente';
-                    const galoesVindos = (pedido.galoesVindos && pedido.galoesVindos.length > 0) ? 
-                        ` | Vindo: ${pedido.galoesVindos.join(', ')}` : '';
+                    const galoesEntregues = (pedido.galoesEntregues && pedido.galoesEntregues.length > 0) ? 
+                        pedido.galoesEntregues.join(', ') : 'Pendente';
+                    const galoesRecebidos = (pedido.galoesVindos && pedido.galoesVindos.length > 0) ? 
+                        pedido.galoesVindos.join(', ') : '-';
                     
-                    html += `					
-						<tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
-                            <td class="border border-gray-300 dark:border-gray-600 p-4">${formatLocalDate(pedido.data)}</td>
+                    html += `                    
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                            <td class="border border-gray-300 dark:border-gray-600 p-4">${formatLocalDate(pedido.dataIda)}</td>
                             <td class="border border-gray-300 dark:border-gray-600 p-4 font-semibold">${cliente ? cliente.nome : 'N/A'}</td>
                             <td class="border border-gray-300 dark:border-gray-600 p-4">${pedido.quantidade || 1}</td>
                             <td class="border border-gray-300 dark:border-gray-600 p-4">${pedido.quantidadeVazios || 0}</td>
@@ -5101,7 +5274,10 @@ Estamos sempre à disposição! 🙏`,
                                 ${pedido.formaPagamento ? pedido.formaPagamento : '-'}
                             </td>
                             <td class="border border-gray-300 dark:border-gray-600 p-4 text-sm">
-                                ${galoesInfo}${galoesVindos}
+                                ${galoesEntregues}
+                            </td>
+                            <td class="border border-gray-300 dark:border-gray-600 p-4 text-sm">
+                                ${galoesRecebidos}
                             </td>
                         </tr>
                     `;
@@ -5121,15 +5297,13 @@ Estamos sempre à disposição! 🙏`,
                     return;
                 }
 
-                const doc = new window.jspdf.jsPDF('landscape'); // Modo paisagem para mais colunas
+                const doc = new window.jspdf.jsPDF('landscape');
                 
-                // Configurações
                 const margin = 15;
                 let yPosition = margin;
                 const pageWidth = doc.internal.pageSize.getWidth();
                 const pageHeight = doc.internal.pageSize.getHeight();
                 
-                // Cabeçalho moderno
                 doc.setFillColor(93, 92, 222);
                 doc.rect(0, 0, pageWidth, 25, 'F');
                 
@@ -5144,7 +5318,6 @@ Estamos sempre à disposição! 🙏`,
                 
                 yPosition = 35;
                 
-                // Título do relatório
                 doc.setTextColor(0, 0, 0);
                 doc.setFontSize(16);
                 doc.setFont('helvetica', 'bold');
@@ -5160,7 +5333,6 @@ Estamos sempre à disposição! 🙏`,
                     doc.setFontSize(12);
                     doc.text('Nenhum pedido encontrado para o período selecionado.', margin, yPosition);
                 } else {
-                    // Estatísticas resumidas em caixas coloridas
                     const totalVendas = pedidosList.length;
                     const totalPago = pedidosList.filter(p => p.pago).length;
                     const totalPendente = totalVendas - totalPago;
@@ -5169,10 +5341,9 @@ Estamos sempre à disposição! 🙏`,
                     const totalGaloesVazios = pedidosList.reduce((sum, p) => sum + (p.quantidadeVazios || 0), 0);
                     const totalGaloesGratis = pedidosList.filter(p => p.isGratis).reduce((sum, p) => sum + (p.quantidade || 1), 0);
                     
-                    // Cards de estatísticas
-                    const cardWidth = 38;
-                    const cardHeight = 20;
-                    const cardSpacing = 5;
+                    const cardWidth = 35;
+                    const cardHeight = 18;
+                    const cardSpacing = 3;
                     
                     const stats = [
                         { label: 'Total Vendas', value: totalVendas, color: [59, 130, 246] },
@@ -5188,55 +5359,52 @@ Estamos sempre à disposição! 🙏`,
                         const x = margin + (index % 7) * (cardWidth + cardSpacing);
                         const y = yPosition + Math.floor(index / 7) * (cardHeight + cardSpacing);
                         
-                        // Card background
                         doc.setFillColor(...stat.color);
                         doc.roundedRect(x, y, cardWidth, cardHeight, 3, 3, 'F');
                         
-                        // Text
                         doc.setTextColor(255, 255, 255);
-                        doc.setFontSize(8);
+                        doc.setFontSize(7);
                         doc.setFont('helvetica', 'normal');
-                        doc.text(stat.label, x + 2, y + 6);
+                        doc.text(stat.label, x + 2, y + 5);
                         
-                        doc.setFontSize(12);
+                        doc.setFontSize(10);
                         doc.setFont('helvetica', 'bold');
-                        doc.text(String(stat.value), x + 2, y + 14);
+                        doc.text(String(stat.value), x + 2, y + 12);
                     });
                     
-                    yPosition += 35;
+                    yPosition += 30;
                     
-                    // Preparar dados para a tabela
                     const tableData = pedidosList.map(pedido => {
                         const cliente = clientes.find(c => c.id == pedido.clienteId);
-                        const galoesInfo = (pedido.galoesEntregues && pedido.galoesEntregues.length > 0) ? 
+                        const galoesEntregues = (pedido.galoesEntregues && pedido.galoesEntregues.length > 0) ? 
                             pedido.galoesEntregues.join(', ') : 'Pendente';
-                        const galoesVindos = (pedido.galoesVindos && pedido.galoesVindos.length > 0) ? 
+                        const galoesRecebidos = (pedido.galoesVindos && pedido.galoesVindos.length > 0) ? 
                             pedido.galoesVindos.join(', ') : '-';
                         
                         return [
-                            formatLocalDate(pedido.data),
-                            cliente ? cliente.nome.substring(0, 20) : 'N/A',
+                            formatLocalDate(pedido.dataIda),
+                            cliente ? cliente.nome.substring(0, 18) : 'N/A',
                             `${(pedido.quantidade || 1)}`,
                             `${(pedido.quantidadeVazios || 0)}`,
                             pedido.isGratis ? 'GRÁTIS' : 'PAGO',
                             pedido.isGratis ? 'GRÁTIS' : `R$ ${(pedido.valorTotal || 0).toFixed(2)}`,
                             pedido.pago ? 'Pago' : 'Pendente',
-                            pedido.formaPagamento || '-',
-                            galoesInfo.substring(0, 15),
-                            galoesVindos.substring(0, 15)
+                            pedido.formaPagamento ? pedido.formaPagamento.substring(0, 12) : '-',
+                            galoesEntregues.length > 25 ? galoesEntregues.substring(0, 25) + '...' : galoesEntregues,
+                            galoesRecebidos.length > 25 ? galoesRecebidos.substring(0, 25) + '...' : galoesRecebidos
                         ];
                     });
                     
                     if (doc.autoTable) {
                         doc.setTextColor(0, 0, 0);
                         doc.autoTable({
-                            head: [['Data', 'Cliente', 'Água', 'Vazios', 'Tipo', 'Valor', 'Status', 'Pagamento', 'Entregues', 'Vindo']],
+                            head: [['Data', 'Cliente', 'Água', 'Vazios', 'Tipo', 'Valor', 'Status', 'Pagamento', 'Galões Entregues', 'Galões Recebidos']],
                             body: tableData,
                             startY: yPosition,
                             margin: { left: margin, right: margin },
                             styles: { 
-                                fontSize: 7,
-                                cellPadding: 2
+                                fontSize: 6,
+                                cellPadding: 1.5
                             },
                             headStyles: { 
                                 fillColor: [93, 92, 222],
@@ -5247,27 +5415,25 @@ Estamos sempre à disposição! 🙏`,
                                 fillColor: [248, 250, 252]
                             },
                             columnStyles: {
-                                0: { cellWidth: 20 },
-                                1: { cellWidth: 35 },
-                                2: { cellWidth: 15 },
-                                3: { cellWidth: 15 },
-                                4: { cellWidth: 20 },
-                                5: { cellWidth: 25 },
-                                6: { cellWidth: 20 },
-                                7: { cellWidth: 25 },
-                                8: { cellWidth: 30 },
-                                9: { cellWidth: 30 }
+                                0: { cellWidth: 18 },
+                                1: { cellWidth: 30 },
+                                2: { cellWidth: 12 },
+                                3: { cellWidth: 12 },
+                                4: { cellWidth: 15 },
+                                5: { cellWidth: 20 },
+                                6: { cellWidth: 15 },
+                                7: { cellWidth: 20 },
+                                8: { cellWidth: 35 },
+                                9: { cellWidth: 35 }
                             }
                         });
                     }
                 }
                 
-                // Rodapé moderno
                 const pageCount = doc.internal.getNumberOfPages();
                 for (let i = 1; i <= pageCount; i++) {
                     doc.setPage(i);
                     
-                    // Linha do rodapé
                     doc.setDrawColor(93, 92, 222);
                     doc.setLineWidth(1);
                     doc.line(margin, pageHeight - 20, pageWidth - margin, pageHeight - 20);
@@ -5280,8 +5446,7 @@ Estamos sempre à disposição! 🙏`,
                     doc.text(`Relatório: ${titulo}`, margin, pageHeight - 5);
                 }
                 
-                // Salvar PDF
-                const fileName = `${titulo.replace(/[^a-zA-Z0-9]/g, '_')}_${formatDateForInput(new Date())}.pdf`;
+                const fileName = `${titulo.replace(/[^a-zA-Z0-9]/g, '_')}_${getCurrentDateLocal()}.pdf`;
                 doc.save(fileName);
                 
                 alert('✅ PDF gerado com sucesso!');
@@ -5298,6 +5463,7 @@ Estamos sempre à disposição! 🙏`,
             if (estoqueListener) estoqueListener();
             if (emprestimosListener) emprestimosListener();
             if (authStateListener) authStateListener();
+            if (configuracoesListener) configuracoesListener();
         });
     </script>
 
