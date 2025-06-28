@@ -98,7 +98,7 @@ manifest-src 'self';
 worker-src 'self';
 upgrade-insecure-requests;
 block-all-mixed-content;
-">
+"> 
 
     <title>Comercial Rocha - Controle de Galões</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -110,53 +110,85 @@ block-all-mixed-content;
         // Try to load Firebase, but don't block the app if it fails
         try {
             const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js');
-            const { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, getDocs, onSnapshot, query, orderBy, where, setDoc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js');
-            const { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } = await import('https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js');
-            
-            // ⚠️ ATENÇÃO: Configure suas credenciais do Firebase aqui
-            const firebaseConfig = {
-                apiKey: "AIzaSyCvE9fE30JNt_w0bFCNcaIZvHCFr3ptZ6U",
-                authDomain: "comercialrocha-b9478.firebaseapp.com",
-                projectId: "comercialrocha-b9478",
-                storageBucket: "comercialrocha-b9478.firebasestorage.app",
-                messagingSenderId: "1010786167518",
-                appId: "1:1010786167518:web:5cbf6cb9b45e2924fef04f"
-            };
-            
-            // Initialize Firebase
-            const app = initializeApp(firebaseConfig);
-            const db = getFirestore(app);
-            const auth = getAuth(app);
-            
-            // Set persistence to local (persists for 10+ hours)
-            await setPersistence(auth, browserLocalPersistence);
-            
-            // Disponibilizar Firebase globalmente
-            window.firebaseApp = app;
-            window.db = db;
-            window.auth = auth;
-            window.firebaseUtils = {
-                collection,
-                addDoc,
-                updateDoc,
-                deleteDoc,
-                doc,
-                getDocs,
-                onSnapshot,
-                query,
-                orderBy,
-                where,
-                setDoc,
-                getDoc
-            };
-            window.authUtils = {
-                signInWithEmailAndPassword,
-                signOut,
-                onAuthStateChanged
-            };
-            
-            console.log('✅ Firebase carregado com sucesso');
-            window.firebaseLoaded = true;
+const {
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  getDocs,
+  onSnapshot,
+  query,
+  orderBy,
+  where,
+  setDoc,
+  getDoc,
+  enableNetwork,
+  disableNetwork
+} = await import('https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js');
+const {
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence
+} = await import('https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js');
+
+// ⚠️ Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyCvE9fE30JNt_w0bFCNcaIZvHCFr3ptZ6U",
+  authDomain: "comercialrocha-b9478.firebaseapp.com",
+  projectId: "comercialrocha-b9478",
+  storageBucket: "comercialrocha-b9478.appspot.com", // corrigido aqui
+  messagingSenderId: "1010786167518",
+  appId: "1:1010786167518:web:5cbf6cb9b45e2924fef04f"
+};
+
+// ✅ Inicializa Firebase
+const app = initializeApp(firebaseConfig);
+const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({
+    tabManager: persistentMultipleTabManager()
+  })
+});
+const auth = getAuth(app);
+
+// 🔐 Persistência de sessão
+await setPersistence(auth, browserLocalPersistence);
+
+// 🔄 Expondo para uso global
+window.firebaseApp = app;
+window.db = db;
+window.auth = auth;
+window.firebaseUtils = {
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  getDocs,
+  onSnapshot,
+  query,
+  orderBy,
+  where,
+  setDoc,
+  getDoc,
+  enableNetwork,
+  disableNetwork
+};
+window.authUtils = {
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+};
+
+console.log('✅ Firebase com persistência carregado com sucesso');
+window.firebaseLoaded = true;
+
         } catch (error) {
             console.warn('⚠️ Firebase não pôde ser carregado:', error);
             window.firebaseApp = null;
@@ -876,50 +908,156 @@ block-all-mixed-content;
             background: linear-gradient(135deg, #065f46, #047857) !important;
         }
 
-        /* Melhorias para autocomplete em dispositivos móveis */
-        input[list] {
+        /* NOVO: Estilos para o custom autocomplete que funciona no mobile */
+        .custom-autocomplete {
             position: relative;
-            z-index: 1;
+            width: 100%;
         }
 
-        /* Forçar autocomplete para aparecer abaixo do campo */
-        input::-webkit-calendar-picker-indicator {
-            display: none;
+        .autocomplete-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
         }
 
-        /* Melhorar dropdown do datalist */
-        datalist {
+        .autocomplete-input:focus {
+            border-color: #5D5CDE;
+            box-shadow: 0 0 0 3px rgba(93, 92, 222, 0.1);
+            outline: none;
+        }
+
+        .dark .autocomplete-input {
+            border-color: #4b5563;
+            background: #374151;
+            color: white;
+        }
+
+        .autocomplete-dropdown {
             position: absolute;
-            z-index: 9999;
-            max-height: 200px;
-            overflow-y: auto;
+            top: 100%;
+            left: 0;
+            right: 0;
             background: white;
             border: 1px solid #e5e7eb;
             border-radius: 8px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
         }
 
-        .dark datalist {
+        .dark .autocomplete-dropdown {
             background: #374151;
             border-color: #4b5563;
         }
 
-        /* Garantir que autocomplete funcione em dispositivos móveis */
-        @media (max-width: 768px) {
-            input[list] {
-                -webkit-appearance: none;
-                appearance: none;
-            }
-            
-            /* Força a exibição do autocomplete */
-            input[list]:focus {
-                position: relative;
-                z-index: 10;
-            }
+        .autocomplete-dropdown.show {
+            display: block;
+        }
+
+        .autocomplete-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+            transition: background-color 0.2s;
+        }
+
+        .autocomplete-option:last-child {
+            border-bottom: none;
+        }
+
+        .autocomplete-option:hover {
+            background: #f3f4f6;
+        }
+
+        .autocomplete-option.selected {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .dark .autocomplete-option {
+            border-color: #4b5563;
+        }
+
+        .dark .autocomplete-option:hover {
+            background: #4b5563;
+        }
+
+        .dark .autocomplete-option.selected {
+            background: #1e3a8a;
+            color: #60a5fa;
+        }
+
+        .autocomplete-no-results {
+            padding: 12px 16px;
+            color: #6b7280;
+            text-align: center;
+            font-style: italic;
+        }
+
+        /* NOVO: Seções de notificação separadas */
+        .notification-section {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .dark .notification-section {
+            background: rgba(31, 41, 55, 0.95);
+        }
+
+        .notification-7-days {
+            border-color: #f59e0b;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+        }
+
+        .dark .notification-7-days {
+            background: linear-gradient(135deg, #78350f, #92400e);
+        }
+
+        .notification-15-days {
+            border-color: #ef4444;
+            background: linear-gradient(135deg, #fecaca, #fca5a5);
+        }
+
+        .dark .notification-15-days {
+            background: linear-gradient(135deg, #7f1d1d, #991b1b);
+        }
+
+        .notification-30-days {
+            border-color: #dc2626;
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+        }
+
+        .dark .notification-30-days {
+            background: linear-gradient(135deg, #991b1b, #b91c1c);
         }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swUrl = '/sw.js';
+                navigator.serviceWorker.register(swUrl)
+                    .then((registration) => {
+                        console.log('✅ Service Worker registrado:', registration);
+                    })
+                    .catch((error) => {
+                        console.warn('⚠️ Erro ao registrar Service Worker:', error);
+                    });
+            });
+        }
+    </script>
+
     <!-- Fixed Status Bar -->
     <div class="status-bar">
         <div class="flex items-center gap-4">
@@ -990,8 +1128,10 @@ block-all-mixed-content;
             <form id="formEmprestimo" class="space-y-4">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Cliente</label>
-                    <input type="text" id="emprestimoCliente" list="clientesEmprestimoList" placeholder="Digite ou selecione um cliente" class="input-modern w-full" required="" autocomplete="off">
-                    <datalist id="clientesEmprestimoList"></datalist>
+                    <div class="custom-autocomplete">
+                        <input type="text" id="emprestimoCliente" placeholder="Digite ou selecione um cliente" class="autocomplete-input" required="" autocomplete="off">
+                        <div id="emprestimoClienteDropdown" class="autocomplete-dropdown"></div>
+                    </div>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1096,6 +1236,9 @@ block-all-mixed-content;
                                 📤 Importar Dados
                             </button>
                         </div>
+                        <button id="clearCache" class="btn-modern w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700">
+                            🗑️ Limpar Cache do App
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1272,6 +1415,10 @@ block-all-mixed-content;
                 <div class="payment-option" data-payment="Pagar na Nota">
                     <span class="text-2xl mr-3">📄</span>
                     <span class="font-semibold text-gray-700 dark:text-gray-300">Pagar na Nota</span>
+                </div>
+                <div class="payment-option" data-payment="Fidelidade">
+                    <span class="text-2xl mr-3">🎁</span>
+                    <span class="font-semibold text-gray-700 dark:text-gray-300">Fidelidade (Galão Grátis)</span>
                 </div>
             </div>
             <div class="flex space-x-3 mt-6">
@@ -1492,15 +1639,8 @@ block-all-mixed-content;
                 </div>
 
                 <!-- Notificações -->
-                <div class="card-modern bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900 dark:to-orange-900 border-l-4 border-yellow-400 p-6">
-                    <h3 class="text-xl font-bold text-yellow-800 dark:text-yellow-200 mb-4 flex items-center">
-                        <span class="text-2xl mr-3">🔔</span>
-                        Clientes para Notificar
-                    </h3>
-                    <div id="clientesNotificar" class="space-y-3 mb-4"></div>
-                    <button onclick="notificarClientes()" class="btn-modern bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600">
-                        📱 Notificar Todos via WhatsApp
-                    </button>
+                <div id="clientesNotificarContainer">
+                    <!-- As seções de notificação serão preenchidas aqui -->
                 </div>
             </section>
 
@@ -1559,9 +1699,10 @@ block-all-mixed-content;
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Cliente</label>
-                                <input type="text" id="clientePedidoInput" list="clientesList" placeholder="Digite ou selecione um cliente" class="input-modern w-full" onchange="handleClienteSelection()" autocomplete="off">
-                                <datalist id="clientesList">
-                                </datalist>
+                                <div class="custom-autocomplete">
+                                    <input type="text" id="clientePedidoInput" placeholder="Digite ou selecione um cliente" class="autocomplete-input" onchange="handleClienteSelection()" autocomplete="off">
+                                    <div id="clientePedidoDropdown" class="autocomplete-dropdown"></div>
+                                </div>
                                 <input type="hidden" id="clientePedido" required="">
                             </div>
                             <div>
@@ -1756,9 +1897,10 @@ block-all-mixed-content;
                             Relatórios por Cliente
                         </h3>
                         <div class="space-y-4">
-                            <input type="text" id="clienteRelatorioInput" list="clientesRelatorioList" placeholder="Digite ou selecione um cliente" class="input-modern w-full" autocomplete="off">
-                            <datalist id="clientesRelatorioList">
-                            </datalist>
+                            <div class="custom-autocomplete">
+                                <input type="text" id="clienteRelatorioInput" placeholder="Digite ou selecione um cliente" class="autocomplete-input" autocomplete="off">
+                                <div id="clienteRelatorioDropdown" class="autocomplete-dropdown"></div>
+                            </div>
                             <input type="hidden" id="clienteRelatorio">
                             <button onclick="gerarRelatorioCliente()" class="btn-modern w-full bg-gradient-to-r from-green-500 to-green-600">
                                 📋 Gerar Relatório do Cliente
@@ -1877,35 +2019,176 @@ Estamos sempre à disposição! 🙏`,
             configuracoes: 'comercialrocha_configuracoes'
         };
 
+        // Cache management
+        let dataCache = new Map();
+        let cacheTimeout = 5 * 60 * 1000; // 5 minutos
+        let lastSyncTime = 0;
+
         // ================================
-        // FUNÇÕES DE DATA CORRIGIDAS
+        // CACHE AND OPTIMIZATION FUNCTIONS
         // ================================
 
-        // Função para criar data local - CORRIGIDA para evitar problemas de fuso horário
+        function getCachedData(key) {
+            const cached = dataCache.get(key);
+            if (cached && (Date.now() - cached.timestamp) < cacheTimeout) {
+                return cached.data;
+            }
+            return null;
+        }
+
+        function setCachedData(key, data) {
+            dataCache.set(key, {
+                data: data,
+                timestamp: Date.now()
+            });
+        }
+
+        function clearCache() {
+            dataCache.clear();
+            lastSyncTime = 0;
+            console.log('🗑️ Cache limpo');
+        }
+
+        // ================================
+        // CUSTOM AUTOCOMPLETE FUNCTIONS
+        // ================================
+
+        function createCustomAutocomplete(inputId, dropdownId, options, onSelect) {
+            const input = document.getElementById(inputId);
+            const dropdown = document.getElementById(dropdownId);
+            let filteredOptions = [];
+            let selectedIndex = -1;
+
+            function showDropdown() {
+                dropdown.classList.add('show');
+            }
+
+            function hideDropdown() {
+                dropdown.classList.remove('show');
+                selectedIndex = -1;
+            }
+
+            function updateDropdown(searchTerm = '') {
+                filteredOptions = options.filter(option =>
+                    option.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+
+                dropdown.innerHTML = '';
+
+                if (filteredOptions.length === 0) {
+                    const noResults = document.createElement('div');
+                    noResults.className = 'autocomplete-no-results';
+                    noResults.textContent = 'Nenhum resultado encontrado';
+                    dropdown.appendChild(noResults);
+                } else {
+                    filteredOptions.forEach((option, index) => {
+                        const optionEl = document.createElement('div');
+                        optionEl.className = 'autocomplete-option';
+                        optionEl.textContent = option;
+                        optionEl.addEventListener('click', () => {
+                            input.value = option;
+                            hideDropdown();
+                            if (onSelect) onSelect(option);
+                        });
+                        dropdown.appendChild(optionEl);
+                    });
+                }
+
+                updateSelection();
+            }
+
+            function updateSelection() {
+                dropdown.querySelectorAll('.autocomplete-option').forEach((option, index) => {
+                    option.classList.toggle('selected', index === selectedIndex);
+                });
+            }
+
+            function selectOption() {
+                if (selectedIndex >= 0 && selectedIndex < filteredOptions.length) {
+                    const selectedOption = filteredOptions[selectedIndex];
+                    input.value = selectedOption;
+                    hideDropdown();
+                    if (onSelect) onSelect(selectedOption);
+                }
+            }
+
+            // Event listeners
+            input.addEventListener('focus', () => {
+                updateDropdown(input.value);
+                showDropdown();
+                // NOVO: Implementar this.select() no focus
+                input.select();
+            });
+
+            input.addEventListener('input', (e) => {
+                updateDropdown(e.target.value);
+                showDropdown();
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (!dropdown.classList.contains('show')) return;
+
+                switch (e.key) {
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        selectedIndex = Math.min(selectedIndex + 1, filteredOptions.length - 1);
+                        updateSelection();
+                        break;
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        selectedIndex = Math.max(selectedIndex - 1, -1);
+                        updateSelection();
+                        break;
+                    case 'Enter':
+                        e.preventDefault();
+                        selectOption();
+                        break;
+                    case 'Escape':
+                        hideDropdown();
+                        break;
+                }
+            });
+
+            // Hide dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+                    hideDropdown();
+                }
+            });
+
+            // Return update function for external use
+            return {
+                updateOptions: (newOptions) => {
+                    options = newOptions;
+                    if (dropdown.classList.contains('show')) {
+                        updateDropdown(input.value);
+                    }
+                }
+            };
+        }
+
+        // ================================
+        // DATE FUNCTIONS (CORRIGIDAS)
+        // ================================
+
         function createLocalDate(dateString) {
             if (!dateString) return new Date();
             
-            // Se for apenas uma data (YYYY-MM-DD), criar como data local
             if (typeof dateString === 'string' && dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
                 const [year, month, day] = dateString.split('-');
                 return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
             }
             
-            // Se for uma string ISO ou outro formato de data
             if (typeof dateString === 'string') {
-                // Verificar se é ISO string com timezone
                 if (dateString.includes('T') && dateString.includes('Z')) {
                     return new Date(dateString);
                 }
-                // Assumir que é uma data local
                 return new Date(dateString + 'T00:00:00');
             }
             
-            // Para outros casos, usar o construtor padrão
             return new Date(dateString);
         }
 
-        // Função para formatar data como string local - CORRIGIDA
         function formatLocalDate(date) {
             if (!date) return '';
             
@@ -1913,13 +2196,11 @@ Estamos sempre à disposição! 🙏`,
             return localDate.toLocaleDateString('pt-BR');
         }
 
-        // Função para formatar data para input type="date" - CORRIGIDA
         function formatDateForInput(date) {
             if (!date) return '';
             
             let localDate;
             if (typeof date === 'string' && date.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                // Se já está no formato YYYY-MM-DD, retornar como está
                 return date;
             }
             
@@ -1930,13 +2211,11 @@ Estamos sempre à disposição! 🙏`,
             return `${year}-${month}-${day}`;
         }
 
-        // Função para obter data/hora atual - CORRIGIDA para manter consistência
         function getCurrentDateTime() {
             const now = new Date();
             return now.toISOString();
         }
 
-        // Função para obter data local atual como string YYYY-MM-DD - NOVA
         function getCurrentDateLocal() {
             const now = new Date();
             const year = now.getFullYear();
@@ -1945,7 +2224,6 @@ Estamos sempre à disposição! 🙏`,
             return `${year}-${month}-${day}`;
         }
 
-        // Função para comparar datas ignorando horário - CORRIGIDA
         function isSameDate(date1, date2) {
             if (!date1 || !date2) return false;
             
@@ -1957,7 +2235,6 @@ Estamos sempre à disposição! 🙏`,
                    d1.getDate() === d2.getDate();
         }
 
-        // Função para comparar mês/ano - CORRIGIDA
         function isSameMonth(date, monthString) {
             if (!date || !monthString) return false;
             
@@ -1969,26 +2246,156 @@ Estamos sempre à disposição! 🙏`,
         }
 
         // ================================
-        // RESTO DO CÓDIGO
+        // FIREBASE OPTIMIZATIONS
+        // ================================
+
+        function setupOptimizedFirebaseListeners() {
+            if (!window.db || !window.firebaseUtils || !currentUser || isOfflineMode) return;
+
+            const { collection, onSnapshot, orderBy, query, doc } = window.firebaseUtils;
+
+            // Only setup listeners if we don't have recent cached data
+            const cachedClientes = getCachedData('clientes');
+            if (!cachedClientes) {
+                const clientesRef = collection(window.db, 'clientes');
+                clientesListener = onSnapshot(clientesRef, (snapshot) => {
+                    clientes = [];
+                    snapshot.forEach((doc) => {
+                        clientes.push({ id: doc.id, ...doc.data() });
+                    });
+                    setCachedData('clientes', clientes);
+                    updateListaClientes();
+                    updateDashboard();
+                    loadClienteOptions();
+                    loadClienteOptionsRelatorio();
+                    loadClienteOptionsEmprestimo();
+                    saveLocalData();
+                }, (error) => {
+                    console.error('❌ Erro ao escutar clientes:', error);
+                    updateConnectionStatus('❌ Erro', 'error');
+                });
+            } else {
+                clientes = cachedClientes;
+                updateListaClientes();
+                updateDashboard();
+                loadClienteOptions();
+                loadClienteOptionsRelatorio();
+                loadClienteOptionsEmprestimo();
+            }
+
+            // Pedidos with limited query to recent ones only
+            const cachedPedidos = getCachedData('pedidos');
+            if (!cachedPedidos) {
+                const pedidosRef = collection(window.db, 'pedidos');
+                const pedidosQuery = query(pedidosRef, orderBy('data', 'desc'));
+                pedidosListener = onSnapshot(pedidosQuery, (snapshot) => {
+                    // Only load the last 100 orders to reduce reads
+                    const newPedidos = [];
+                    let count = 0;
+                    snapshot.forEach((doc) => {
+                        if (count < 100) {
+                            newPedidos.push({ id: doc.id, ...doc.data() });
+                            count++;
+                        }
+                    });
+                    pedidos = newPedidos;
+                    setCachedData('pedidos', pedidos);
+                    updateListaPedidos();
+                    updateDashboard();
+                    saveLocalData();
+                }, (error) => {
+                    console.error('❌ Erro ao escutar pedidos:', error);
+                    updateConnectionStatus('❌ Erro', 'error');
+                });
+            } else {
+                pedidos = cachedPedidos;
+                updateListaPedidos();
+                updateDashboard();
+            }
+
+            // Estoque
+            const cachedEstoque = getCachedData('estoque');
+            if (!cachedEstoque) {
+                const estoqueRef = collection(window.db, 'estoque');
+                estoqueListener = onSnapshot(estoqueRef, (snapshot) => {
+                    estoque = {};
+                    snapshot.forEach((doc) => {
+                        const id = doc.id.replace(/_/g, '-');
+                        estoque[id] = doc.data();
+                    });
+                    setCachedData('estoque', estoque);
+                    updateVisualizacaoEstoque();
+                    updateEstoqueDetalhado();
+                    updateDashboard();
+                    saveLocalData();
+                }, (error) => {
+                    console.error('❌ Erro ao escutar estoque:', error);
+                    updateConnectionStatus('❌ Erro', 'error');
+                });
+            } else {
+                estoque = cachedEstoque;
+                updateVisualizacaoEstoque();
+                updateEstoqueDetalhado();
+                updateDashboard();
+            }
+
+            // Empréstimos
+            const cachedEmprestimos = getCachedData('emprestimos');
+            if (!cachedEmprestimos) {
+                const emprestimosRef = collection(window.db, 'emprestimos');
+                emprestimosListener = onSnapshot(emprestimosRef, (snapshot) => {
+                    emprestimos = [];
+                    snapshot.forEach((doc) => {
+                        emprestimos.push({ id: doc.id, ...doc.data() });
+                    });
+                    setCachedData('emprestimos', emprestimos);
+                    updateGaloesEmprestados();
+                    saveLocalData();
+                }, (error) => {
+                    console.error('❌ Erro ao escutar empréstimos:', error);
+                    updateConnectionStatus('❌ Erro', 'error');
+                });
+            } else {
+                emprestimos = cachedEmprestimos;
+                updateGaloesEmprestados();
+            }
+
+            // Configurações (only for admin)
+            if (currentUser?.email === 'adm@comercialrocha.com') {
+                const configRef = doc(window.db, 'configuracoes', 'global');
+                configuracoesListener = onSnapshot(configRef, (docSnapshot) => {
+                    if (docSnapshot.exists()) {
+                        const configData = docSnapshot.data();
+                        configuracoes = { ...configuracoes, ...configData };
+                        setCachedData('configuracoes', configuracoes);
+                        saveConfiguracoes();
+                        console.log('✅ Configurações atualizadas do Firebase');
+                    }
+                }, (error) => {
+                    console.error('❌ Erro ao escutar configurações:', error);
+                });
+            }
+
+            lastSyncTime = Date.now();
+        }
+
+        // ================================
+        // REST OF THE CODE (UNCHANGED FUNCTIONS)
         // ================================
 
         // Novas funções de filtro de data
         function setFiltroData(tipo) {
-            // Atualizar botões ativos
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
             
-            // Mostrar/esconder campos específicos
             document.getElementById('customDayFilter').classList.add('hidden');
             document.getElementById('customMonthFilter').classList.add('hidden');
             
             if (tipo === 'customDay') {
                 document.getElementById('customDayFilter').classList.remove('hidden');
-                // Definir data de hoje como padrão
                 document.getElementById('filtroDataEspecifica').value = getCurrentDateLocal();
             } else if (tipo === 'customMonth') {
                 document.getElementById('customMonthFilter').classList.remove('hidden');
-                // Definir mês atual como padrão
                 const today = new Date();
                 const year = today.getFullYear();
                 const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -2104,7 +2511,6 @@ Estamos sempre à disposição! 🙏`,
         window.initializeApp = function() {
             console.log('🚀 Inicializando aplicação...');
             
-            // Load configurations
             loadConfiguracoes();
             
             checkInternetConnection();
@@ -2141,7 +2547,7 @@ Estamos sempre à disposição! 🙏`,
                     currentUser = user;
                     updateAuthStatus(user.email.split('@')[0]);
                     checkConfigAccess(user.email);
-                    setupFirebaseListeners();
+                    setupOptimizedFirebaseListeners(); // CHANGED: Use optimized listeners
                     showMainApp();
                     syncPendingData();
                 } else {
@@ -2230,7 +2636,6 @@ Estamos sempre à disposição! 🙏`,
             }
         }
 
-        // NOVA FUNÇÃO: Salvar configurações no Firebase
         async function saveConfiguracoesFirebase() {
             if (isOfflineMode || !firebaseConnected || !currentUser) {
                 console.log('📱 Salvando configurações localmente (modo offline)');
@@ -2246,13 +2651,11 @@ Estamos sempre à disposição! 🙏`,
                     updatedAt: getCurrentDateTime()
                 });
                 
-                // Também salvar localmente como backup
                 saveConfiguracoes();
                 
                 console.log('✅ Configurações salvas no Firebase');
             } catch (error) {
                 console.error('❌ Erro ao salvar configurações no Firebase:', error);
-                // Em caso de erro, salvar localmente
                 saveConfiguracoes();
             }
         }
@@ -2406,7 +2809,6 @@ Estamos sempre à disposição! 🙏`,
             const month = String(currentDate.getMonth() + 1).padStart(2, '0');
             document.getElementById('filtroMesEspecifico').value = `${year}-${month}`;
             
-            // Definir datas padrão para relatórios
             document.getElementById('dataDiario').value = today;
             document.getElementById('mesMensal').value = `${year}-${month}`;
             
@@ -2427,60 +2829,84 @@ Estamos sempre à disposição! 🙏`,
             setupPedidoBusca();
             setupPDFButton();
             setupTelefoneInputMasks();
-            setupAutocompleteEnhancements(); // NOVA FUNÇÃO
+            setupCustomAutocompletes();
+            setupSearchFocus(); // NOVO: Setup focus para campos de busca
             calcularValorTotal();
         }
 
-        // NOVA FUNÇÃO: Melhorar autocomplete para dispositivos móveis
-        function setupAutocompleteEnhancements() {
-            // Lista de todos os campos que usam autocomplete
-            const autocompleteFields = [
+        // NOVO: Setup focus para campos de busca
+        function setupSearchFocus() {
+            // Busca de clientes
+            const buscaCliente = document.getElementById('buscaCliente');
+            if (buscaCliente) {
+                buscaCliente.addEventListener('focus', function() {
+                    this.select();
+                });
+            }
+
+            // Busca de pedidos
+            const buscaPedido = document.getElementById('buscaPedido');
+            if (buscaPedido) {
+                buscaPedido.addEventListener('focus', function() {
+                    this.select();
+                });
+            }
+
+            // Busca de relatório
+            const clienteRelatorioInput = document.getElementById('clienteRelatorioInput');
+            if (clienteRelatorioInput) {
+                // Já implementado no custom autocomplete
+            }
+        }
+
+        // NEW: Setup custom autocompletes
+        function setupCustomAutocompletes() {
+            // Cliente Pedido Autocomplete
+            const clientePedidoAutocomplete = createCustomAutocomplete(
                 'clientePedidoInput',
-                'emprestimoCliente', 
-                'buscaCliente',
-                'buscaPedido',
-                'clienteRelatorioInput'
-            ];
-
-            autocompleteFields.forEach(fieldId => {
-                const field = document.getElementById(fieldId);
-                if (field) {
-                    // Adicionar this.select() no focus
-                    field.addEventListener('focus', function() {
-                        this.select();
-                        
-                        // Para dispositivos móveis, forçar a exibição do autocomplete
-                        if ('ontouchstart' in window) {
-                            setTimeout(() => {
-                                this.dispatchEvent(new Event('input', { bubbles: true }));
-                            }, 100);
-                        }
-                    });
-
-                    // Melhorar comportamento no mobile
-                    field.addEventListener('touchstart', function() {
-                        this.focus();
-                    });
-
-                    // Garantir que o autocomplete funcione corretamente
-                    field.setAttribute('autocomplete', 'off');
-                    field.setAttribute('autocorrect', 'off');
-                    field.setAttribute('autocapitalize', 'off');
-                    field.setAttribute('spellcheck', 'false');
-                }
-            });
-
-            // Melhorar comportamento do datalist em dispositivos móveis
-            document.addEventListener('click', function(e) {
-                if (e.target.matches('input[list]')) {
-                    const input = e.target;
-                    const list = document.getElementById(input.getAttribute('list'));
-                    if (list) {
-                        // Disparar evento para mostrar opções
-                        input.dispatchEvent(new Event('input', { bubbles: true }));
+                'clientePedidoDropdown',
+                [],
+                (selectedCliente) => {
+                    const cliente = clientes.find(c => c.nome === selectedCliente && !c.inativo);
+                    if (cliente) {
+                        document.getElementById('clientePedido').value = cliente.id;
+                        updateClienteInfo(cliente.id);
+                    } else {
+                        document.getElementById('clientePedido').value = '';
+                        document.getElementById('clienteInfo').classList.add('hidden');
                     }
                 }
-            });
+            );
+
+            // Empréstimo Cliente Autocomplete
+            const emprestimoClienteAutocomplete = createCustomAutocomplete(
+                'emprestimoCliente',
+                'emprestimoClienteDropdown',
+                [],
+                () => {}
+            );
+
+            // Cliente Relatório Autocomplete
+            const clienteRelatorioAutocomplete = createCustomAutocomplete(
+                'clienteRelatorioInput',
+                'clienteRelatorioDropdown',
+                [],
+                (selectedCliente) => {
+                    const cliente = clientes.find(c => c.nome === selectedCliente);
+                    if (cliente) {
+                        document.getElementById('clienteRelatorio').value = cliente.id;
+                    } else {
+                        document.getElementById('clienteRelatorio').value = '';
+                    }
+                }
+            );
+
+            // Store autocomplete instances for later updates
+            window.autocompleteInstances = {
+                clientePedido: clientePedidoAutocomplete,
+                emprestimoCliente: emprestimoClienteAutocomplete,
+                clienteRelatorio: clienteRelatorioAutocomplete
+            };
         }
 
         function setupPDFButton() {
@@ -2551,6 +2977,7 @@ Estamos sempre à disposição! 🙏`,
                 currentUser = null;
                 isOfflineMode = false;
                 localStorage.clear();
+                clearCache();
                 location.reload();
                 return;
             }
@@ -2571,6 +2998,7 @@ Estamos sempre à disposição! 🙏`,
                 pedidos = [];
                 estoque = {};
                 emprestimos = [];
+                clearCache();
                 
                 alert('✅ Logout realizado com sucesso!');
             } catch (error) {
@@ -2620,7 +3048,7 @@ Estamos sempre à disposição! 🙏`,
             try {
                 const pedidoGratis = {
                     clienteId: clienteId,
-                    dataIda: getCurrentDateLocal(), // CORRIGIDO: usar data local
+                    dataIda: getCurrentDateLocal(),
                     quantidade: 1,
                     quantidadeVazios: 0,
                     valorTotal: 0,
@@ -2743,18 +3171,7 @@ Estamos sempre à disposição! 🙏`,
 
         // Cliente Relatório Selection
         function setupClienteRelatorioSelection() {
-            const input = document.getElementById('clienteRelatorioInput');
-            const hiddenInput = document.getElementById('clienteRelatorio');
-            
-            input.addEventListener('change', function() {
-                const clienteNome = this.value;
-                const cliente = clientes.find(c => c.nome === clienteNome);
-                if (cliente) {
-                    hiddenInput.value = cliente.id;
-                } else {
-                    hiddenInput.value = '';
-                }
-            });
+            // This is now handled by the custom autocomplete
         }
 
         // Pedido Busca
@@ -2793,6 +3210,28 @@ Estamos sempre à disposição! 🙏`,
                 const clienteElement = createPedidoElement(pedido, isAdmin);
                 lista.appendChild(clienteElement);
             });
+        }
+
+        // Update cliente options functions to use autocomplete
+        function loadClienteOptions() {
+            if (window.autocompleteInstances?.clientePedido) {
+                const clientesAtivos = clientes.filter(c => !c.inativo).map(c => c.nome);
+                window.autocompleteInstances.clientePedido.updateOptions(clientesAtivos);
+            }
+        }
+
+        function loadClienteOptionsRelatorio() {
+            if (window.autocompleteInstances?.clienteRelatorio) {
+                const todosClientes = clientes.map(c => c.nome);
+                window.autocompleteInstances.clienteRelatorio.updateOptions(todosClientes);
+            }
+        }
+
+        function loadClienteOptionsEmprestimo() {
+            if (window.autocompleteInstances?.emprestimoCliente) {
+                const clientesAtivos = clientes.filter(c => !c.inativo).map(c => c.nome);
+                window.autocompleteInstances.emprestimoCliente.updateOptions(clientesAtivos);
+            }
         }
 
         // Empréstimo Functions
@@ -2956,17 +3395,6 @@ Estamos sempre à disposição! 🙏`,
             loadClienteOptionsEmprestimo();
             document.getElementById('emprestimoModal').classList.remove('hidden');
             document.getElementById('contextMenu').classList.add('hidden');
-        }
-
-        function loadClienteOptionsEmprestimo() {
-            const datalist = document.getElementById('clientesEmprestimoList');
-            datalist.innerHTML = '';
-            
-            clientes.filter(c => !c.inativo).forEach(cliente => {
-                const option = document.createElement('option');
-                option.value = cliente.nome;
-                datalist.appendChild(option);
-            });
         }
 
         async function marcarDevolvido(emprestimoId) {
@@ -3166,12 +3594,9 @@ Estamos sempre à disposição! 🙏`,
             if (isOfflineMode) {
                 const pedidoIndex = pedidos.findIndex(p => p.id === pedidoId);
                 if (pedidoIndex !== -1) {
-                    // CORRIGIDO: Preservar data original ao editar pedido
                     const dataOriginal = pedidos[pedidoIndex].dataIda;
                     pedidos[pedidoIndex] = { ...pedidos[pedidoIndex], ...dadosAtualizacao };
                     
-                    // Se a data foi modificada explicitamente na edição, manter a nova data
-                    // Caso contrário, preservar a data original
                     if (!dadosAtualizacao.hasOwnProperty('dataIda')) {
                         pedidos[pedidoIndex].dataIda = dataOriginal;
                     }
@@ -3397,7 +3822,7 @@ Estamos sempre à disposição! 🙏`,
                         if (e.target.value === '') {
                             e.target.value = '(33) ';
                         }
-                        e.target.select(); // ADICIONADO: Selecionar texto no focus
+                        e.target.select();
                     });
                 }
             });
@@ -3630,6 +4055,7 @@ Estamos sempre à disposição! 🙏`,
             const cancelBtn = document.getElementById('cancelConfig');
             const exportarBtn = document.getElementById('exportarDados');
             const confirmarImportBtn = document.getElementById('confirmarImport');
+            const clearCacheBtn = document.getElementById('clearCache');
             
             salvarBtn.addEventListener('click', async () => {
                 configuracoes.diasNotificacao = parseInt(document.getElementById('configDiasNotificacao').value) || 7;
@@ -3640,7 +4066,6 @@ Estamos sempre à disposição! 🙏`,
                 configuracoes.mensagemGratis = document.getElementById('configMensagemGratis').value;
                 configuracoes.mensagemNotificacao = document.getElementById('configMensagemNotificacao').value;
                 
-                // ATUALIZADO: Salvar no Firebase
                 await saveConfiguracoesFirebase();
                 
                 modal.classList.add('hidden');
@@ -3697,7 +4122,6 @@ Estamos sempre à disposição! 🙏`,
                     document.getElementById('configMensagemGratis').value = configuracoes.mensagemGratis;
                     document.getElementById('configMensagemNotificacao').value = configuracoes.mensagemNotificacao;
                     
-                    // ATUALIZADO: Salvar no Firebase
                     await saveConfiguracoesFirebase();
                     alert('✅ Configurações restauradas para o padrão!');
                 }
@@ -3713,6 +4137,15 @@ Estamos sempre à disposição! 🙏`,
 
             confirmarImportBtn.addEventListener('click', () => {
                 importarDados();
+            });
+
+            // NEW: Clear cache button
+            clearCacheBtn.addEventListener('click', () => {
+                if (confirm('⚠️ Tem certeza que deseja limpar todo o cache do aplicativo?\n\nEsto forçará o recarregamento de todos os dados.')) {
+                    clearCache();
+                    localStorage.clear();
+                    location.reload();
+                }
             });
         }
 
@@ -3763,8 +4196,9 @@ Estamos sempre à disposição! 🙏`,
                     if (dados.emprestimos) emprestimos = dados.emprestimos;
                     if (dados.configuracoes) configuracoes = dados.configuracoes;
                     
+                    clearCache();
                     saveLocalData();
-                    await saveConfiguracoesFirebase(); // ATUALIZADO: Salvar configurações no Firebase
+                    await saveConfiguracoesFirebase();
                     
                     updateListaClientes();
                     updateListaPedidos();
@@ -3785,87 +4219,6 @@ Estamos sempre à disposição! 🙏`,
                 }
             };
             reader.readAsText(file);
-        }
-
-        // Setup Firebase Listeners
-        function setupFirebaseListeners() {
-            if (!window.db || !window.firebaseUtils || !currentUser || isOfflineMode) return;
-
-            const { collection, onSnapshot, orderBy, query, doc } = window.firebaseUtils;
-
-            const clientesRef = collection(window.db, 'clientes');
-            clientesListener = onSnapshot(clientesRef, (snapshot) => {
-                clientes = [];
-                snapshot.forEach((doc) => {
-                    clientes.push({ id: doc.id, ...doc.data() });
-                });
-                updateListaClientes();
-                updateDashboard();
-                loadClienteOptions();
-                loadClienteOptionsRelatorio();
-                loadClienteOptionsEmprestimo();
-                saveLocalData();
-            }, (error) => {
-                console.error('❌ Erro ao escutar clientes:', error);
-                updateConnectionStatus('❌ Erro', 'error');
-            });
-
-            const pedidosRef = collection(window.db, 'pedidos');
-            const pedidosQuery = query(pedidosRef, orderBy('data', 'desc'));
-            pedidosListener = onSnapshot(pedidosQuery, (snapshot) => {
-                pedidos = [];
-                snapshot.forEach((doc) => {
-                    pedidos.push({ id: doc.id, ...doc.data() });
-                });
-                updateListaPedidos();
-                updateDashboard();
-                saveLocalData();
-            }, (error) => {
-                console.error('❌ Erro ao escutar pedidos:', error);
-                updateConnectionStatus('❌ Erro', 'error');
-            });
-
-            const estoqueRef = collection(window.db, 'estoque');
-            estoqueListener = onSnapshot(estoqueRef, (snapshot) => {
-                estoque = {};
-                snapshot.forEach((doc) => {
-                    const id = doc.id.replace(/_/g, '-');
-                    estoque[id] = doc.data();
-                });
-                updateVisualizacaoEstoque();
-                updateEstoqueDetalhado();
-                updateDashboard();
-                saveLocalData();
-            }, (error) => {
-                console.error('❌ Erro ao escutar estoque:', error);
-                updateConnectionStatus('❌ Erro', 'error');
-            });
-
-            const emprestimosRef = collection(window.db, 'emprestimos');
-            emprestimosListener = onSnapshot(emprestimosRef, (snapshot) => {
-                emprestimos = [];
-                snapshot.forEach((doc) => {
-                    emprestimos.push({ id: doc.id, ...doc.data() });
-                });
-                updateGaloesEmprestados();
-                saveLocalData();
-            }, (error) => {
-                console.error('❌ Erro ao escutar empréstimos:', error);
-                updateConnectionStatus('❌ Erro', 'error');
-            });
-
-            // NOVO: Listener para configurações
-            const configRef = doc(window.db, 'configuracoes', 'global');
-            configuracoesListener = onSnapshot(configRef, (docSnapshot) => {
-                if (docSnapshot.exists()) {
-                    const configData = docSnapshot.data();
-                    configuracoes = { ...configuracoes, ...configData };
-                    saveConfiguracoes(); // Salvar localmente também
-                    console.log('✅ Configurações atualizadas do Firebase');
-                }
-            }, (error) => {
-                console.error('❌ Erro ao escutar configurações:', error);
-            });
         }
 
         function setupContextMenu() {
@@ -3973,6 +4326,12 @@ Estamos sempre à disposição! 🙏`,
                     console.error('❌ Erro ao excluir estoque:', error);
                     alert('❌ Erro ao excluir estoque. Tente novamente.');
                 }
+            }
+        }
+
+        function excluirEstoqueDetalhado(dataGalao) {
+            if (confirm(`⚠️ Tem certeza que deseja excluir todo o estoque da data "${dataGalao}"?\n\nEsta ação não pode ser desfeita.`)) {
+                excluirEstoque(dataGalao);
             }
         }
 
@@ -4120,7 +4479,7 @@ Estamos sempre à disposição! 🙏`,
                     });
                     
                     const dadosAtualizacao = {
-                        dataIda: document.getElementById('editPedidoData').value, // CORRIGIDO: Manter a data selecionada
+                        dataIda: document.getElementById('editPedidoData').value,
                         quantidade: parseInt(document.getElementById('editPedidoQuantidade').value),
                         quantidadeVazios: parseInt(document.getElementById('editPedidoQuantidadeVazios').value) || 0,
                         valorTotal: parseFloat(document.getElementById('editPedidoValor').value),
@@ -4202,6 +4561,26 @@ Estamos sempre à disposição! 🙏`,
                 option.addEventListener('click', function() {
                     paymentOptions.forEach(opt => opt.classList.remove('selected'));
                     this.classList.add('selected');
+                    
+                    // NOVO: Mostrar mensagem de fidelidade quando selecionar "Fidelidade"
+                    const formaPagamento = this.getAttribute('data-payment');
+                    const fidelidadeInfo = document.getElementById('fidelidadeInfo');
+                    
+                    if (formaPagamento === 'Fidelidade') {
+                        fidelidadeInfo.classList.remove('hidden');
+                        document.getElementById('fidelidadeText').textContent = 'Você está utilizando o galão grátis da fidelidade! 🎉';
+                    } else {
+                        // Verificar se cliente tem galão grátis disponível
+                        if (currentPedidoForPayment) {
+                            const galoesGratisDevidos = verificarFidelidade(currentPedidoForPayment.clienteId);
+                            if (galoesGratisDevidos > 0 && !currentPedidoForPayment.isGratis) {
+                                fidelidadeInfo.classList.remove('hidden');
+                                document.getElementById('fidelidadeText').textContent = `Cliente já tem ${galoesGratisDevidos} galão(s) grátis disponível(s)! (Pedidos grátis já foram criados)`;
+                            } else {
+                                fidelidadeInfo.classList.add('hidden');
+                            }
+                        }
+                    }
                 });
             });
             
@@ -4210,11 +4589,20 @@ Estamos sempre à disposição! 🙏`,
                 if (selectedOption && currentPedidoForPayment) {
                     try {
                         const formaPagamento = selectedOption.getAttribute('data-payment');
-                        await atualizarPedido(currentPedidoForPayment.id, {
+                        
+                        // NOVO: Se for fidelidade, marcar como grátis
+                        let updateData = {
                             pago: true,
                             formaPagamento: formaPagamento,
                             dataPagamento: getCurrentDateTime()
-                        });
+                        };
+                        
+                        if (formaPagamento === 'Fidelidade') {
+                            updateData.isGratis = true;
+                            updateData.valorTotal = 0;
+                        }
+                        
+                        await atualizarPedido(currentPedidoForPayment.id, updateData);
                         
                         const cliente = clientes.find(c => c.id == currentPedidoForPayment.clienteId);
                         if (cliente) {
@@ -4225,6 +4613,7 @@ Estamos sempre à disposição! 🙏`,
                         
                         modal.classList.add('hidden');
                         paymentOptions.forEach(opt => opt.classList.remove('selected'));
+                        document.getElementById('fidelidadeInfo').classList.add('hidden');
                         currentPedidoForPayment = null;
                         
                         alert('✅ Pagamento registrado com sucesso!');
@@ -4239,6 +4628,7 @@ Estamos sempre à disposição! 🙏`,
                 modal.classList.add('hidden');
                 currentPedidoForPayment = null;
                 paymentOptions.forEach(opt => opt.classList.remove('selected'));
+                document.getElementById('fidelidadeInfo').classList.add('hidden');
             });
         }
 
@@ -4296,18 +4686,7 @@ Estamos sempre à disposição! 🙏`,
         }
 
         function handleClienteSelection() {
-            const input = document.getElementById('clientePedidoInput');
-            const hiddenInput = document.getElementById('clientePedido');
-            const clienteNome = input.value;
-            
-            const cliente = clientes.find(c => c.nome === clienteNome && !c.inativo);
-            if (cliente) {
-                hiddenInput.value = cliente.id;
-                updateClienteInfo(cliente.id);
-            } else {
-                hiddenInput.value = '';
-                document.getElementById('clienteInfo').classList.add('hidden');
-            }
+            // This is now handled by the custom autocomplete callback
         }
 
         function updateClienteInfo(clienteId) {
@@ -4375,28 +4754,6 @@ Estamos sempre à disposição! 🙏`,
             window.open(url, '_blank');
         }
 
-        function loadClienteOptions() {
-            const datalist = document.getElementById('clientesList');
-            datalist.innerHTML = '';
-            
-            clientes.filter(c => !c.inativo).forEach(cliente => {
-                const option = document.createElement('option');
-                option.value = cliente.nome;
-                datalist.appendChild(option);
-            });
-        }
-
-        function loadClienteOptionsRelatorio() {
-            const datalist = document.getElementById('clientesRelatorioList');
-            datalist.innerHTML = '';
-            
-            clientes.forEach(cliente => {
-                const option = document.createElement('option');
-                option.value = cliente.nome;
-                datalist.appendChild(option);
-            });
-        }
-
         // MODIFICADO: Criar pedidos grátis automaticamente ao registrar pedido
         document.getElementById('formPedido').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -4413,7 +4770,7 @@ Estamos sempre à disposição! 🙏`,
                 
                 const pedido = {
                     clienteId: clienteId,
-                    dataIda: document.getElementById('dataIda').value, // CORRIGIDO: Usar valor do campo como está
+                    dataIda: document.getElementById('dataIda').value,
                     quantidade: quantidade,
                     quantidadeVazios: quantidadeVazios,
                     valorTotal: valorTotal,
@@ -4435,7 +4792,7 @@ Estamos sempre à disposição! 🙏`,
                 this.reset();
                 document.getElementById('clienteInfo').classList.add('hidden');
                 document.getElementById('clientePedidoInput').value = '';
-                document.getElementById('dataIda').value = getCurrentDateLocal(); // CORRIGIDO: Resetar para data atual
+                document.getElementById('dataIda').value = getCurrentDateLocal();
                 document.getElementById('quantidadeGaloes').value = '1';
                 document.getElementById('quantidadeGaloesVazios').value = '0';
                 calcularValorTotal();
@@ -4566,11 +4923,10 @@ Estamos sempre à disposição! 🙏`,
             document.getElementById('receiveGalaoModal').classList.remove('hidden');
         }
 
-        // NOVA FUNÇÃO: Atualizar outros campos quando o primeiro é alterado
         function updateOtherGalaoInputs(firstValue) {
             const inputs = document.querySelectorAll('#galaoVindosList input[type="text"]');
             inputs.forEach((input, index) => {
-                if (index > 0) { // Pular o primeiro input
+                if (index > 0) {
                     input.value = firstValue;
                 }
             });
@@ -4597,7 +4953,7 @@ Estamos sempre à disposição! 🙏`,
             currentEditingPedido = pedidoId;
             
             document.getElementById('editPedidoCliente').value = cliente ? cliente.nome : 'N/A';
-            document.getElementById('editPedidoData').value = formatDateForInput(pedido.dataIda); // CORRIGIDO: Manter data original
+            document.getElementById('editPedidoData').value = formatDateForInput(pedido.dataIda);
             document.getElementById('editPedidoQuantidade').value = pedido.quantidade || 1;
             document.getElementById('editPedidoQuantidadeVazios').value = pedido.quantidadeVazios || 0;
             document.getElementById('editPedidoValor').value = pedido.valorTotal || 0;
@@ -4910,12 +5266,6 @@ Estamos sempre à disposição! 🙏`,
             });
         }
 
-        function excluirEstoqueDetalhado(dataGalao) {
-            if (confirm(`⚠️ Tem certeza que deseja excluir todo o estoque da data "${dataGalao}"?\n\nEsta ação não pode ser desfeita.`)) {
-                excluirEstoque(dataGalao);
-            }
-        }
-
         function createGalaoVisual(data, status, quantidade) {
             const div = document.createElement('div');
             div.className = `galao-container ${getGalaoColorClass(status)} w-20 h-24 cursor-pointer`;
@@ -5024,448 +5374,495 @@ Estamos sempre à disposição! 🙏`,
             const vendasHoje = pedidos.filter(p => isSameDate(p.dataIda, hoje)).length;
             document.getElementById('vendasHoje').textContent = vendasHoje;
             
-            const totalCheios = Object.values(estoque).reduce((total, stock) => total + (stock.cheio || 0), 0);
+			const totalCheios = Object.values(estoque).reduce((total, stock) => total + (stock.cheio || 0), 0);
             const totalVazios = Object.values(estoque).reduce((total, stock) => total + (stock.vazio || 0), 0);
+            document.getElementById('galoesEstoque').textContent = totalCheios + totalVazios;
             
-            document.getElementById('galoesEstoque').textContent = totalCheios;
-            
-            if (document.getElementById('totalGaloesCheios')) {
-                document.getElementById('totalGaloesCheios').textContent = totalCheios;
-            }
-            if (document.getElementById('totalGaloesVazios')) {
-                document.getElementById('totalGaloesVazios').textContent = totalVazios;
-            }
-            
-            const pendentes = pedidos.filter(p => !p.pago).length;
-            document.getElementById('pedidosPendentes').textContent = pendentes;
+            const pedidosPendentes = pedidos.filter(p => !p.pago).length;
+            document.getElementById('pedidosPendentes').textContent = pedidosPendentes;
             
             updateClientesNotificar();
         }
 
+        // MODIFICADO: Separar notificações por tempo sem comprar
         function updateClientesNotificar() {
-            const agora = new Date();
-            const diasLimite = configuracoes.diasNotificacao || 7;
-            
-            const clientesParaNotificar = clientes.filter(cliente => {
-                if (cliente.inativo) return false;
-                if (!cliente.ultimaCompra) return true;
-                
-                const ultimaCompra = new Date(cliente.ultimaCompra);
-                const diferencaDias = (agora - ultimaCompra) / (1000 * 60 * 60 * 24);
-                return diferencaDias > diasLimite;
-            });
-            
-            const container = document.getElementById('clientesNotificar');
+            const container = document.getElementById('clientesNotificarContainer');
             container.innerHTML = '';
             
-            if (clientesParaNotificar.length === 0) {
-                container.innerHTML = '<p class="text-yellow-800 dark:text-yellow-200">🎉 Todos os clientes estão em dia!</p>';
-            } else {
-                clientesParaNotificar.forEach(cliente => {
-                    const div = document.createElement('div');
-                    div.className = 'flex items-center justify-between bg-yellow-100 dark:bg-yellow-800 p-4 rounded-lg border border-yellow-300 dark:border-yellow-600';
-                    div.innerHTML = `
-                        <div class="flex items-center space-x-3">
-                            <span class="text-2xl">⏰</span>
-                            <span class="text-yellow-800 dark:text-yellow-200 font-semibold">${cliente.nome}</span>
-                        </div>
-                        <button onclick="notificarCliente('${cliente.id}')" class="btn-modern bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 px-4 py-2 text-sm">
-                            📱 Notificar
-                        </button>
-                    `;
-                    container.appendChild(div);
-                });
+            const agora = new Date();
+            const clientesAtivos = clientes.filter(c => !c.inativo);
+            
+            // Separar clientes por tempo sem comprar
+            const clientes7Dias = [];
+            const clientes15Dias = [];
+            const clientes30Dias = [];
+            
+            clientesAtivos.forEach(cliente => {
+                if (cliente.ultimaCompra) {
+                    const ultimaCompra = new Date(cliente.ultimaCompra);
+                    const diasSemComprar = Math.floor((agora - ultimaCompra) / (1000 * 60 * 60 * 24));
+                    
+                    if (diasSemComprar >= 30) {
+                        clientes30Dias.push({ ...cliente, diasSemComprar });
+                    } else if (diasSemComprar >= 15) {
+                        clientes15Dias.push({ ...cliente, diasSemComprar });
+                    } else if (diasSemComprar >= 7) {
+                        clientes7Dias.push({ ...cliente, diasSemComprar });
+                    }
+                } else {
+                    // Clientes sem compra
+                    clientes30Dias.push({ ...cliente, diasSemComprar: 999 });
+                }
+            });
+
+            // Criar seção para 7 dias
+            if (clientes7Dias.length > 0) {
+                createNotificationSection(container, '⚠️ 7 dias sem comprar', clientes7Dias, 'notification-7-days');
             }
+
+            // Criar seção para 15 dias  
+            if (clientes15Dias.length > 0) {
+                createNotificationSection(container, '🔶 15+ dias sem comprar', clientes15Dias, 'notification-15-days');
+            }
+
+            // Criar seção para 30+ dias
+            if (clientes30Dias.length > 0) {
+                createNotificationSection(container, '🔴 30+ dias sem comprar', clientes30Dias, 'notification-30-days');
+            }
+
+            // Se não há clientes para notificar
+            if (clientes7Dias.length === 0 && clientes15Dias.length === 0 && clientes30Dias.length === 0) {
+                container.innerHTML = `
+                    <div class="card-modern bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900 dark:to-emerald-900 border-l-4 border-green-400 p-6">
+                        <h3 class="text-xl font-bold text-green-800 dark:text-green-200 mb-4 flex items-center">
+                            <span class="text-2xl mr-3">✅</span>
+                            Parabéns! Nenhum cliente precisa ser notificado
+                        </h3>
+                        <p class="text-green-700 dark:text-green-300">Todos os clientes estão ativos ou fizeram compras recentemente.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function createNotificationSection(container, title, clientesList, className) {
+            const section = document.createElement('div');
+            section.className = `notification-section ${className}`;
+            
+            let clientesHtml = '';
+            clientesList.forEach(cliente => {
+                const diasTexto = cliente.diasSemComprar === 999 ? 'Nunca comprou' : `${cliente.diasSemComprar} dias`;
+                clientesHtml += `
+                    <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg mb-2 shadow-sm">
+                        <div class="flex-1">
+                            <h5 class="font-semibold text-gray-900 dark:text-white">${cliente.nome}</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">${diasTexto}</p>
+                            ${cliente.telefone ? `<p class="text-sm text-gray-500 dark:text-gray-500">📞 ${cliente.telefone}</p>` : ''}
+                        </div>
+                        ${cliente.telefone ? `<button onclick="notificarCliente('${cliente.id}')" class="btn-modern bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-sm">📱 Notificar</button>` : ''}
+                    </div>
+                `;
+            });
+
+            section.innerHTML = `
+                <h3 class="text-lg font-bold mb-4 flex items-center justify-between">
+                    <span>${title} (${clientesList.length})</span>
+                    ${clientesList.filter(c => c.telefone).length > 0 ? `<button onclick="notificarGrupo('${className}')" class="btn-modern bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-sm">📱 Notificar Todos</button>` : ''}
+                </h3>
+                <div class="space-y-2">
+                    ${clientesHtml}
+                </div>
+            `;
+
+            container.appendChild(section);
         }
 
         function notificarCliente(clienteId) {
-            const cliente = clientes.find(c => c.id == clienteId);
-            if (cliente && cliente.telefone) {
-                let mensagem = configuracoes.mensagemNotificacao;
-                mensagem = mensagem.replace('{nome}', cliente.nome);
-                abrirWhatsApp(cliente.telefone, mensagem);
-            } else {
-                alert('⚠️ Cliente não possui telefone cadastrado!');
-            }
+            const cliente = clientes.find(c => c.id === clienteId);
+            if (!cliente || !cliente.telefone) return;
+            
+            let mensagem = configuracoes.mensagemNotificacao;
+            mensagem = mensagem.replace('{nome}', cliente.nome);
+            
+            abrirWhatsApp(cliente.telefone, mensagem);
         }
 
-        function notificarClientes() {
-            const agora = new Date();
-            const diasLimite = configuracoes.diasNotificacao || 7;
+        function notificarGrupo(className) {
+            const section = document.querySelector(`.${className}`);
+            if (!section) return;
             
-            const clientesParaNotificar = clientes.filter(cliente => {
-                if (cliente.inativo) return false;
-                if (!cliente.ultimaCompra) return true;
-                
-                const ultimaCompra = new Date(cliente.ultimaCompra);
-                const diferencaDias = (agora - ultimaCompra) / (1000 * 60 * 60 * 24);
-                return diferencaDias > diasLimite;
-            });
+            const buttons = section.querySelectorAll('button[onclick^="notificarCliente"]');
             
-            const clientesComTelefone = clientesParaNotificar.filter(c => c.telefone);
-            
-            if (clientesComTelefone.length === 0) {
-                alert('🎉 Nenhum cliente com telefone para notificar no momento!');
+            if (buttons.length === 0) {
+                alert('⚠️ Nenhum cliente com telefone neste grupo!');
                 return;
             }
             
-            clientesComTelefone.forEach((cliente, index) => {
-                setTimeout(() => notificarCliente(cliente.id), 1000 * index);
+            if (!confirm(`📱 Deseja notificar ${buttons.length} cliente(s) deste grupo via WhatsApp?`)) {
+                return;
+            }
+            
+            buttons.forEach((button, index) => {
+                setTimeout(() => {
+                    button.click();
+                }, index * 1000); // 1 segundo de intervalo entre cada mensagem
             });
         }
 
-        function gerarRelatorio(tipo) {
-            let pedidosFiltrados = [];
-            let titulo = '';
+        function notificarClientes() {
+            const buttons = document.querySelectorAll('button[onclick^="notificarCliente"]');
             
-            switch (tipo) {
-                case 'diario':
-                    const dataSelecionada = document.getElementById('dataDiario').value;
-                    if (!dataSelecionada) {
-                        alert('⚠️ Selecione uma data para o relatório diário!');
-                        return;
-                    }
-                    pedidosFiltrados = pedidos.filter(p => isSameDate(p.dataIda, dataSelecionada));
-                    titulo = 'Relatório Diário - ' + formatLocalDate(dataSelecionada);
-                    break;
-                case 'mensal':
-                    const mesSelecionado = document.getElementById('mesMensal').value;
-                    if (!mesSelecionado) {
-                        alert('⚠️ Selecione um mês para o relatório mensal!');
-                        return;
-                    }
-                    const [ano, mes] = mesSelecionado.split('-');
-                    pedidosFiltrados = pedidos.filter(p => {
-                        return isSameMonth(p.dataIda, mesSelecionado);
-                    });
-                    titulo = 'Relatório Mensal - ' + new Date(parseInt(ano), parseInt(mes) - 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-                    break;
-                case 'anual':
-                    const anoAtual = new Date().getFullYear();
-                    pedidosFiltrados = pedidos.filter(p => {
-                        const dataIda = createLocalDate(p.dataIda);
-                        return dataIda.getFullYear() === anoAtual;
-                    });
-                    titulo = 'Relatório Anual - ' + anoAtual;
-                    break;
+            if (buttons.length === 0) {
+                alert('⚠️ Nenhum cliente com telefone para notificar!');
+                return;
             }
             
-            mostrarRelatorio(titulo, pedidosFiltrados);
+            if (!confirm(`📱 Deseja notificar ${buttons.length} cliente(s) via WhatsApp?`)) {
+                return;
+            }
+            
+            buttons.forEach((button, index) => {
+                setTimeout(() => {
+                    button.click();
+                }, index * 1000); // 1 segundo de intervalo entre cada mensagem
+            });
         }
 
-        function gerarRelatorioCliente() {
+        // Relatórios
+        async function gerarRelatorio(tipo) {
+            const resultadosDiv = document.getElementById('resultadosRelatorio');
+            const conteudoDiv = document.getElementById('conteudoRelatorio');
+            
+            let dados = [];
+            let titulo = '';
+            
+            try {
+                switch (tipo) {
+                    case 'diario':
+                        const dataDiario = document.getElementById('dataDiario').value;
+                        if (!dataDiario) {
+                            alert('⚠️ Selecione uma data!');
+                            return;
+                        }
+                        dados = pedidos.filter(p => isSameDate(p.dataIda, dataDiario));
+                        titulo = `Relatório Diário - ${formatLocalDate(dataDiario)}`;
+                        break;
+                        
+                    case 'mensal':
+                        const mesMensal = document.getElementById('mesMensal').value;
+                        if (!mesMensal) {
+                            alert('⚠️ Selecione um mês!');
+                            return;
+                        }
+                        dados = pedidos.filter(p => isSameMonth(p.dataIda, mesMensal));
+                        titulo = `Relatório Mensal - ${mesMensal}`;
+                        break;
+                        
+                    case 'anual':
+                        const anoAtual = new Date().getFullYear();
+                        dados = pedidos.filter(p => {
+                            const ano = createLocalDate(p.dataIda).getFullYear();
+                            return ano === anoAtual;
+                        });
+                        titulo = `Relatório Anual - ${anoAtual}`;
+                        break;
+                }
+                
+                currentRelatorioData = dados;
+                currentRelatorioTitulo = titulo;
+                
+                if (dados.length === 0) {
+                    conteudoDiv.innerHTML = '<p class="text-center py-8 text-gray-500">Nenhum pedido encontrado para o período selecionado.</p>';
+                } else {
+                    conteudoDiv.innerHTML = gerarHTMLRelatorio(dados, titulo);
+                }
+                
+                resultadosDiv.classList.remove('hidden');
+                
+            } catch (error) {
+                console.error('❌ Erro ao gerar relatório:', error);
+                alert('❌ Erro ao gerar relatório. Tente novamente.');
+            }
+        }
+
+        async function gerarRelatorioCliente() {
             const clienteId = document.getElementById('clienteRelatorio').value;
             if (!clienteId) {
                 alert('⚠️ Selecione um cliente!');
                 return;
             }
             
-            const cliente = clientes.find(c => c.id == clienteId);
-            const pedidosCliente = pedidos.filter(p => p.clienteId == clienteId);
+            const cliente = clientes.find(c => c.id === clienteId);
+            if (!cliente) {
+                alert('⚠️ Cliente não encontrado!');
+                return;
+            }
             
-            mostrarRelatorio(`Relatório do Cliente - ${cliente.nome}`, pedidosCliente);
+            const dados = pedidos.filter(p => p.clienteId === clienteId);
+            const titulo = `Relatório do Cliente - ${cliente.nome}`;
+            
+            currentRelatorioData = dados;
+            currentRelatorioTitulo = titulo;
+            
+            const resultadosDiv = document.getElementById('resultadosRelatorio');
+            const conteudoDiv = document.getElementById('conteudoRelatorio');
+            
+            if (dados.length === 0) {
+                conteudoDiv.innerHTML = '<p class="text-center py-8 text-gray-500">Nenhum pedido encontrado para este cliente.</p>';
+            } else {
+                conteudoDiv.innerHTML = gerarHTMLRelatorioCliente(dados, cliente);
+            }
+            
+            resultadosDiv.classList.remove('hidden');
         }
 
-        function mostrarRelatorio(titulo, pedidosList) {
-            const container = document.getElementById('resultadosRelatorio');
-            const conteudo = document.getElementById('conteudoRelatorio');
+        function gerarHTMLRelatorio(dados, titulo) {
+            const totalPedidos = dados.length;
+            const totalGaloes = dados.reduce((total, p) => total + (p.quantidade || 1), 0);
+            const totalVazios = dados.reduce((total, p) => total + (p.quantidadeVazios || 0), 0);
+            const totalValor = dados.reduce((total, p) => total + (p.valorTotal || 0), 0);
+            const pedidosPagos = dados.filter(p => p.pago).length;
+            const pedidosGratis = dados.filter(p => p.isGratis).length;
             
-            currentRelatorioTitulo = titulo;
-            currentRelatorioData = pedidosList;
-            
-            let html = `<h4 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">${titulo}</h4>`;
-            
-            if (pedidosList.length === 0) {
-                html += '<div class="text-center py-8"><p class="text-gray-600 dark:text-gray-400 text-lg">📊 Nenhum pedido encontrado para o período selecionado.</p></div>';
-            } else {
-                const totalVendas = pedidosList.length;
-                const totalPago = pedidosList.filter(p => p.pago).length;
-                const totalPendente = totalVendas - totalPago;
-                const totalValor = pedidosList.reduce((sum, p) => sum + (p.valorTotal || 0), 0);
-                const totalGaloes = pedidosList.reduce((sum, p) => sum + (p.quantidade || 1), 0);
-                const totalGaloesVazios = pedidosList.reduce((sum, p) => sum + (p.quantidadeVazios || 0), 0);
-                const totalGaloesGratis = pedidosList.filter(p => p.isGratis).reduce((sum, p) => sum + (p.quantidade || 1), 0);
-                
-                html += `
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-6 mb-8">
-                        <div class="card-modern bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 p-6 text-center">
-                            <div class="text-4xl mb-3">📊</div>
-                            <h5 class="font-bold text-blue-800 dark:text-blue-200 text-lg">Total de Vendas</h5>
-                            <p class="text-3xl font-bold text-blue-900 dark:text-blue-100">${totalVendas}</p>
+            let html = `
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">${titulo}</h2>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-blue-100 dark:bg-blue-900 p-4 rounded-lg text-center">
+                            <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">${totalPedidos}</div>
+                            <div class="text-blue-600 dark:text-blue-400 text-sm">Total Pedidos</div>
                         </div>
-                        <div class="card-modern bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900 dark:to-green-800 p-6 text-center">
-                            <div class="text-4xl mb-3">✅</div>
-                            <h5 class="font-bold text-green-800 dark:text-green-200 text-lg">Pagos</h5>
-                            <p class="text-3xl font-bold text-green-900 dark:text-green-100">${totalPago}</p>
+                        <div class="bg-green-100 dark:bg-green-900 p-4 rounded-lg text-center">
+                            <div class="text-2xl font-bold text-green-600 dark:text-green-400">${totalGaloes}</div>
+                            <div class="text-green-600 dark:text-green-400 text-sm">Galões de Água</div>
                         </div>
-                        <div class="card-modern bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900 dark:to-red-800 p-6 text-center">
-                            <div class="text-4xl mb-3">⏳</div>
-							<h5 class="font-bold text-red-800 dark:text-red-200 text-lg">Pendentes</h5>
-                            <p class="text-3xl font-bold text-red-900 dark:text-red-100">${totalPendente}</p>
+                        <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg text-center">
+                            <div class="text-2xl font-bold text-gray-600 dark:text-gray-400">${totalVazios}</div>
+                            <div class="text-gray-600 dark:text-gray-400 text-sm">Galões Vazios</div>
                         </div>
-                        <div class="card-modern bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900 dark:to-purple-800 p-6 text-center">
-                            <div class="text-4xl mb-3">🪣</div>
-                            <h5 class="font-bold text-purple-800 dark:text-purple-200 text-lg">Galões Água</h5>
-                            <p class="text-3xl font-bold text-purple-900 dark:text-purple-100">${totalGaloes}</p>
-                        </div>
-                        <div class="card-modern bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6 text-center">
-                            <div class="text-4xl mb-3">🫙</div>
-                            <h5 class="font-bold text-gray-800 dark:text-gray-200 text-lg">Galões Vazios</h5>
-                            <p class="text-3xl font-bold text-gray-900 dark:text-gray-100">${totalGaloesVazios}</p>
-                        </div>
-                        <div class="card-modern bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900 dark:to-orange-800 p-6 text-center">
-                            <div class="text-4xl mb-3">🎁</div>
-                            <h5 class="font-bold text-orange-800 dark:text-orange-200 text-lg">Galões Grátis</h5>
-                            <p class="text-3xl font-bold text-orange-900 dark:text-orange-100">${totalGaloesGratis}</p>
-                        </div>
-                        <div class="card-modern bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900 dark:to-yellow-800 p-6 text-center">
-                            <div class="text-4xl mb-3">💰</div>
-                            <h5 class="font-bold text-yellow-800 dark:text-yellow-200 text-lg">Valor Total</h5>
-                            <p class="text-3xl font-bold text-yellow-900 dark:text-yellow-100">R$ ${totalValor.toFixed(2)}</p>
+                        <div class="bg-yellow-100 dark:bg-yellow-900 p-4 rounded-lg text-center">
+                            <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">R$ ${totalValor.toFixed(2)}</div>
+                            <div class="text-yellow-600 dark:text-yellow-400 text-sm">Valor Total</div>
                         </div>
                     </div>
                     
-                    <div class="card-modern p-6">
-                        <h5 class="text-lg font-bold mb-4 text-gray-900 dark:text-white">Detalhes dos Pedidos</h5>
-                        <div class="overflow-x-auto">
-                            <table class="w-full border-collapse">
-                                <thead>
-                                    <tr class="bg-gray-100 dark:bg-gray-700">
-                                        <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Data</th>
-                                        <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Cliente</th>
-                                        <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Galões Água</th>
-                                        <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Galões Vazios</th>
-                                        <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Tipo</th>
-                                        <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Valor</th>
-                                        <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Status</th>
-                                        <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Pagamento</th>
-                                        <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Galões Entregues</th>
-                                        <th class="border border-gray-300 dark:border-gray-600 p-4 text-left font-semibold">Galões Recebidos</th>
-                                    </tr>
-                                </thead>
-								<tbody>
-                `;
-                
-                pedidosList.forEach(pedido => {
-                    const cliente = clientes.find(c => c.id == pedido.clienteId);
-                    const galoesEntregues = (pedido.galoesEntregues && pedido.galoesEntregues.length > 0) ? 
-                        pedido.galoesEntregues.join(', ') : 'Pendente';
-                    const galoesRecebidos = (pedido.galoesVindos && pedido.galoesVindos.length > 0) ? 
-                        pedido.galoesVindos.join(', ') : '-';
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-emerald-100 dark:bg-emerald-900 p-4 rounded-lg text-center">
+                            <div class="text-xl font-bold text-emerald-600 dark:text-emerald-400">${pedidosPagos}</div>
+                            <div class="text-emerald-600 dark:text-emerald-400 text-sm">Pedidos Pagos</div>
+                        </div>
+                        <div class="bg-red-100 dark:bg-red-900 p-4 rounded-lg text-center">
+                            <div class="text-xl font-bold text-red-600 dark:text-red-400">${totalPedidos - pedidosPagos}</div>
+                            <div class="text-red-600 dark:text-red-400 text-sm">Pedidos Pendentes</div>
+                        </div>
+                        <div class="bg-purple-100 dark:bg-purple-900 p-4 rounded-lg text-center">
+                            <div class="text-xl font-bold text-purple-600 dark:text-purple-400">${pedidosGratis}</div>
+                            <div class="text-purple-600 dark:text-purple-400 text-sm">Pedidos Grátis</div>
+                        </div>
+                    </div>
                     
-                    html += `                    
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
-                            <td class="border border-gray-300 dark:border-gray-600 p-4">${formatLocalDate(pedido.dataIda)}</td>
-                            <td class="border border-gray-300 dark:border-gray-600 p-4 font-semibold">${cliente ? cliente.nome : 'N/A'}</td>
-                            <td class="border border-gray-300 dark:border-gray-600 p-4">${pedido.quantidade || 1}</td>
-                            <td class="border border-gray-300 dark:border-gray-600 p-4">${pedido.quantidadeVazios || 0}</td>
-                            <td class="border border-gray-300 dark:border-gray-600 p-4">
-                                <span class="${pedido.isGratis ? 'text-green-600 bg-green-100 dark:bg-green-800' : 'text-blue-600 bg-blue-100 dark:bg-blue-800'} font-bold px-3 py-1 rounded-full text-sm">
-                                    ${pedido.isGratis ? '🎁 GRÁTIS' : '💰 PAGO'}
-                                </span>
-                            </td>
-                            <td class="border border-gray-300 dark:border-gray-600 p-4">${pedido.isGratis ? 'GRÁTIS' : `R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}`}</td>
-                            <td class="border border-gray-300 dark:border-gray-600 p-4">
-                                <span class="${pedido.pago ? 'text-green-600 bg-green-100 dark:bg-green-800' : 'text-red-600 bg-red-100 dark:bg-red-800'} font-bold px-3 py-1 rounded-full text-sm">
-                                    ${pedido.pago ? '✅ Pago' : '❌ Pendente'}
-                                </span>
-                            </td>
-                            <td class="border border-gray-300 dark:border-gray-600 p-4">
-                                ${pedido.formaPagamento ? pedido.formaPagamento : '-'}
-                            </td>
-                            <td class="border border-gray-300 dark:border-gray-600 p-4 text-sm">
-                                ${galoesEntregues}
-                            </td>
-                            <td class="border border-gray-300 dark:border-gray-600 p-4 text-sm">
-                                ${galoesRecebidos}
-                            </td>
-                        </tr>
-                    `;
-                });
-                
-                html += '</tbody></table></div></div>';
+                    <h3 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Detalhes dos Pedidos</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600">
+                            <thead class="bg-gray-50 dark:bg-gray-700">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-gray-700 dark:text-gray-300">Data</th>
+                                    <th class="px-4 py-2 text-left text-gray-700 dark:text-gray-300">Cliente</th>
+                                    <th class="px-4 py-2 text-left text-gray-700 dark:text-gray-300">Galões</th>
+                                    <th class="px-4 py-2 text-left text-gray-700 dark:text-gray-300">Vazios</th>
+                                    <th class="px-4 py-2 text-left text-gray-700 dark:text-gray-300">Valor</th>
+                                    <th class="px-4 py-2 text-left text-gray-700 dark:text-gray-300">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+            
+            dados.forEach(pedido => {
+                const cliente = clientes.find(c => c.id == pedido.clienteId);
+                html += `
+                    <tr class="border-b border-gray-200 dark:border-gray-600">
+                        <td class="px-4 py-2 text-gray-900 dark:text-gray-100">${formatLocalDate(pedido.dataIda)}</td>
+                        <td class="px-4 py-2 text-gray-900 dark:text-gray-100">${cliente ? cliente.nome : 'N/A'}</td>
+                        <td class="px-4 py-2 text-gray-900 dark:text-gray-100">${pedido.quantidade || 1}${pedido.isGratis ? ' (GRÁTIS)' : ''}</td>
+                        <td class="px-4 py-2 text-gray-900 dark:text-gray-100">${pedido.quantidadeVazios || 0}</td>
+                        <td class="px-4 py-2 text-gray-900 dark:text-gray-100">${pedido.isGratis ? 'GRÁTIS' : `R$ ${(pedido.valorTotal || 0).toFixed(2)}`}</td>
+                        <td class="px-4 py-2">
+                            <span class="px-2 py-1 text-xs rounded-full ${pedido.pago ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100' : 'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100'}">
+                                ${pedido.pago ? 'Pago' : 'Pendente'}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            
+            return html;
+        }
+
+        function gerarHTMLRelatorioCliente(dados, cliente) {
+            const totalPedidos = dados.length;
+            const totalGaloes = dados.reduce((total, p) => total + (p.quantidade || 1), 0);
+            const totalVazios = dados.reduce((total, p) => total + (p.quantidadeVazios || 0), 0);
+            const totalValor = dados.reduce((total, p) => total + (p.valorTotal || 0), 0);
+            const pedidosPagos = dados.filter(p => p.pago).length;
+            const pedidosGratis = dados.filter(p => p.isGratis).length;
+            
+            const galoesPagos = contarGaloesPagos(cliente.id);
+            const proximaGratis = proximaCompraGratis(cliente.id);
+            const galoesGratisDevidos = verificarFidelidade(cliente.id);
+            
+            let html = `
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Relatório do Cliente - ${cliente.nome}</h2>
+                    
+                    <div class="bg-blue-100 dark:bg-blue-900 p-4 rounded-lg mb-6">
+                        <h3 class="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-2">Informações do Cliente</h3>
+                        <p class="text-blue-700 dark:text-blue-300"><strong>Nome:</strong> ${cliente.nome}</p>
+                        ${cliente.telefone ? `<p class="text-blue-700 dark:text-blue-300"><strong>Telefone:</strong> ${cliente.telefone}</p>` : ''}
+                        ${cliente.endereco ? `<p class="text-blue-700 dark:text-blue-300"><strong>Endereço:</strong> ${cliente.endereco}</p>` : ''}
+                        <p class="text-blue-700 dark:text-blue-300"><strong>Galões pagos:</strong> ${galoesPagos}</p>
+                        <p class="text-blue-700 dark:text-blue-300"><strong>Próxima grátis em:</strong> ${proximaGratis} galão(s)</p>
+                        ${galoesGratisDevidos > 0 ? `<p class="text-orange-700 dark:text-orange-300 font-bold"><strong>🎉 Galões grátis disponíveis:</strong> ${galoesGratisDevidos}</p>` : ''}
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-blue-100 dark:bg-blue-900 p-4 rounded-lg text-center">
+                            <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">${totalPedidos}</div>
+                            <div class="text-blue-600 dark:text-blue-400 text-sm">Total Pedidos</div>
+                        </div>
+                        <div class="bg-green-100 dark:bg-green-900 p-4 rounded-lg text-center">
+                            <div class="text-2xl font-bold text-green-600 dark:text-green-400">${totalGaloes}</div>
+                            <div class="text-green-600 dark:text-green-400 text-sm">Galões de Água</div>
+                        </div>
+                        <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg text-center">
+                            <div class="text-2xl font-bold text-gray-600 dark:text-gray-400">${totalVazios}</div>
+                            <div class="text-gray-600 dark:text-gray-400 text-sm">Galões Vazios</div>
+                        </div>
+                        <div class="bg-yellow-100 dark:bg-yellow-900 p-4 rounded-lg text-center">
+                            <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">R$ ${totalValor.toFixed(2)}</div>
+                            <div class="text-yellow-600 dark:text-yellow-400 text-sm">Valor Total</div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-emerald-100 dark:bg-emerald-900 p-4 rounded-lg text-center">
+                            <div class="text-xl font-bold text-emerald-600 dark:text-emerald-400">${pedidosPagos}</div>
+                            <div class="text-emerald-600 dark:text-emerald-400 text-sm">Pedidos Pagos</div>
+                        </div>
+                        <div class="bg-red-100 dark:bg-red-900 p-4 rounded-lg text-center">
+                            <div class="text-xl font-bold text-red-600 dark:text-red-400">${totalPedidos - pedidosPagos}</div>
+                            <div class="text-red-600 dark:text-red-400 text-sm">Pedidos Pendentes</div>
+                        </div>
+                        <div class="bg-purple-100 dark:bg-purple-900 p-4 rounded-lg text-center">
+                            <div class="text-xl font-bold text-purple-600 dark:text-purple-400">${pedidosGratis}</div>
+                            <div class="text-purple-600 dark:text-purple-400 text-sm">Pedidos Grátis</div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Histórico de Pedidos</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600">
+                            <thead class="bg-gray-50 dark:bg-gray-700">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-gray-700 dark:text-gray-300">Data</th>
+                                    <th class="px-4 py-2 text-left text-gray-700 dark:text-gray-300">Galões</th>
+                                    <th class="px-4 py-2 text-left text-gray-700 dark:text-gray-300">Vazios</th>
+                                    <th class="px-4 py-2 text-left text-gray-700 dark:text-gray-300">Valor</th>
+                                    <th class="px-4 py-2 text-left text-gray-700 dark:text-gray-300">Status</th>
+                                    <th class="px-4 py-2 text-left text-gray-700 dark:text-gray-300">Galões Entregues</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+            
+            dados.sort((a, b) => new Date(b.data) - new Date(a.data)).forEach(pedido => {
+                html += `
+                    <tr class="border-b border-gray-200 dark:border-gray-600">
+                        <td class="px-4 py-2 text-gray-900 dark:text-gray-100">${formatLocalDate(pedido.dataIda)}</td>
+                        <td class="px-4 py-2 text-gray-900 dark:text-gray-100">${pedido.quantidade || 1}${pedido.isGratis ? ' (GRÁTIS)' : ''}</td>
+                        <td class="px-4 py-2 text-gray-900 dark:text-gray-100">${pedido.quantidadeVazios || 0}</td>
+                        <td class="px-4 py-2 text-gray-900 dark:text-gray-100">${pedido.isGratis ? 'GRÁTIS' : `R$ ${(pedido.valorTotal || 0).toFixed(2)}`}</td>
+                        <td class="px-4 py-2">
+                            <span class="px-2 py-1 text-xs rounded-full ${pedido.pago ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100' : 'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100'}">
+                                ${pedido.pago ? 'Pago' : 'Pendente'}
+                            </span>
+                        </td>
+                        <td class="px-4 py-2 text-gray-900 dark:text-gray-100">${pedido.galoesEntregues ? pedido.galoesEntregues.join(', ') : 'Pendente'}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            
+            return html;
+        }
+
+        function gerarPDF(titulo, dados) {
+            if (typeof window.jspdf?.jsPDF === 'undefined') {
+                alert('❌ Biblioteca PDF não disponível.');
+                return;
             }
             
-            conteudo.innerHTML = html;
-            container.classList.remove('hidden');
-        }
-
-        function gerarPDF(titulo, pedidosList) {
-            try {
-                if (typeof window.jspdf?.jsPDF === 'undefined') {
-                    alert('❌ Biblioteca PDF não carregada. Aguarde alguns segundos e tente novamente.');
-                    return;
-                }
-
-                const doc = new window.jspdf.jsPDF('landscape');
-                
-                const margin = 15;
-                let yPosition = margin;
-                const pageWidth = doc.internal.pageSize.getWidth();
-                const pageHeight = doc.internal.pageSize.getHeight();
-                
-                doc.setFillColor(93, 92, 222);
-                doc.rect(0, 0, pageWidth, 25, 'F');
-                
-                doc.setTextColor(255, 255, 255);
-                doc.setFontSize(20);
-                doc.setFont('helvetica', 'bold');
-                doc.text('COMERCIAL ROCHA', margin, 17);
-                
-                doc.setFontSize(12);
-                doc.setFont('helvetica', 'normal');
-                doc.text('Sistema de Gestão de Galões', pageWidth - margin - 60, 17);
-                
-                yPosition = 35;
-                
-                doc.setTextColor(0, 0, 0);
-                doc.setFontSize(16);
-                doc.setFont('helvetica', 'bold');
-                doc.text(titulo, margin, yPosition);
-                yPosition += 15;
-                
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Configurar fonte
+            doc.setFont('helvetica');
+            doc.setFontSize(16);
+            doc.text('Comercial Rocha', 20, 20);
+            
+            doc.setFontSize(14);
+            doc.text(titulo, 20, 35);
+            
+            // Preparar dados para a tabela
+            const tableData = dados.map(pedido => {
+                const cliente = clientes.find(c => c.id == pedido.clienteId);
+                return [
+                    formatLocalDate(pedido.dataIda),
+                    cliente ? cliente.nome : 'N/A',
+                    `${pedido.quantidade || 1}${pedido.isGratis ? ' (GRÁTIS)' : ''}`,
+                    `${pedido.quantidadeVazios || 0}`,
+                    pedido.isGratis ? 'GRÁTIS' : `R$ ${(pedido.valorTotal || 0).toFixed(2)}`,
+                    pedido.pago ? 'Pago' : 'Pendente'
+                ];
+            });
+            
+            const tableHeaders = ['Data', 'Cliente', 'Galões', 'Vazios', 'Valor', 'Status'];
+            
+            // Adicionar tabela
+            if (typeof doc.autoTable === 'function') {
+                doc.autoTable({
+                    head: [tableHeaders],
+                    body: tableData,
+                    startY: 45,
+                    styles: { fontSize: 8 }
+                });
+            } else {
                 doc.setFontSize(10);
-                doc.setFont('helvetica', 'normal');
-                doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, margin, yPosition);
-                yPosition += 15;
-                
-                if (pedidosList.length === 0) {
-                    doc.setFontSize(12);
-                    doc.text('Nenhum pedido encontrado para o período selecionado.', margin, yPosition);
-                } else {
-                    const totalVendas = pedidosList.length;
-                    const totalPago = pedidosList.filter(p => p.pago).length;
-                    const totalPendente = totalVendas - totalPago;
-                    const totalValor = pedidosList.reduce((sum, p) => sum + (p.valorTotal || 0), 0);
-                    const totalGaloes = pedidosList.reduce((sum, p) => sum + (p.quantidade || 1), 0);
-                    const totalGaloesVazios = pedidosList.reduce((sum, p) => sum + (p.quantidadeVazios || 0), 0);
-                    const totalGaloesGratis = pedidosList.filter(p => p.isGratis).reduce((sum, p) => sum + (p.quantidade || 1), 0);
-                    
-                    const cardWidth = 35;
-                    const cardHeight = 18;
-                    const cardSpacing = 3;
-                    
-                    const stats = [
-                        { label: 'Total Vendas', value: totalVendas, color: [59, 130, 246] },
-                        { label: 'Pagos', value: totalPago, color: [16, 185, 129] },
-                        { label: 'Pendentes', value: totalPendente, color: [239, 68, 68] },
-                        { label: 'Galões Água', value: totalGaloes, color: [139, 92, 246] },
-                        { label: 'Galões Vazios', value: totalGaloesVazios, color: [107, 114, 128] },
-                        { label: 'Galões Grátis', value: totalGaloesGratis, color: [245, 158, 11] },
-                        { label: 'Valor Total', value: `R$ ${totalValor.toFixed(2)}`, color: [34, 197, 94] }
-                    ];
-                    
-                    stats.forEach((stat, index) => {
-                        const x = margin + (index % 7) * (cardWidth + cardSpacing);
-                        const y = yPosition + Math.floor(index / 7) * (cardHeight + cardSpacing);
-                        
-                        doc.setFillColor(...stat.color);
-                        doc.roundedRect(x, y, cardWidth, cardHeight, 3, 3, 'F');
-                        
-                        doc.setTextColor(255, 255, 255);
-                        doc.setFontSize(7);
-                        doc.setFont('helvetica', 'normal');
-                        doc.text(stat.label, x + 2, y + 5);
-                        
-                        doc.setFontSize(10);
-                        doc.setFont('helvetica', 'bold');
-                        doc.text(String(stat.value), x + 2, y + 12);
-                    });
-                    
-                    yPosition += 30;
-                    
-                    const tableData = pedidosList.map(pedido => {
-                        const cliente = clientes.find(c => c.id == pedido.clienteId);
-                        const galoesEntregues = (pedido.galoesEntregues && pedido.galoesEntregues.length > 0) ? 
-                            pedido.galoesEntregues.join(', ') : 'Pendente';
-                        const galoesRecebidos = (pedido.galoesVindos && pedido.galoesVindos.length > 0) ? 
-                            pedido.galoesVindos.join(', ') : '-';
-                        
-                        return [
-                            formatLocalDate(pedido.dataIda),
-                            cliente ? cliente.nome.substring(0, 18) : 'N/A',
-                            `${(pedido.quantidade || 1)}`,
-                            `${(pedido.quantidadeVazios || 0)}`,
-                            pedido.isGratis ? 'GRÁTIS' : 'PAGO',
-                            pedido.isGratis ? 'GRÁTIS' : `R$ ${(pedido.valorTotal || 0).toFixed(2)}`,
-                            pedido.pago ? 'Pago' : 'Pendente',
-                            pedido.formaPagamento ? pedido.formaPagamento.substring(0, 12) : '-',
-                            galoesEntregues.length > 25 ? galoesEntregues.substring(0, 25) + '...' : galoesEntregues,
-                            galoesRecebidos.length > 25 ? galoesRecebidos.substring(0, 25) + '...' : galoesRecebidos
-                        ];
-                    });
-                    
-                    if (doc.autoTable) {
-                        doc.setTextColor(0, 0, 0);
-                        doc.autoTable({
-                            head: [['Data', 'Cliente', 'Água', 'Vazios', 'Tipo', 'Valor', 'Status', 'Pagamento', 'Galões Entregues', 'Galões Recebidos']],
-                            body: tableData,
-                            startY: yPosition,
-                            margin: { left: margin, right: margin },
-                            styles: { 
-                                fontSize: 6,
-                                cellPadding: 1.5
-                            },
-                            headStyles: { 
-                                fillColor: [93, 92, 222],
-                                textColor: [255, 255, 255],
-                                fontStyle: 'bold'
-                            },
-                            alternateRowStyles: {
-                                fillColor: [248, 250, 252]
-                            },
-                            columnStyles: {
-                                0: { cellWidth: 18 },
-                                1: { cellWidth: 30 },
-                                2: { cellWidth: 12 },
-                                3: { cellWidth: 12 },
-                                4: { cellWidth: 15 },
-                                5: { cellWidth: 20 },
-                                6: { cellWidth: 15 },
-                                7: { cellWidth: 20 },
-                                8: { cellWidth: 35 },
-                                9: { cellWidth: 35 }
-                            }
-                        });
-                    }
-                }
-                
-                const pageCount = doc.internal.getNumberOfPages();
-                for (let i = 1; i <= pageCount; i++) {
-                    doc.setPage(i);
-                    
-                    doc.setDrawColor(93, 92, 222);
-                    doc.setLineWidth(1);
-                    doc.line(margin, pageHeight - 20, pageWidth - margin, pageHeight - 20);
-                    
-                    doc.setFontSize(8);
-                    doc.setFont('helvetica', 'normal');
-                    doc.setTextColor(107, 114, 128);
-                    doc.text(`Página ${i} de ${pageCount}`, pageWidth - 30, pageHeight - 10);
-                    doc.text('© Comercial Rocha - Sistema de Gestão', margin, pageHeight - 10);
-                    doc.text(`Relatório: ${titulo}`, margin, pageHeight - 5);
-                }
-                
-                const fileName = `${titulo.replace(/[^a-zA-Z0-9]/g, '_')}_${getCurrentDateLocal()}.pdf`;
-                doc.save(fileName);
-                
-                alert('✅ PDF gerado com sucesso!');
-                
-            } catch (error) {
-                console.error('❌ Erro ao gerar PDF:', error);
-                alert('❌ Erro ao gerar PDF: ' + error.message);
+                let y = 50;
+                tableData.forEach(row => {
+                    doc.text(row.join(' | '), 20, y);
+                    y += 10;
+                });
             }
+            
+            // Salvar
+            const fileName = `${titulo.replace(/\s+/g, '_')}_${getCurrentDateLocal()}.pdf`;
+            doc.save(fileName);
+            
+            alert('✅ PDF gerado com sucesso!');
         }
-
-        window.addEventListener('beforeunload', function() {
-            if (clientesListener) clientesListener();
-            if (pedidosListener) pedidosListener();
-            if (estoqueListener) estoqueListener();
-            if (emprestimosListener) emprestimosListener();
-            if (authStateListener) authStateListener();
-            if (configuracoesListener) configuracoesListener();
-        });
     </script>
-
 </body>
 </html>
