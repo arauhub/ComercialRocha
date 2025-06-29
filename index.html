@@ -1039,6 +1039,75 @@ window.firebaseLoaded = true;
         .dark .notification-30-days {
             background: linear-gradient(135deg, #991b1b, #b91c1c);
         }
+
+        /* MODIFICADO: Barra de notificações menor sem números */
+        .notification-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .notification-item {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            font-size: 12px;
+        }
+
+        .notification-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .notification-7-item {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-color: #f59e0b;
+            color: #78350f;
+        }
+
+        .notification-15-item {
+            background: linear-gradient(135deg, #fecaca, #fca5a5);
+            border-color: #ef4444;
+            color: #7f1d1d;
+        }
+
+        .notification-30-item {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            border-color: #dc2626;
+            color: #991b1b;
+        }
+
+        /* NOVO: Checkbox para galão emprestado */
+        .galao-emprestado-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(139, 92, 246, 0.1);
+            border-radius: 8px;
+            border: 1px solid #8b5cf6;
+        }
+
+        .galao-emprestado-checkbox input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #8b5cf6;
+        }
+
+        .emprestado-badge {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
@@ -1046,7 +1115,7 @@ window.firebaseLoaded = true;
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                const swUrl = '/sw.js';
+                const swUrl = './sw.js';
                 navigator.serviceWorker.register(swUrl)
                     .then((registration) => {
                         console.log('✅ Service Worker registrado:', registration);
@@ -1615,12 +1684,15 @@ window.firebaseLoaded = true;
             <!-- Dashboard -->
             <section id="dashboard" class="section">
                 <h2 class="text-3xl font-bold mb-8 text-gray-900 dark:text-white">Dashboard</h2>
+                
+                <!-- MODIFICADO: Estatísticas principais primeiro -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <div class="card-modern stat-card p-6 text-center">
                         <div class="text-4xl mb-3">👥</div>
                         <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Total Clientes</h3>
                         <p id="totalClientes" class="text-3xl font-bold text-primary">0</p>
                     </div>
+                    <!-- MODIFICADO: Vendas Hoje agora mostra número de vendas -->
                     <div class="card-modern stat-card p-6 text-center">
                         <div class="text-4xl mb-3">💰</div>
                         <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Vendas Hoje</h3>
@@ -1631,10 +1703,23 @@ window.firebaseLoaded = true;
                         <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Galões Estoque</h3>
                         <p id="galoesEstoque" class="text-3xl font-bold text-blue-600">0</p>
                     </div>
-                    <div class="card-modern stat-card p-6 text-center">
+                    <div class="card-modern stat-card p-6 text-center cursor-pointer" onclick="showPendingOrders()">
                         <div class="text-4xl mb-3">⏳</div>
                         <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Pendentes</h3>
                         <p id="pedidosPendentes" class="text-3xl font-bold text-red-600">0</p>
+                    </div>
+                </div>
+
+                <!-- MODIFICADO: Barra de notificações menor sem números -->
+                <div class="notification-bar">
+                    <div id="notification7Days" class="notification-item notification-7-item" onclick="showNotificationGroup('7days')">
+                        <div class="notification-label">7 dias sem comprar</div>
+                    </div>
+                    <div id="notification15Days" class="notification-item notification-15-item" onclick="showNotificationGroup('15days')">
+                        <div class="notification-label">15+ dias sem comprar</div>
+                    </div>
+                    <div id="notification30Days" class="notification-item notification-30-item" onclick="showNotificationGroup('30days')">
+                        <div class="notification-label">30+ dias sem comprar</div>
                     </div>
                 </div>
 
@@ -1756,6 +1841,7 @@ window.firebaseLoaded = true;
                                     <button type="button" class="filter-btn active" onclick="setFiltroData('hoje')">Hoje</button>
                                     <button type="button" class="filter-btn" onclick="setFiltroData('customDay')">Dia Específico</button>
                                     <button type="button" class="filter-btn" onclick="setFiltroData('customMonth')">Mês Específico</button>
+                                    <button type="button" class="filter-btn" onclick="setFiltroData('pendentes')">Pendentes</button>
                                     <button type="button" class="filter-btn" onclick="setFiltroData('todos')">Todos</button>
                                 </div>
                             </div>
@@ -1890,7 +1976,7 @@ window.firebaseLoaded = true;
                         </div>
                     </div>
 
-                    <!-- Relatórios por Cliente -->
+                    <!-- MODIFICADO: Relatórios por Cliente agora incluindo Galões por Cliente -->
                     <div class="card-modern p-6">
                         <h3 class="text-xl font-semibold mb-6 text-gray-900 dark:text-white flex items-center">
                             <span class="text-2xl mr-3">👤</span>
@@ -1904,6 +1990,10 @@ window.firebaseLoaded = true;
                             <input type="hidden" id="clienteRelatorio">
                             <button onclick="gerarRelatorioCliente()" class="btn-modern w-full bg-gradient-to-r from-green-500 to-green-600">
                                 📋 Gerar Relatório do Cliente
+                            </button>
+                            <!-- MODIFICADO: Galões por Cliente agora está aqui -->
+                            <button onclick="gerarRelatorioRanking()" class="btn-modern w-full bg-gradient-to-r from-purple-500 to-purple-600">
+                                🥇 Galões por Cliente
                             </button>
                         </div>
                     </div>
@@ -1960,7 +2050,7 @@ window.firebaseLoaded = true;
         let currentRelatorioData = null;
         let currentRelatorioTitulo = '';
         let mostrandoInativos = false;
-        let filtroDataAtual = 'hoje';
+        let filtroDataAtual = 'hoje'; // MODIFICADO: Por padrão filtrar por hoje
         let configuracoes = {
             mensagemPedido: `🪣 *Comercial Rocha*
 
@@ -2047,6 +2137,42 @@ Estamos sempre à disposição! 🙏`,
             dataCache.clear();
             lastSyncTime = 0;
             console.log('🗑️ Cache limpo');
+        }
+
+        // ================================
+        // NOVO: FUNÇÕES DE NAVEGAÇÃO
+        // ================================
+
+        function showPendingOrders() {
+            showSection('pedidos');
+            setFiltroData('pendentes');
+        }
+
+        function showNotificationGroup(group) {
+            // Ocultar todas as seções primeiro
+            document.querySelectorAll('.notification-section').forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Mostrar apenas o grupo selecionado
+            const groupClasses = {
+                '7days': 'notification-7-days',
+                '15days': 'notification-15-days',
+                '30days': 'notification-30-days'
+            };
+
+            const targetClass = groupClasses[group];
+            if (targetClass) {
+                const targetSection = document.querySelector(`.${targetClass}`);
+                if (targetSection) {
+                    targetSection.style.display = 'block';
+                }
+            }
+
+            // Scroll para a seção de notificações
+            document.getElementById('clientesNotificarContainer').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
         }
 
         // ================================
@@ -2426,6 +2552,9 @@ Estamos sempre à disposição! 🙏`,
                     const mesEspecifico = document.getElementById('filtroMesEspecifico').value;
                     if (!mesEspecifico) return pedidosList;
                     return pedidosList.filter(p => isSameMonth(p.dataIda, mesEspecifico));
+                
+                case 'pendentes':
+                    return pedidosList.filter(p => !p.pago);
                 
                 case 'todos':
                 default:
@@ -3055,6 +3184,7 @@ Estamos sempre à disposição! 🙏`,
                     isGratis: true,
                     galoesEntregues: [],
                     galoesVindos: [],
+                    galoesEmprestados: [],
                     detalhesConfirmados: false,
                     galoesRecebidos: false,
                     pago: true,
@@ -4354,10 +4484,19 @@ Estamos sempre à disposição! 🙏`,
                 if (!currentPedidoForDetails) return;
                 
                 const selectedGaloes = [];
+                const galoesEmprestados = [];
                 
-                document.querySelectorAll('#galaoSelectionList select').forEach(select => {
+                document.querySelectorAll('#galaoSelectionList .galao-selection').forEach(galaoDiv => {
+                    const select = galaoDiv.querySelector('select');
+                    const emprestadoCheckbox = galaoDiv.querySelector('.emprestado-checkbox');
+                    
                     if (select.value) {
                         selectedGaloes.push(select.value);
+                        
+                        // NOVO: Verificar se foi marcado como emprestado
+                        if (emprestadoCheckbox && emprestadoCheckbox.checked) {
+                            galoesEmprestados.push(select.value);
+                        }
                     }
                 });
                 
@@ -4369,18 +4508,31 @@ Estamos sempre à disposição! 🙏`,
                 try {
                     await atualizarPedido(currentPedidoForDetails.id, {
                         galoesEntregues: selectedGaloes,
+                        galoesEmprestados: galoesEmprestados,
                         detalhesConfirmados: true
                     });
                     
                     for (const dataGalao of selectedGaloes) {
                         const currentCheio = estoque[dataGalao]?.cheio || 0;
                         const currentCliente = estoque[dataGalao]?.cliente || 0;
+                        const currentEmprestado = estoque[dataGalao]?.emprestado || 0;
                         
                         if (currentCheio > 0) {
-                            await atualizarEstoque(dataGalao, {
-                                cheio: currentCheio - 1,
-                                cliente: currentCliente + 1
-                            });
+                            const isEmprestado = galoesEmprestados.includes(dataGalao);
+                            
+                            if (isEmprestado) {
+                                // Se emprestado, vai para emprestados
+                                await atualizarEstoque(dataGalao, {
+                                    cheio: currentCheio - 1,
+                                    emprestado: currentEmprestado + 1
+                                });
+                            } else {
+                                // Se não emprestado, vai para cliente
+                                await atualizarEstoque(dataGalao, {
+                                    cheio: currentCheio - 1,
+                                    cliente: currentCliente + 1
+                                });
+                            }
                         }
                     }
                     
@@ -4777,6 +4929,7 @@ Estamos sempre à disposição! 🙏`,
                     isGratis: false,
                     galoesEntregues: [],
                     galoesVindos: [],
+                    galoesEmprestados: [],
                     detalhesConfirmados: false,
                     galoesRecebidos: false,
                     pago: false,
@@ -4863,7 +5016,7 @@ Estamos sempre à disposição! 🙏`,
                 
                 for (let i = 0; i < pedido.quantidade; i++) {
                     const div = document.createElement('div');
-                    div.className = 'border border-gray-200 rounded-lg p-4';
+                    div.className = 'galao-selection border border-gray-200 rounded-lg p-4';
                     
                     const galaoSugerido = ultimoGalaoCliente ? 
                         getGalaoMaisProximo(ultimoGalaoCliente, galoesDisponiveis) : 
@@ -4880,6 +5033,13 @@ Estamos sempre à disposição! 🙏`,
                                         <option value="${data}" ${data === galaoSugerido ? 'selected' : ''}>${data} (${estoque[data].cheio} disponíveis)</option>
                                     `).join('')}
                                 </select>
+                            </div>
+                            <!-- NOVO: Checkbox para galão emprestado -->
+                            <div class="galao-emprestado-checkbox">
+                                <input type="checkbox" class="emprestado-checkbox" id="emprestado_${i}">
+                                <label for="emprestado_${i}" class="text-sm font-medium text-purple-700 dark:text-purple-300">
+                                    🤝 Marcar como galão emprestado
+                                </label>
                             </div>
                         </div>
                     `;
@@ -4902,6 +5062,10 @@ Estamos sempre à disposição! 🙏`,
                 <p><strong>Cliente:</strong> ${cliente ? cliente.nome : 'N/A'}</p>
                 <p><strong>Data:</strong> ${formatLocalDate(pedido.dataIda)}</p>
                 <p><strong>Galões enviados:</strong> ${pedido.galoesEntregues ? pedido.galoesEntregues.join(', ') : 'Nenhum'}</p>
+                ${pedido.galoesEmprestados && pedido.galoesEmprestados.length > 0 ? 
+                    `<p><strong>Galões emprestados:</strong> <span class="emprestado-badge">${pedido.galoesEmprestados.join(', ')}</span></p>` : 
+                    ''
+                }
             `;
             
             const galaoVindosList = document.getElementById('galaoVindosList');
@@ -4909,12 +5073,21 @@ Estamos sempre à disposição! 🙏`,
             
             const ultimoGalaoCliente = cliente ? getClienteUltimoGalao(cliente.id) : '';
             
+            // NOVO: Se há galões emprestados, destacar quais devem ser devolvidos
+            const galoesEmprestados = pedido.galoesEmprestados || [];
+            
             for (let i = 0; i < (pedido.quantidade || 1); i++) {
                 const div = document.createElement('div');
                 div.className = 'flex items-center gap-2';
+                
+                const isEmprestado = i < galoesEmprestados.length;
+                const galaoValue = isEmprestado ? galoesEmprestados[i] : (ultimoGalaoCliente || '');
+                
                 div.innerHTML = `
-                    <input type="text" class="data-galao-input flex-1" placeholder="MM-AAAA" maxlength="7" value="${ultimoGalaoCliente || ''}" 
-                           ${i === 0 ? 'onchange="updateOtherGalaoInputs(this.value)"' : ''}>
+                    <input type="text" class="data-galao-input flex-1 ${isEmprestado ? 'border-purple-500 bg-purple-50' : ''}" 
+                           placeholder="MM-AAAA" maxlength="7" value="${galaoValue}" 
+                           ${i === 0 && !isEmprestado ? 'onchange="updateOtherGalaoInputs(this.value)"' : ''}>
+                    ${isEmprestado ? '<span class="emprestado-badge">EMPRESTADO</span>' : ''}
                     <button type="button" class="btn-delete-estoque" onclick="this.parentElement.remove()">🗑️</button>
                 `;
                 galaoVindosList.appendChild(div);
@@ -4926,7 +5099,7 @@ Estamos sempre à disposição! 🙏`,
         function updateOtherGalaoInputs(firstValue) {
             const inputs = document.querySelectorAll('#galaoVindosList input[type="text"]');
             inputs.forEach((input, index) => {
-                if (index > 0) {
+                if (index > 0 && !input.classList.contains('border-purple-500')) {
                     input.value = firstValue;
                 }
             });
@@ -5009,6 +5182,10 @@ Estamos sempre à disposição! 🙏`,
             if (pedido.galoesVindos && pedido.galoesVindos.length > 0) {
                 galoesInfo += `<p class="text-orange-600 dark:text-orange-400 mt-1 font-semibold">🔄 Galões vindo: ${pedido.galoesVindos.join(', ')}</p>`;
             }
+            // NOVO: Mostrar galões emprestados
+            if (pedido.galoesEmprestados && pedido.galoesEmprestados.length > 0) {
+                galoesInfo += `<p class="text-purple-600 dark:text-purple-400 mt-1 font-semibold">🤝 Galões emprestados: ${pedido.galoesEmprestados.join(', ')}</p>`;
+            }
             if (!galoesInfo) {
                 galoesInfo = '<p class="text-gray-600 dark:text-gray-400 mt-1">🪣 Galões: Pendente</p>';
             }
@@ -5027,6 +5204,12 @@ Estamos sempre à disposição! 🙏`,
             if (pedido.observacoes && pedido.observacoes.trim()) {
                 observacoesHtml = `<p class="text-gray-600 dark:text-gray-400 mt-1 font-semibold">💬 Obs: ${pedido.observacoes}</p>`;
             }
+
+            // NOVO: Badge para galões emprestados
+            let emprestadoBadge = '';
+            if (pedido.galoesEmprestados && pedido.galoesEmprestados.length > 0) {
+                emprestadoBadge = `<span class="emprestado-badge ml-2">🤝 ${pedido.galoesEmprestados.length} EMPRESTADO</span>`;
+            }
             
             div.innerHTML = `
                 <div class="flex-1 mb-4 md:mb-0">
@@ -5034,6 +5217,7 @@ Estamos sempre à disposição! 🙏`,
                         ${cliente ? cliente.nome : 'Cliente não encontrado'}
                         ${syncPendingItem ? '<span class="sync-pending">Pendente</span>' : ''}
                         ${pedido.isGratis ? '<span class="fidelidade-badge ml-2">🎁 GRÁTIS!</span>' : ''}
+                        ${emprestadoBadge}
                     </h4>
                     <p class="text-gray-600 dark:text-gray-400 mt-1">
                         ${quantidadeTexto}
@@ -5075,7 +5259,9 @@ Estamos sempre à disposição! 🙏`,
             pedidosOrdenados = filtrarPedidosPorData(pedidosOrdenados);
             
             if (pedidosOrdenados.length === 0) {
-                const mensagem = filtroDataAtual === 'hoje' ? 'Nenhum pedido registrado hoje.' : 'Nenhum pedido encontrado para o período selecionado.';
+                const mensagem = filtroDataAtual === 'hoje' ? 'Nenhum pedido registrado hoje.' : 
+                                filtroDataAtual === 'pendentes' ? 'Nenhum pedido pendente encontrado.' :
+                                'Nenhum pedido encontrado para o período selecionado.';
                 lista.innerHTML = `<div class="text-center py-8"><p class="text-gray-500">${mensagem}</p></div>`;
                 return;
             }
@@ -5155,714 +5341,505 @@ Estamos sempre à disposição! 🙏`,
             visual.innerHTML = '';
             
             if (Object.keys(estoque).length === 0) {
-                visual.innerHTML = '<div class="text-center py-8 col-span-full"><p class="text-gray-500">Nenhum estoque registrado ainda.</p></div>';
-                return;
-            }
-            
-            const datasSortidas = Object.keys(estoque).sort((a, b) => {
-                const dataA = parseDataMesAno(a);
-                const dataB = parseDataMesAno(b);
-                return dataA - dataB;
-            });
-            
-            datasSortidas.forEach(data => {
-                const stockData = estoque[data];
-                
-                if (stockData.cheio > 0 || stockData.vazio > 0 || stockData.cliente > 0 || stockData.emprestado > 0) {
-                    if (stockData.cheio > 0) {
-                        const div = createGalaoVisual(data, 'cheio', stockData.cheio);
-                        visual.appendChild(div);
-                    }
-                    
-                    if (stockData.vazio > 0) {
-                        const div = createGalaoVisual(data, 'vazio', stockData.vazio);
-                        visual.appendChild(div);
-                    }
-                    
-                    if (stockData.cliente > 0) {
-                        const div = createGalaoVisual(data, 'cliente', stockData.cliente);
-                        visual.appendChild(div);
-                    }
+                visual.innerHTML = '<div class="text-center py-8"><p class="text-gray-500">Nenhum galão no estoque ainda.</p></div>';
+            return;
+        }
 
-                    if (stockData.emprestado > 0) {
-                        const div = createGalaoVisual(data, 'emprestado', stockData.emprestado);
-                        visual.appendChild(div);
+        const sortedDates = Object.keys(estoque).sort((a, b) => parseDataMesAno(a) - parseDataMesAno(b));
+
+        sortedDates.forEach(dataGalao => {
+            const stockData = estoque[dataGalao];
+            const statuses = [
+                { type: 'cheio', count: stockData.cheio || 0, icon: '🟢', label: 'Cheios' },
+                { type: 'vazio', count: stockData.vazio || 0, icon: '⚪', label: 'Vazios' },
+                { type: 'cliente', count: stockData.cliente || 0, icon: '🟡', label: 'Com Cliente' },
+                { type: 'emprestado', count: stockData.emprestado || 0, icon: '🟣', label: 'Emprestados' }
+            ];
+
+            statuses.forEach(status => {
+                if (status.count > 0) {
+                    for (let i = 0; i < status.count; i++) {
+                        const galaoContainer = document.createElement('div');
+                        galaoContainer.className = `galao-container galao-${status.type}`;
+                        galaoContainer.addEventListener('contextmenu', (e) => {
+                            e.preventDefault();
+                            currentContextMenuData = { dataGalao, status: status.type, quantidade: status.count };
+                            const contextMenu = document.getElementById('contextMenu');
+                            contextMenu.style.left = e.pageX + 'px';
+                            contextMenu.style.top = e.pageY + 'px';
+                            contextMenu.classList.remove('hidden');
+                        });
+                        
+                        galaoContainer.innerHTML = `
+                            <div class="galao-icon">${status.icon}</div>
+                            <div class="galao-data">${dataGalao}</div>
+                        `;
+                        
+                        visual.appendChild(galaoContainer);
                     }
                 }
             });
-        }
+        });
+    }
 
-        function updateEstoqueDetalhado() {
-            const lista = document.getElementById('estoqueDetalhado');
-            if (!lista) return;
-            lista.innerHTML = '';
+    function updateEstoqueDetalhado() {
+        const container = document.getElementById('estoqueDetalhado');
+        container.innerHTML = '';
+        
+        if (Object.keys(estoque).length === 0) {
+            container.innerHTML = '<div class="text-center py-4"><p class="text-gray-500 text-sm">Nenhum galão no estoque ainda.</p></div>';
+            return;
+        }
+        
+        const sortedDates = Object.keys(estoque).sort((a, b) => parseDataMesAno(b) - parseDataMesAno(a));
+        
+        sortedDates.forEach(dataGalao => {
+            const stockData = estoque[dataGalao];
+            const total = (stockData.cheio || 0) + (stockData.vazio || 0) + (stockData.cliente || 0) + (stockData.emprestado || 0);
             
-            if (Object.keys(estoque).length === 0) {
-                lista.innerHTML = '<div class="text-center py-4"><p class="text-gray-500 text-sm">Nenhum estoque registrado ainda.</p></div>';
+            if (total > 0) {
+                const div = document.createElement('div');
+                div.className = 'flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg';
+                
+                const syncPendingItem = pendingSync.find(item => 
+                    item.collection === 'estoque' && 
+                    item.data.dataGalao === dataGalao
+                );
+                
+                div.innerHTML = `
+                    <div class="flex-1">
+                        <h5 class="font-semibold text-gray-900 dark:text-white">
+                            ${dataGalao}
+                            ${syncPendingItem ? '<span class="sync-pending">Pendente</span>' : ''}
+                        </h5>
+                        <div class="flex items-center space-x-4 mt-1 text-sm">
+                            <span class="text-green-600">🟢 Cheios: ${stockData.cheio || 0}</span>
+                            <span class="text-gray-600">⚪ Vazios: ${stockData.vazio || 0}</span>
+                            <span class="text-yellow-600">🟡 Cliente: ${stockData.cliente || 0}</span>
+                            <span class="text-purple-600">🟣 Emprest.: ${stockData.emprestado || 0}</span>
+                        </div>
+                    </div>
+                    <div class="estoque-item-actions">
+                        <button onclick="editarEstoqueDetalhado('${dataGalao}')" class="btn-edit-estoque">✏️</button>
+                        <button onclick="emprestarGalaoDetalhado('${dataGalao}')" class="btn-emprestar">🤝</button>
+                        <button onclick="excluirEstoqueDetalhado('${dataGalao}')" class="btn-delete-estoque">🗑️</button>
+                    </div>
+                `;
+                
+                container.appendChild(div);
+            }
+        });
+    }
+
+    function updateDashboard() {
+        // MODIFICADO: Vendas hoje mostra quantidade de vendas, não valor
+        const hoje = getCurrentDateLocal();
+        const vendasHoje = pedidos.filter(p => isSameDate(p.dataIda, hoje) && p.pago).length;
+        
+        const totalGaloesCheios = Object.values(estoque).reduce((total, stock) => total + (stock.cheio || 0), 0);
+        const totalGaloesVazios = Object.values(estoque).reduce((total, stock) => total + (stock.vazio || 0), 0);
+        const totalGaloesEstoque = totalGaloesCheios + totalGaloesVazios;
+        const pedidosPendentes = pedidos.filter(p => !p.pago).length;
+        
+        document.getElementById('totalClientes').textContent = clientes.filter(c => !c.inativo).length;
+        document.getElementById('vendasHoje').textContent = vendasHoje; // MODIFICADO: Mostra número de vendas
+        document.getElementById('galoesEstoque').textContent = totalGaloesEstoque;
+        document.getElementById('pedidosPendentes').textContent = pedidosPendentes;
+        
+        document.getElementById('totalGaloesCheios').textContent = totalGaloesCheios;
+        document.getElementById('totalGaloesVazios').textContent = totalGaloesVazios;
+        
+        updateNotificacoesClientes();
+    }
+
+    function updateNotificacoesClientes() {
+        const container = document.getElementById('clientesNotificarContainer');
+        const hoje = new Date();
+        const diasNotificacao = configuracoes.diasNotificacao || 7;
+        
+        const clientesParaNotificar = {
+            '7days': [],
+            '15days': [],
+            '30days': []
+        };
+        
+        clientes.filter(c => !c.inativo).forEach(cliente => {
+            const ultimaCompra = cliente.ultimaCompra;
+            if (!ultimaCompra) {
+                clientesParaNotificar['30days'].push(cliente);
                 return;
             }
             
-            const datasSortidas = Object.keys(estoque).sort((a, b) => {
-                const dataA = parseDataMesAno(a);
-                const dataB = parseDataMesAno(b);
-                return dataA - dataB;
-            });
+            const dataUltimaCompra = new Date(ultimaCompra);
+            const diasSemComprar = Math.floor((hoje - dataUltimaCompra) / (1000 * 60 * 60 * 24));
             
-            const isAdmin = currentUser?.email === 'adm@comercialrocha.com';
-            
-            datasSortidas.forEach(data => {
-                const stockData = estoque[data];
-                const total = stockData.cheio + stockData.vazio + stockData.cliente + (stockData.emprestado || 0);
+            if (diasSemComprar >= 30) {
+                clientesParaNotificar['30days'].push(cliente);
+            } else if (diasSemComprar >= 15) {
+                clientesParaNotificar['15days'].push(cliente);
+            } else if (diasSemComprar >= diasNotificacao) {
+                clientesParaNotificar['7days'].push(cliente);
+            }
+        });
+        
+        // REMOVIDO: Não mostra mais os números nas notificações
+        // document.getElementById('count7Days').textContent = clientesParaNotificar['7days'].length;
+        // document.getElementById('count15Days').textContent = clientesParaNotificar['15days'].length;
+        // document.getElementById('count30Days').textContent = clientesParaNotificar['30days'].length;
+        
+        container.innerHTML = '';
+        
+        const sections = [
+            { key: '7days', title: `${diasNotificacao} dias sem comprar`, class: 'notification-7-days', color: 'orange', clients: clientesParaNotificar['7days'] },
+            { key: '15days', title: '15+ dias sem comprar', class: 'notification-15-days', color: 'red', clients: clientesParaNotificar['15days'] },
+            { key: '30days', title: '30+ dias sem comprar', class: 'notification-30-days', color: 'red', clients: clientesParaNotificar['30days'] }
+        ];
+        
+        sections.forEach(section => {
+            if (section.clients.length > 0) {
+                const sectionDiv = document.createElement('div');
+                sectionDiv.className = `notification-section ${section.class}`;
                 
-                if (total > 0) {
-                    const div = document.createElement('div');
-                    div.className = `bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-600 ${!isAdmin ? 'admin-only' : 'admin-only admin-active'}`;
+                let clientesHtml = section.clients.map(cliente => {
+                    const ultimaCompra = cliente.ultimaCompra ? formatLocalDate(cliente.ultimaCompra) : 'Nunca';
+                    const diasSemComprar = cliente.ultimaCompra ? 
+                        Math.floor((hoje - new Date(cliente.ultimaCompra)) / (1000 * 60 * 60 * 24)) : 
+                        'N/A';
                     
-                    const syncPendingItem = pendingSync.find(item => 
-                        item.collection === 'estoque' && item.data.dataGalao === data
-                    );
-                    
-                    const galoesDisponiveis = (stockData.cheio || 0) + (stockData.vazio || 0);
-                    
-                    div.innerHTML = `
-                        <div class="flex justify-between items-center mb-2">
-                            <h4 class="font-semibold text-gray-900 dark:text-white flex items-center">
-                                ${data}
-                                ${syncPendingItem ? '<span class="sync-pending ml-2">Pendente</span>' : ''}
-                            </h4>
-                            <div class="flex items-center gap-2">
-                                <span class="text-sm text-gray-500">Total: ${total}</span>
-                                ${isAdmin ? `
-                                    <div class="estoque-item-actions">
-                                        <button class="btn-edit-estoque" onclick="editarEstoqueDetalhado('${data}')">✏️</button>
-                                        ${galoesDisponiveis > 0 ? `<button class="btn-emprestar" onclick="emprestarGalaoDetalhado('${data}')" title="Emprestar galão">➡️</button>` : ''}
-                                        <button class="btn-delete-estoque" onclick="excluirEstoqueDetalhado('${data}')">🗑️</button>
-                                    </div>
-                                ` : ''}
+                    return `
+                        <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg mb-3">
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-gray-900 dark:text-white">${cliente.nome}</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Última compra: ${ultimaCompra}</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Dias sem comprar: ${diasSemComprar}</p>
+                                ${cliente.telefone ? `<p class="text-sm text-gray-600 dark:text-gray-400">📞 ${cliente.telefone}</p>` : ''}
                             </div>
-                        </div>
-                        <div class="grid grid-cols-4 gap-2 text-sm">
-                            <div class="text-center">
-                                <div class="text-green-600 font-semibold">${stockData.cheio}</div>
-                                <div class="text-gray-600 dark:text-gray-400">Cheios</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-gray-600 font-semibold">${stockData.vazio}</div>
-                                <div class="text-gray-600 dark:text-gray-400">Vazios</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-orange-600 font-semibold">${stockData.cliente}</div>
-                                <div class="text-gray-600 dark:text-gray-400">Cliente</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-purple-600 font-semibold">${stockData.emprestado || 0}</div>
-                                <div class="text-gray-600 dark:text-gray-400">Emprestado</div>
-                            </div>
+                            ${cliente.telefone ? `
+                                <button onclick="enviarNotificacaoWhatsApp('${cliente.id}')" class="btn-modern bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-sm">
+                                    📱 Notificar
+                                </button>
+                            ` : ''}
                         </div>
                     `;
-                    
-                    lista.appendChild(div);
-                }
-            });
-        }
-
-        function createGalaoVisual(data, status, quantidade) {
-            const div = document.createElement('div');
-            div.className = `galao-container ${getGalaoColorClass(status)} w-20 h-24 cursor-pointer`;
-            
-            let icon = '';
-            switch (status) {
-                case 'cheio':
-                    icon = '🏺';
-                    break;
-                case 'vazio':
-                    icon = '🫙';
-                    break;
-                case 'cliente':
-                    icon = '🚚';
-                    break;
-                case 'emprestado':
-                    icon = '🤝';
-                    break;
-            }
-            
-            div.innerHTML = `
-                <div class="galao-icon">${icon}</div>
-                <div class="galao-data">${data}</div>
-                <div class="galao-quantidade">${quantidade}</div>
-                <div class="tooltip">${getTooltipText(data, status, quantidade)}</div>
-            `;
-            
-            div.addEventListener('mouseenter', showTooltip);
-            div.addEventListener('mouseleave', hideTooltip);
-            div.addEventListener('touchstart', showTooltip);
-            div.addEventListener('touchend', hideTooltip);
-            
-            const isAdmin = currentUser?.email === 'adm@comercialrocha.com';
-            if (isAdmin) {
-                div.addEventListener('contextmenu', (e) => {
-                    e.preventDefault();
-                    showContextMenu(e, data, status, quantidade);
-                });
-            }
-            
-            return div;
-        }
-
-        function showContextMenu(event, dataGalao, status, quantidade) {
-            const isAdmin = currentUser?.email === 'adm@comercialrocha.com';
-            if (!isAdmin) return;
-            
-            const contextMenu = document.getElementById('contextMenu');
-            currentContextMenuData = { dataGalao, status, quantidade };
-            
-            contextMenu.style.left = `${event.pageX}px`;
-            contextMenu.style.top = `${event.pageY}px`;
-            contextMenu.classList.remove('hidden');
-            
-            event.stopPropagation();
-        }
-
-        function getGalaoColorClass(status) {
-            switch (status) {
-                case 'cheio': return 'galao-cheio';
-                case 'vazio': return 'galao-vazio';
-                case 'cliente': return 'galao-cliente';
-                case 'emprestado': return 'galao-emprestado';
-                default: return 'galao-vazio';
-            }
-        }
-
-        function getTooltipText(data, status, quantidade) {
-            let text = `Galões ${data} - `;
-            switch (status) {
-                case 'cheio':
-                    text += `${quantidade} Cheio(s) (Disponível)`;
-                    break;
-                case 'vazio':
-                    text += `${quantidade} Vazio(s) (Precisa Encher)`;
-                    break;
-                case 'cliente':
-                    text += `${quantidade} Com Cliente(s)`;
-                    break;
-                case 'emprestado':
-                    text += `${quantidade} Emprestado(s)`;
-                    break;
-            }
-            return text;
-        }
-
-        function showTooltip(event) {
-            const tooltip = event.target.closest('.galao-container').querySelector('.tooltip');
-            if (tooltip) {
-                tooltip.classList.add('show');
-            }
-        }
-
-        function hideTooltip(event) {
-            const tooltip = event.target.closest('.galao-container').querySelector('.tooltip');
-            if (tooltip) {
-                tooltip.classList.remove('show');
-            }
-        }
-
-        function updateDashboard() {
-            const clientesAtivos = clientes.filter(c => !c.inativo);
-            document.getElementById('totalClientes').textContent = clientesAtivos.length;
-            
-            const hoje = getCurrentDateLocal();
-            const vendasHoje = pedidos.filter(p => isSameDate(p.dataIda, hoje)).length;
-            document.getElementById('vendasHoje').textContent = vendasHoje;
-            
-			const totalCheios = Object.values(estoque).reduce((total, stock) => total + (stock.cheio || 0), 0);
-            const totalVazios = Object.values(estoque).reduce((total, stock) => total + (stock.vazio || 0), 0);
-            document.getElementById('galoesEstoque').textContent = totalCheios + totalVazios;
-            
-            const pedidosPendentes = pedidos.filter(p => !p.pago).length;
-            document.getElementById('pedidosPendentes').textContent = pedidosPendentes;
-            
-            updateClientesNotificar();
-        }
-
-        // MODIFICADO: Separar notificações por tempo sem comprar
-        function updateClientesNotificar() {
-            const container = document.getElementById('clientesNotificarContainer');
-            container.innerHTML = '';
-            
-            const agora = new Date();
-            const clientesAtivos = clientes.filter(c => !c.inativo);
-            
-            // Separar clientes por tempo sem comprar
-            const clientes7Dias = [];
-            const clientes15Dias = [];
-            const clientes30Dias = [];
-            
-            clientesAtivos.forEach(cliente => {
-                if (cliente.ultimaCompra) {
-                    const ultimaCompra = new Date(cliente.ultimaCompra);
-                    const diasSemComprar = Math.floor((agora - ultimaCompra) / (1000 * 60 * 60 * 24));
-                    
-                    if (diasSemComprar >= 30) {
-                        clientes30Dias.push({ ...cliente, diasSemComprar });
-                    } else if (diasSemComprar >= 15) {
-                        clientes15Dias.push({ ...cliente, diasSemComprar });
-                    } else if (diasSemComprar >= 7) {
-                        clientes7Dias.push({ ...cliente, diasSemComprar });
-                    }
-                } else {
-                    // Clientes sem compra
-                    clientes30Dias.push({ ...cliente, diasSemComprar: 999 });
-                }
-            });
-
-            // Criar seção para 7 dias
-            if (clientes7Dias.length > 0) {
-                createNotificationSection(container, '⚠️ 7 dias sem comprar', clientes7Dias, 'notification-7-days');
-            }
-
-            // Criar seção para 15 dias  
-            if (clientes15Dias.length > 0) {
-                createNotificationSection(container, '🔶 15+ dias sem comprar', clientes15Dias, 'notification-15-days');
-            }
-
-            // Criar seção para 30+ dias
-            if (clientes30Dias.length > 0) {
-                createNotificationSection(container, '🔴 30+ dias sem comprar', clientes30Dias, 'notification-30-days');
-            }
-
-            // Se não há clientes para notificar
-            if (clientes7Dias.length === 0 && clientes15Dias.length === 0 && clientes30Dias.length === 0) {
-                container.innerHTML = `
-                    <div class="card-modern bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900 dark:to-emerald-900 border-l-4 border-green-400 p-6">
-                        <h3 class="text-xl font-bold text-green-800 dark:text-green-200 mb-4 flex items-center">
-                            <span class="text-2xl mr-3">✅</span>
-                            Parabéns! Nenhum cliente precisa ser notificado
-                        </h3>
-                        <p class="text-green-700 dark:text-green-300">Todos os clientes estão ativos ou fizeram compras recentemente.</p>
-                    </div>
-                `;
-            }
-        }
-
-        function createNotificationSection(container, title, clientesList, className) {
-            const section = document.createElement('div');
-            section.className = `notification-section ${className}`;
-            
-            let clientesHtml = '';
-            clientesList.forEach(cliente => {
-                const diasTexto = cliente.diasSemComprar === 999 ? 'Nunca comprou' : `${cliente.diasSemComprar} dias`;
-                clientesHtml += `
-                    <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg mb-2 shadow-sm">
-                        <div class="flex-1">
-                            <h5 class="font-semibold text-gray-900 dark:text-white">${cliente.nome}</h5>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">${diasTexto}</p>
-                            ${cliente.telefone ? `<p class="text-sm text-gray-500 dark:text-gray-500">📞 ${cliente.telefone}</p>` : ''}
-                        </div>
-                        ${cliente.telefone ? `<button onclick="notificarCliente('${cliente.id}')" class="btn-modern bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-sm">📱 Notificar</button>` : ''}
-                    </div>
-                `;
-            });
-
-            section.innerHTML = `
-                <h3 class="text-lg font-bold mb-4 flex items-center justify-between">
-                    <span>${title} (${clientesList.length})</span>
-                    ${clientesList.filter(c => c.telefone).length > 0 ? `<button onclick="notificarGrupo('${className}')" class="btn-modern bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-sm">📱 Notificar Todos</button>` : ''}
-                </h3>
-                <div class="space-y-2">
+                }).join('');
+                
+                sectionDiv.innerHTML = `
+                    <h3 class="text-lg font-bold mb-4 text-gray-900 dark:text-white">
+                        ⚠️ ${section.title} (${section.clients.length})
+                    </h3>
                     ${clientesHtml}
+                `;
+                
+                container.appendChild(sectionDiv);
+            }
+        });
+        
+        if (container.innerHTML === '') {
+            container.innerHTML = '<div class="text-center py-8"><p class="text-green-600 font-semibold">🎉 Todos os clientes estão em dia!</p></div>';
+        }
+    }
+
+    function enviarNotificacaoWhatsApp(clienteId) {
+        const cliente = clientes.find(c => c.id === clienteId);
+        if (!cliente || !cliente.telefone) return;
+        
+        let mensagem = configuracoes.mensagemNotificacao;
+        mensagem = mensagem.replace('{nome}', cliente.nome);
+        
+        abrirWhatsApp(cliente.telefone, mensagem);
+    }
+
+    // Reports Functions
+    function gerarRelatorio(tipo) {
+        let dados = [];
+        let titulo = '';
+        
+        switch (tipo) {
+            case 'diario':
+                const dataDiario = document.getElementById('dataDiario').value;
+                if (!dataDiario) {
+                    alert('⚠️ Selecione uma data!');
+                    return;
+                }
+                dados = pedidos.filter(p => isSameDate(p.dataIda, dataDiario) && p.pago);
+                titulo = `Relatório Diário - ${formatLocalDate(dataDiario)}`;
+                break;
+                
+            case 'mensal':
+                const mesMensal = document.getElementById('mesMensal').value;
+                if (!mesMensal) {
+                    alert('⚠️ Selecione um mês!');
+                    return;
+                }
+                dados = pedidos.filter(p => isSameMonth(p.dataIda, mesMensal) && p.pago);
+                titulo = `Relatório Mensal - ${mesMensal}`;
+                break;
+                
+            case 'anual':
+                const anoAtual = new Date().getFullYear();
+                dados = pedidos.filter(p => {
+                    const dataPedido = createLocalDate(p.dataIda);
+                    return dataPedido.getFullYear() === anoAtual && p.pago;
+                });
+                titulo = `Relatório Anual - ${anoAtual}`;
+                break;
+        }
+        
+        exibirRelatorio(titulo, dados);
+    }
+
+    function gerarRelatorioCliente() {
+        const clienteId = document.getElementById('clienteRelatorio').value;
+        if (!clienteId) {
+            alert('⚠️ Selecione um cliente!');
+            return;
+        }
+        
+        const cliente = clientes.find(c => c.id === clienteId);
+        const dados = pedidos.filter(p => p.clienteId === clienteId && p.pago);
+        const titulo = `Relatório do Cliente - ${cliente.nome}`;
+        
+        exibirRelatorio(titulo, dados, cliente);
+    }
+
+    // MODIFICADO: Função renomeada de gerarRelatorioRanking para gerarRelatorioRanking
+    function gerarRelatorioRanking() {
+        const ranking = {};
+        
+        pedidos.filter(p => p.pago && !p.isGratis).forEach(pedido => {
+            const cliente = clientes.find(c => c.id === pedido.clienteId);
+            if (cliente) {
+                if (!ranking[cliente.id]) {
+                    ranking[cliente.id] = {
+                        nome: cliente.nome,
+                        telefone: cliente.telefone || '',
+                        endereco: cliente.endereco || '',
+                        totalGaloes: 0,
+                        totalGasto: 0,
+                        ultimaCompra: null
+                    };
+                }
+                ranking[cliente.id].totalGaloes += pedido.quantidade || 1;
+                ranking[cliente.id].totalGasto += pedido.valorTotal || 0;
+                
+                if (!ranking[cliente.id].ultimaCompra || new Date(pedido.dataIda) > new Date(ranking[cliente.id].ultimaCompra)) {
+                    ranking[cliente.id].ultimaCompra = pedido.dataIda;
+                }
+            }
+        });
+        
+        const rankingArray = Object.values(ranking).sort((a, b) => b.totalGaloes - a.totalGaloes);
+        
+        let html = `
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse border border-gray-300 dark:border-gray-600">
+                    <thead>
+                        <tr class="bg-gray-100 dark:bg-gray-700">
+                            <th class="border border-gray-300 dark:border-gray-600 p-3 text-left">Posição</th>
+                            <th class="border border-gray-300 dark:border-gray-600 p-3 text-left">Cliente</th>
+                            <th class="border border-gray-300 dark:border-gray-600 p-3 text-left">Total de Galões</th>
+                            <th class="border border-gray-300 dark:border-gray-600 p-3 text-left">Total Gasto</th>
+                            <th class="border border-gray-300 dark:border-gray-600 p-3 text-left">Última Compra</th>
+                            <th class="border border-gray-300 dark:border-gray-600 p-3 text-left">Contato</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+        
+        rankingArray.forEach((cliente, index) => {
+            const posicao = index + 1;
+            let emoji = '';
+            if (posicao === 1) emoji = '🥇';
+            else if (posicao === 2) emoji = '🥈';
+            else if (posicao === 3) emoji = '🥉';
+            
+            html += `
+                <tr class="${index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-750'}">
+                    <td class="border border-gray-300 dark:border-gray-600 p-3">${emoji} ${posicao}º</td>
+                    <td class="border border-gray-300 dark:border-gray-600 p-3">
+                        <strong>${cliente.nome}</strong>
+                        ${cliente.endereco ? `<br><small class="text-gray-600">${cliente.endereco}</small>` : ''}
+                    </td>
+                    <td class="border border-gray-300 dark:border-gray-600 p-3 font-bold text-blue-600">${cliente.totalGaloes}</td>
+                    <td class="border border-gray-300 dark:border-gray-600 p-3 font-bold text-green-600">R$ ${cliente.totalGasto.toFixed(2)}</td>
+                    <td class="border border-gray-300 dark:border-gray-600 p-3">${formatLocalDate(cliente.ultimaCompra)}</td>
+                    <td class="border border-gray-300 dark:border-gray-600 p-3">${cliente.telefone}</td>
+                </tr>
+            `;
+        });
+        
+        html += `
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-6 p-4 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                <h4 class="font-bold text-blue-800 dark:text-blue-200 mb-2">Resumo:</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div>
+                        <strong>Total de Clientes:</strong> ${rankingArray.length}
+                    </div>
+                    <div>
+                        <strong>Total de Galões Vendidos:</strong> ${rankingArray.reduce((total, c) => total + c.totalGaloes, 0)}
+                    </div>
+                    <div>
+                        <strong>Receita Total:</strong> R$ ${rankingArray.reduce((total, c) => total + c.totalGasto, 0).toFixed(2)}
+                    </div>
                 </div>
-            `;
+            </div>
+        `;
+        
+        currentRelatorioData = html;
+        currentRelatorioTitulo = 'Galões por Cliente'; // MODIFICADO: Nome alterado
+        
+        document.getElementById('conteudoRelatorio').innerHTML = html;
+        document.getElementById('resultadosRelatorio').classList.remove('hidden');
+    }
 
-            container.appendChild(section);
-        }
-
-        function notificarCliente(clienteId) {
-            const cliente = clientes.find(c => c.id === clienteId);
-            if (!cliente || !cliente.telefone) return;
+    function exibirRelatorio(titulo, dados, cliente = null) {
+        let html = '';
+        
+        if (dados.length === 0) {
+            html = '<div class="text-center py-8"><p class="text-gray-500">Nenhum dado encontrado para o período selecionado.</p></div>';
+        } else {
+            let totalVendas = 0;
+            let totalGaloes = 0;
+            let totalGaloesVazios = 0;
             
-            let mensagem = configuracoes.mensagemNotificacao;
-            mensagem = mensagem.replace('{nome}', cliente.nome);
-            
-            abrirWhatsApp(cliente.telefone, mensagem);
-        }
-
-        function notificarGrupo(className) {
-            const section = document.querySelector(`.${className}`);
-            if (!section) return;
-            
-            const buttons = section.querySelectorAll('button[onclick^="notificarCliente"]');
-            
-            if (buttons.length === 0) {
-                alert('⚠️ Nenhum cliente com telefone neste grupo!');
-                return;
-            }
-            
-            if (!confirm(`📱 Deseja notificar ${buttons.length} cliente(s) deste grupo via WhatsApp?`)) {
-                return;
-            }
-            
-            buttons.forEach((button, index) => {
-                setTimeout(() => {
-                    button.click();
-                }, index * 1000); // 1 segundo de intervalo entre cada mensagem
-            });
-        }
-
-        function notificarClientes() {
-            const buttons = document.querySelectorAll('button[onclick^="notificarCliente"]');
-            
-            if (buttons.length === 0) {
-                alert('⚠️ Nenhum cliente com telefone para notificar!');
-                return;
-            }
-            
-            if (!confirm(`📱 Deseja notificar ${buttons.length} cliente(s) via WhatsApp?`)) {
-                return;
-            }
-            
-            buttons.forEach((button, index) => {
-                setTimeout(() => {
-                    button.click();
-                }, index * 1000); // 1 segundo de intervalo entre cada mensagem
-            });
-        }
-
-        // Relatórios
-        async function gerarRelatorio(tipo) {
-            const resultadosDiv = document.getElementById('resultadosRelatorio');
-            const conteudoDiv = document.getElementById('conteudoRelatorio');
-            
-            let dados = [];
-            let titulo = '';
-            
-            try {
-                switch (tipo) {
-                    case 'diario':
-                        const dataDiario = document.getElementById('dataDiario').value;
-                        if (!dataDiario) {
-                            alert('⚠️ Selecione uma data!');
-                            return;
-                        }
-                        dados = pedidos.filter(p => isSameDate(p.dataIda, dataDiario));
-                        titulo = `Relatório Diário - ${formatLocalDate(dataDiario)}`;
-                        break;
-                        
-                    case 'mensal':
-                        const mesMensal = document.getElementById('mesMensal').value;
-                        if (!mesMensal) {
-                            alert('⚠️ Selecione um mês!');
-                            return;
-                        }
-                        dados = pedidos.filter(p => isSameMonth(p.dataIda, mesMensal));
-                        titulo = `Relatório Mensal - ${mesMensal}`;
-                        break;
-                        
-                    case 'anual':
-                        const anoAtual = new Date().getFullYear();
-                        dados = pedidos.filter(p => {
-                            const ano = createLocalDate(p.dataIda).getFullYear();
-                            return ano === anoAtual;
-                        });
-                        titulo = `Relatório Anual - ${anoAtual}`;
-                        break;
-                }
-                
-                currentRelatorioData = dados;
-                currentRelatorioTitulo = titulo;
-                
-                if (dados.length === 0) {
-                    conteudoDiv.innerHTML = '<p class="text-center py-8 text-gray-500">Nenhum pedido encontrado para o período selecionado.</p>';
-                } else {
-                    conteudoDiv.innerHTML = gerarHTMLRelatorio(dados, titulo);
-                }
-                
-                resultadosDiv.classList.remove('hidden');
-                
-            } catch (error) {
-                console.error('❌ Erro ao gerar relatório:', error);
-                alert('❌ Erro ao gerar relatório. Tente novamente.');
-            }
-        }
-
-        async function gerarRelatorioCliente() {
-            const clienteId = document.getElementById('clienteRelatorio').value;
-            if (!clienteId) {
-                alert('⚠️ Selecione um cliente!');
-                return;
-            }
-            
-            const cliente = clientes.find(c => c.id === clienteId);
-            if (!cliente) {
-                alert('⚠️ Cliente não encontrado!');
-                return;
-            }
-            
-            const dados = pedidos.filter(p => p.clienteId === clienteId);
-            const titulo = `Relatório do Cliente - ${cliente.nome}`;
-            
-            currentRelatorioData = dados;
-            currentRelatorioTitulo = titulo;
-            
-            const resultadosDiv = document.getElementById('resultadosRelatorio');
-            const conteudoDiv = document.getElementById('conteudoRelatorio');
-            
-            if (dados.length === 0) {
-                conteudoDiv.innerHTML = '<p class="text-center py-8 text-gray-500">Nenhum pedido encontrado para este cliente.</p>';
-            } else {
-                conteudoDiv.innerHTML = gerarHTMLRelatorioCliente(dados, cliente);
-            }
-            
-            resultadosDiv.classList.remove('hidden');
-        }
-
-        function gerarHTMLRelatorio(dados, titulo) {
-            const totalPedidos = dados.length;
-            const totalGaloes = dados.reduce((total, p) => total + (p.quantidade || 1), 0);
-            const totalVazios = dados.reduce((total, p) => total + (p.quantidadeVazios || 0), 0);
-            const totalValor = dados.reduce((total, p) => total + (p.valorTotal || 0), 0);
-            const pedidosPagos = dados.filter(p => p.pago).length;
-            const pedidosGratis = dados.filter(p => p.isGratis).length;
-            
-            let html = `
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg">
-                    <h2 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">${titulo}</h2>
-                    
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                        <div class="bg-blue-100 dark:bg-blue-900 p-4 rounded-lg text-center">
-                            <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">${totalPedidos}</div>
-                            <div class="text-blue-600 dark:text-blue-400 text-sm">Total Pedidos</div>
-                        </div>
-                        <div class="bg-green-100 dark:bg-green-900 p-4 rounded-lg text-center">
-                            <div class="text-2xl font-bold text-green-600 dark:text-green-400">${totalGaloes}</div>
-                            <div class="text-green-600 dark:text-green-400 text-sm">Galões de Água</div>
-                        </div>
-                        <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg text-center">
-                            <div class="text-2xl font-bold text-gray-600 dark:text-gray-400">${totalVazios}</div>
-                            <div class="text-gray-600 dark:text-gray-400 text-sm">Galões Vazios</div>
-                        </div>
-                        <div class="bg-yellow-100 dark:bg-yellow-900 p-4 rounded-lg text-center">
-                            <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">R$ ${totalValor.toFixed(2)}</div>
-                            <div class="text-yellow-600 dark:text-yellow-400 text-sm">Valor Total</div>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        <div class="bg-emerald-100 dark:bg-emerald-900 p-4 rounded-lg text-center">
-                            <div class="text-xl font-bold text-emerald-600 dark:text-emerald-400">${pedidosPagos}</div>
-                            <div class="text-emerald-600 dark:text-emerald-400 text-sm">Pedidos Pagos</div>
-                        </div>
-                        <div class="bg-red-100 dark:bg-red-900 p-4 rounded-lg text-center">
-                            <div class="text-xl font-bold text-red-600 dark:text-red-400">${totalPedidos - pedidosPagos}</div>
-                            <div class="text-red-600 dark:text-red-400 text-sm">Pedidos Pendentes</div>
-                        </div>
-                        <div class="bg-purple-100 dark:bg-purple-900 p-4 rounded-lg text-center">
-                            <div class="text-xl font-bold text-purple-600 dark:text-purple-400">${pedidosGratis}</div>
-                            <div class="text-purple-600 dark:text-purple-400 text-sm">Pedidos Grátis</div>
-                        </div>
-                    </div>
-                    
-                    <h3 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Detalhes dos Pedidos</h3>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600">
-                            <thead class="bg-gray-50 dark:bg-gray-700">
-                                <tr>
-                                    <th class="px-4 py-2 text-left text-gray-700 dark:text-gray-300">Data</th>
-                                    <th class="px-4 py-2 text-left text-gray-700 dark:text-gray-300">Cliente</th>
-                                    <th class="px-4 py-2 text-left text-gray-700 dark:text-gray-300">Galões</th>
-                                    <th class="px-4 py-2 text-left text-gray-700 dark:text-gray-300">Vazios</th>
-                                    <th class="px-4 py-2 text-left text-gray-700 dark:text-gray-300">Valor</th>
-                                    <th class="px-4 py-2 text-left text-gray-700 dark:text-gray-300">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+            html = `
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse border border-gray-300 dark:border-gray-600">
+                        <thead>
+                            <tr class="bg-gray-100 dark:bg-gray-700">
+                                <th class="border border-gray-300 dark:border-gray-600 p-3 text-left">Data</th>
+                                ${!cliente ? '<th class="border border-gray-300 dark:border-gray-600 p-3 text-left">Cliente</th>' : ''}
+                                <th class="border border-gray-300 dark:border-gray-600 p-3 text-left">Galões de Água</th>
+                                <th class="border border-gray-300 dark:border-gray-600 p-3 text-left">Galões Vazios</th>
+                                <th class="border border-gray-300 dark:border-gray-600 p-3 text-left">Valor</th>
+                                <th class="border border-gray-300 dark:border-gray-600 p-3 text-left">Pagamento</th>
+                            </tr>
+                        </thead>
+                        <tbody>
             `;
             
-            dados.forEach(pedido => {
-                const cliente = clientes.find(c => c.id == pedido.clienteId);
+            dados.forEach((pedido, index) => {
+                const clientePedido = clientes.find(c => c.id == pedido.clienteId);
+                const quantidade = pedido.quantidade || 1;
+                const quantidadeVazios = pedido.quantidadeVazios || 0;
+                const valor = pedido.isGratis ? 0 : (pedido.valorTotal || 0);
+                
+                totalVendas += valor;
+                totalGaloes += quantidade;
+                totalGaloesVazios += quantidadeVazios;
+                
                 html += `
-                    <tr class="border-b border-gray-200 dark:border-gray-600">
-                        <td class="px-4 py-2 text-gray-900 dark:text-gray-100">${formatLocalDate(pedido.dataIda)}</td>
-                        <td class="px-4 py-2 text-gray-900 dark:text-gray-100">${cliente ? cliente.nome : 'N/A'}</td>
-                        <td class="px-4 py-2 text-gray-900 dark:text-gray-100">${pedido.quantidade || 1}${pedido.isGratis ? ' (GRÁTIS)' : ''}</td>
-                        <td class="px-4 py-2 text-gray-900 dark:text-gray-100">${pedido.quantidadeVazios || 0}</td>
-                        <td class="px-4 py-2 text-gray-900 dark:text-gray-100">${pedido.isGratis ? 'GRÁTIS' : `R$ ${(pedido.valorTotal || 0).toFixed(2)}`}</td>
-                        <td class="px-4 py-2">
-                            <span class="px-2 py-1 text-xs rounded-full ${pedido.pago ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100' : 'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100'}">
-                                ${pedido.pago ? 'Pago' : 'Pendente'}
-                            </span>
-                        </td>
+                    <tr class="${index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-750'}">
+                        <td class="border border-gray-300 dark:border-gray-600 p-3">${formatLocalDate(pedido.dataIda)}</td>
+                        ${!cliente ? `<td class="border border-gray-300 dark:border-gray-600 p-3">${clientePedido ? clientePedido.nome : 'N/A'}</td>` : ''}
+                        <td class="border border-gray-300 dark:border-gray-600 p-3">${quantidade}${pedido.isGratis ? ' (GRÁTIS)' : ''}</td>
+                        <td class="border border-gray-300 dark:border-gray-600 p-3">${quantidadeVazios}</td>
+                        <td class="border border-gray-300 dark:border-gray-600 p-3 font-bold ${pedido.isGratis ? 'text-green-600' : 'text-blue-600'}">${pedido.isGratis ? 'GRÁTIS' : `R$ ${valor.toFixed(2)}`}</td>
+                        <td class="border border-gray-300 dark:border-gray-600 p-3">${pedido.formaPagamento || 'N/A'}</td>
                     </tr>
                 `;
             });
             
             html += `
-                            </tbody>
-                        </table>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-6 p-4 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                    <h4 class="font-bold text-blue-800 dark:text-blue-200 mb-2">Resumo:</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                        <div>
+                            <strong>Total de Vendas:</strong> ${dados.length}
+                        </div>
+                        <div>
+                            <strong>Galões de Água:</strong> ${totalGaloes}
+                        </div>
+                        <div>
+                            <strong>Galões Vazios:</strong> ${totalGaloesVazios}
+                        </div>
+                        <div>
+                            <strong>Receita Total:</strong> R$ ${totalVendas.toFixed(2)}
+                        </div>
                     </div>
                 </div>
             `;
-            
-            return html;
         }
+        
+        currentRelatorioData = html;
+        currentRelatorioTitulo = titulo;
+        
+        document.getElementById('conteudoRelatorio').innerHTML = html;
+        document.getElementById('resultadosRelatorio').classList.remove('hidden');
+    }
 
-        function gerarHTMLRelatorioCliente(dados, cliente) {
-            const totalPedidos = dados.length;
-            const totalGaloes = dados.reduce((total, p) => total + (p.quantidade || 1), 0);
-            const totalVazios = dados.reduce((total, p) => total + (p.quantidadeVazios || 0), 0);
-            const totalValor = dados.reduce((total, p) => total + (p.valorTotal || 0), 0);
-            const pedidosPagos = dados.filter(p => p.pago).length;
-            const pedidosGratis = dados.filter(p => p.isGratis).length;
-            
-            const galoesPagos = contarGaloesPagos(cliente.id);
-            const proximaGratis = proximaCompraGratis(cliente.id);
-            const galoesGratisDevidos = verificarFidelidade(cliente.id);
-            
-            let html = `
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg">
-                    <h2 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Relatório do Cliente - ${cliente.nome}</h2>
-                    
-                    <div class="bg-blue-100 dark:bg-blue-900 p-4 rounded-lg mb-6">
-                        <h3 class="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-2">Informações do Cliente</h3>
-                        <p class="text-blue-700 dark:text-blue-300"><strong>Nome:</strong> ${cliente.nome}</p>
-                        ${cliente.telefone ? `<p class="text-blue-700 dark:text-blue-300"><strong>Telefone:</strong> ${cliente.telefone}</p>` : ''}
-                        ${cliente.endereco ? `<p class="text-blue-700 dark:text-blue-300"><strong>Endereço:</strong> ${cliente.endereco}</p>` : ''}
-                        <p class="text-blue-700 dark:text-blue-300"><strong>Galões pagos:</strong> ${galoesPagos}</p>
-                        <p class="text-blue-700 dark:text-blue-300"><strong>Próxima grátis em:</strong> ${proximaGratis} galão(s)</p>
-                        ${galoesGratisDevidos > 0 ? `<p class="text-orange-700 dark:text-orange-300 font-bold"><strong>🎉 Galões grátis disponíveis:</strong> ${galoesGratisDevidos}</p>` : ''}
-                    </div>
-                    
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                        <div class="bg-blue-100 dark:bg-blue-900 p-4 rounded-lg text-center">
-                            <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">${totalPedidos}</div>
-                            <div class="text-blue-600 dark:text-blue-400 text-sm">Total Pedidos</div>
-                        </div>
-                        <div class="bg-green-100 dark:bg-green-900 p-4 rounded-lg text-center">
-                            <div class="text-2xl font-bold text-green-600 dark:text-green-400">${totalGaloes}</div>
-                            <div class="text-green-600 dark:text-green-400 text-sm">Galões de Água</div>
-                        </div>
-                        <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg text-center">
-                            <div class="text-2xl font-bold text-gray-600 dark:text-gray-400">${totalVazios}</div>
-                            <div class="text-gray-600 dark:text-gray-400 text-sm">Galões Vazios</div>
-                        </div>
-                        <div class="bg-yellow-100 dark:bg-yellow-900 p-4 rounded-lg text-center">
-                            <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">R$ ${totalValor.toFixed(2)}</div>
-                            <div class="text-yellow-600 dark:text-yellow-400 text-sm">Valor Total</div>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        <div class="bg-emerald-100 dark:bg-emerald-900 p-4 rounded-lg text-center">
-                            <div class="text-xl font-bold text-emerald-600 dark:text-emerald-400">${pedidosPagos}</div>
-                            <div class="text-emerald-600 dark:text-emerald-400 text-sm">Pedidos Pagos</div>
-                        </div>
-                        <div class="bg-red-100 dark:bg-red-900 p-4 rounded-lg text-center">
-                            <div class="text-xl font-bold text-red-600 dark:text-red-400">${totalPedidos - pedidosPagos}</div>
-                            <div class="text-red-600 dark:text-red-400 text-sm">Pedidos Pendentes</div>
-                        </div>
-                        <div class="bg-purple-100 dark:bg-purple-900 p-4 rounded-lg text-center">
-                            <div class="text-xl font-bold text-purple-600 dark:text-purple-400">${pedidosGratis}</div>
-                            <div class="text-purple-600 dark:text-purple-400 text-sm">Pedidos Grátis</div>
-                        </div>
-                    </div>
-                    
-                    <h3 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Histórico de Pedidos</h3>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600">
-                            <thead class="bg-gray-50 dark:bg-gray-700">
-                                <tr>
-                                    <th class="px-4 py-2 text-left text-gray-700 dark:text-gray-300">Data</th>
-                                    <th class="px-4 py-2 text-left text-gray-700 dark:text-gray-300">Galões</th>
-                                    <th class="px-4 py-2 text-left text-gray-700 dark:text-gray-300">Vazios</th>
-                                    <th class="px-4 py-2 text-left text-gray-700 dark:text-gray-300">Valor</th>
-                                    <th class="px-4 py-2 text-left text-gray-700 dark:text-gray-300">Status</th>
-                                    <th class="px-4 py-2 text-left text-gray-700 dark:text-gray-300">Galões Entregues</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-            `;
-            
-            dados.sort((a, b) => new Date(b.data) - new Date(a.data)).forEach(pedido => {
-                html += `
-                    <tr class="border-b border-gray-200 dark:border-gray-600">
-                        <td class="px-4 py-2 text-gray-900 dark:text-gray-100">${formatLocalDate(pedido.dataIda)}</td>
-                        <td class="px-4 py-2 text-gray-900 dark:text-gray-100">${pedido.quantidade || 1}${pedido.isGratis ? ' (GRÁTIS)' : ''}</td>
-                        <td class="px-4 py-2 text-gray-900 dark:text-gray-100">${pedido.quantidadeVazios || 0}</td>
-                        <td class="px-4 py-2 text-gray-900 dark:text-gray-100">${pedido.isGratis ? 'GRÁTIS' : `R$ ${(pedido.valorTotal || 0).toFixed(2)}`}</td>
-                        <td class="px-4 py-2">
-                            <span class="px-2 py-1 text-xs rounded-full ${pedido.pago ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100' : 'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100'}">
-                                ${pedido.pago ? 'Pago' : 'Pendente'}
-                            </span>
-                        </td>
-                        <td class="px-4 py-2 text-gray-900 dark:text-gray-100">${pedido.galoesEntregues ? pedido.galoesEntregues.join(', ') : 'Pendente'}</td>
-                    </tr>
-                `;
-            });
-            
-            html += `
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            `;
-            
-            return html;
+    function gerarPDF(titulo, conteudo) {
+        if (typeof window.jspdf?.jsPDF === 'undefined') {
+            alert('❌ Biblioteca PDF não disponível!');
+            return;
         }
-
-        function gerarPDF(titulo, dados) {
-            if (typeof window.jspdf?.jsPDF === 'undefined') {
-                alert('❌ Biblioteca PDF não disponível.');
-                return;
-            }
-            
+        
+        try {
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+            const pdf = new jsPDF();
             
-            // Configurar fonte
-            doc.setFont('helvetica');
-            doc.setFontSize(16);
-            doc.text('Comercial Rocha', 20, 20);
+            // Header
+            pdf.setFontSize(18);
+            pdf.text('Comercial Rocha', 20, 20);
+            pdf.setFontSize(14);
+            pdf.text(titulo, 20, 30);
+            pdf.setFontSize(10);
+            pdf.text(`Gerado em: ${formatLocalDate(getCurrentDateLocal())}`, 20, 40);
             
-            doc.setFontSize(14);
-            doc.text(titulo, 20, 35);
+            // Parse HTML table to PDF
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = conteudo;
+            const table = tempDiv.querySelector('table');
             
-            // Preparar dados para a tabela
-            const tableData = dados.map(pedido => {
-                const cliente = clientes.find(c => c.id == pedido.clienteId);
-                return [
-                    formatLocalDate(pedido.dataIda),
-                    cliente ? cliente.nome : 'N/A',
-                    `${pedido.quantidade || 1}${pedido.isGratis ? ' (GRÁTIS)' : ''}`,
-                    `${pedido.quantidadeVazios || 0}`,
-                    pedido.isGratis ? 'GRÁTIS' : `R$ ${(pedido.valorTotal || 0).toFixed(2)}`,
-                    pedido.pago ? 'Pago' : 'Pendente'
-                ];
-            });
-            
-            const tableHeaders = ['Data', 'Cliente', 'Galões', 'Vazios', 'Valor', 'Status'];
-            
-            // Adicionar tabela
-            if (typeof doc.autoTable === 'function') {
-                doc.autoTable({
-                    head: [tableHeaders],
-                    body: tableData,
-                    startY: 45,
+            if (table && typeof pdf.autoTable === 'function') {
+                const headers = [];
+                const rows = [];
+                
+                // Extract headers
+                const headerCells = table.querySelectorAll('thead th');
+                headerCells.forEach(cell => {
+                    headers.push(cell.textContent.trim());
+                });
+                
+                // Extract rows
+                const bodyRows = table.querySelectorAll('tbody tr');
+                bodyRows.forEach(row => {
+                    const rowData = [];
+                    const cells = row.querySelectorAll('td');
+                    cells.forEach(cell => {
+                        rowData.push(cell.textContent.trim());
+                    });
+                    rows.push(rowData);
+                });
+                
+                pdf.autoTable({
+                    head: [headers],
+                    body: rows,
+                    startY: 50,
                     styles: { fontSize: 8 }
                 });
             } else {
-                doc.setFontSize(10);
-                let y = 50;
-                tableData.forEach(row => {
-                    doc.text(row.join(' | '), 20, y);
-                    y += 10;
-                });
+                // Fallback: plain text
+                const lines = conteudo.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+                const splitText = pdf.splitTextToSize(lines, 170);
+                pdf.text(splitText, 20, 50);
             }
             
-            // Salvar
-            const fileName = `${titulo.replace(/\s+/g, '_')}_${getCurrentDateLocal()}.pdf`;
-            doc.save(fileName);
+            const fileName = `${titulo.replace(/[^a-zA-Z0-9]/g, '_')}_${getCurrentDateLocal()}.pdf`;
+            pdf.save(fileName);
             
-            alert('✅ PDF gerado com sucesso!');
+        } catch (error) {
+            console.error('❌ Erro ao gerar PDF:', error);
+            alert('❌ Erro ao gerar PDF. Tente novamente.');
         }
-    </script>
+    }
+</script>
+
 </body>
 </html>
