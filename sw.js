@@ -3,7 +3,7 @@ const CACHE_NAME = 'comercial-rocha-cache-v1';
 
 // Lista de arquivos essenciais para o funcionamento do aplicativo offline (o "App Shell").
 const urlsToCache = [
-  '/', // A página HTML principal.
+  './index.html'
   // Outros assets locais como ícones ou manifest.json podem ser adicionados aqui.
   // Ex: '/icons/icon-192.png', '/manifest.json'
 ];
