@@ -76,11 +76,11 @@ self.addEventListener('fetch', (event) => {
             // Precisamos cloná-la para que uma cópia vá para o navegador e outra para o cache.
             const responseToCache = networkResponse.clone();
 
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-
+            if (event.request.url.startsWith('http')) {
+  caches.open(cacheName).then(cache => {
+    cache.put(event.request, response.clone());
+  });
+}
             return networkResponse;
           }
         );
