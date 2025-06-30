@@ -1,5 +1,5 @@
 // Define o nome e a versão do cache.
-const CACHE_NAME = 'comercial-rocha-cache-v1';
+const CACHE_NAME = 'comercial-rocha-cache-v2';
 
 // Lista de arquivos essenciais para o funcionamento do aplicativo offline (o "App Shell").
 const urlsToCache = [
@@ -13,6 +13,7 @@ const urlsToCache = [
  * Ele abre o cache e armazena os arquivos do App Shell para uso offline.
  */
 self.addEventListener('install', (event) => {
+	self.skipWaiting(); // ⚡ Ativa imediatamente após instalar
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
@@ -41,6 +42,7 @@ self.addEventListener('activate', (event) => {
       );
     })
   );
+  self.clients.claim(); // ⚡ Assume controle imediatamente após ativar
 });
 
 /**
