@@ -1,19 +1,19 @@
-// Define o nome e a versão do cache.
+// Service Worker Corrigido - Comercial Rocha
+// Versão corrigida que resolve o erro de chrome-extension
+
 const CACHE_NAME = 'comercial-rocha-cache-v2';
 
-// Lista de arquivos essenciais para o funcionamento do aplicativo offline (o "App Shell").
 const urlsToCache = [
   './index.html'
-  // Outros assets locais como ícones ou manifest.json podem ser adicionados aqui.
+  // Outros assets locais podem ser adicionados aqui
   // Ex: '/icons/icon-192.png', '/manifest.json'
 ];
 
 /**
  * Evento 'install': É acionado quando o Service Worker é instalado.
- * Ele abre o cache e armazena os arquivos do App Shell para uso offline.
  */
 self.addEventListener('install', (event) => {
-	self.skipWaiting(); // ⚡ Ativa imediatamente após instalar
+  self.skipWaiting(); // Ativa imediatamente após instalar
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
@@ -24,16 +24,14 @@ self.addEventListener('install', (event) => {
 });
 
 /**
- * Evento 'activate': É acionado após a instalação e é o momento ideal para
- * limpar caches antigos que não são mais necessários.
+ * Evento 'activate': Limpa caches antigos que não são mais necessários.
  */
 self.addEventListener('activate', (event) => {
-  const cacheWhitelist = [CACHE_NAME]; // Lista de caches a serem mantidos.
+  const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          // Se o nome do cache não estiver na whitelist, ele é excluído.
           if (cacheWhitelist.indexOf(cacheName) === -1) {
             console.log('Excluindo cache antigo:', cacheName);
             return caches.delete(cacheName);
@@ -42,45 +40,48 @@ self.addEventListener('activate', (event) => {
       );
     })
   );
-  self.clients.claim(); // ⚡ Assume controle imediatamente após ativar
+  self.clients.claim(); // Assume controle imediatamente após ativar
 });
 
 /**
- * Evento 'fetch': Intercepta todas as solicitações de rede da página.
- * Ele verifica se a solicitação já está no cache. Se estiver, retorna a resposta do cache.
- * Se não, ele busca na rede, clona a resposta, armazena no cache para uso futuro e retorna a resposta da rede.
+ * Evento 'fetch': Intercepta solicitações de rede e implementa cache.
+ * CORRIGIDO: Agora filtra adequadamente URLs não suportadas.
  */
 self.addEventListener('fetch', (event) => {
-  // Ignora solicitações que não são do tipo GET.
+  // Ignora solicitações que não são GET
   if (event.request.method !== 'GET') {
+    return;
+  }
+
+  // CORREÇÃO: Ignora URLs que não são HTTP/HTTPS (como chrome-extension://)
+  if (!event.request.url.startsWith('http')) {
     return;
   }
 
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
-        // Se a resposta for encontrada no cache, retorna ela.
+        // Se a resposta for encontrada no cache, retorna ela
         if (response) {
           return response;
         }
 
-        // Se não, busca a solicitação na rede.
+        // Se não, busca a solicitação na rede
         return fetch(event.request).then(
           (networkResponse) => {
-            // Verifica se a resposta da rede é válida.
+            // Verifica se a resposta da rede é válida
             if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
               return networkResponse;
             }
 
-            // Clona a resposta. Uma resposta é um stream e só pode ser consumida uma vez.
-            // Precisamos cloná-la para que uma cópia vá para o navegador e outra para o cache.
+            // Clona a resposta para o cache
             const responseToCache = networkResponse.clone();
 
-            if (event.request.url.startsWith('http')) {
-  caches.open(cacheName).then(cache => {
-    cache.put(event.request, response.clone());
-  });
-}
+            // CORREÇÃO: Cache implementado corretamente
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseToCache);
+            });
+
             return networkResponse;
           }
         );
