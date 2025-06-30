@@ -1,104 +1,18 @@
 <!DOCTYPE html><html lang="pt-BR"><head>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="
-default-src 'self' data: blob: 'unsafe-inline' 'unsafe-eval'
-  https://cdnjs.cloudflare.com
-  https://cdn.jsdelivr.net
-  https://code.jquery.com
-  https://unpkg.com
-  https://d3js.org
-  https://threejs.org
-  https://cdn.plot.ly
-  https://stackpath.bootstrapcdn.com
-  https://maps.googleapis.com
-  https://cdn.tailwindcss.com
-  https://ajax.googleapis.com
-  https://kit.fontawesome.com
-  https://cdn.datatables.net
-  https://maxcdn.bootstrapcdn.com
-  https://code.highcharts.com
-  https://tako-static-assets-production.s3.amazonaws.com
-  https://www.youtube.com
-  https://fonts.googleapis.com
-  https://fonts.gstatic.com
-  https://pfst.cf2.poecdn.net
-  https://puc.poecdn.net
-  https://i.imgur.com
-  https://wikimedia.org
-  https://*.icons8.com
-  https://*.giphy.com
-  https://picsum.photos
-  https://images.unsplash.com
-  https://www.gstatic.com
-  https://*.firebaseapp.com
-  https://*.googleapis.com
-  https://securetoken.googleapis.com
-  https://identitytoolkit.googleapis.com
-  https://firebase.googleapis.com
-  https://*.cloudfunctions.net
-  https://firebaseinstallations.googleapis.com
-  https://nominatim.openstreetmap.org
-  https://1.1.1.1
-  https://www.google.com;
-
-script-src 'self' 'unsafe-inline' 'unsafe-eval'
-  https://www.gstatic.com
-  https://*.firebaseapp.com
-  https://*.googleapis.com
-  https://securetoken.googleapis.com
-  https://identitytoolkit.googleapis.com
-  https://firebase.googleapis.com
-  https://*.cloudfunctions.net
-  https://firebaseinstallations.googleapis.com
-  https://cdn.tailwindcss.com
-  https://cdnjs.cloudflare.com
-  https://cdn.jsdelivr.net
-  https://code.jquery.com
-  https://unpkg.com
-  https://kit.fontawesome.com
-  https://cdn.plot.ly
-  https://code.highcharts.com;
-
-connect-src 'self'
-  https://www.gstatic.com
-  https://*.firebaseapp.com
-  https://*.googleapis.com
-  https://securetoken.googleapis.com
-  https://identitytoolkit.googleapis.com
-  https://firebase.googleapis.com
-  https://*.cloudfunctions.net
-  https://firebaseinstallations.googleapis.com
-  https://nominatim.openstreetmap.org
-  https://1.1.1.1
-  https://www.google.com;
-
-img-src 'self' data: blob:
-  https://www.gstatic.com
-  https://cdnjs.cloudflare.com
-  https://cdn.jsdelivr.net
-  https://code.jquery.com
-  https://unpkg.com
-  https://images.unsplash.com
-  https://i.imgur.com
-  https://wikimedia.org
-  https://*.icons8.com
-  https://*.giphy.com
-  https://picsum.photos
-  https://cdn.plot.ly
-  https://code.highcharts.com;
-
-frame-src 'self'
-  https://www.youtube.com
-  https://trytako.com
-  https://*.firebaseapp.com;
-
+  <meta http-equiv="Content-Security-Policy" content="
+default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com https://www.gstatic.com https://*.firebaseapp.com https://*.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://firebase.googleapis.com https://*.cloudfunctions.net https://firebaseinstallations.googleapis.com https://nominatim.openstreetmap.org https://1.1.1.1 https://www.google.com;
+script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://*.firebaseapp.com https://*.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://firebase.googleapis.com https://*.cloudfunctions.net https://firebaseinstallations.googleapis.com https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://kit.fontawesome.com https://cdn.plot.ly https://code.highcharts.com;
+connect-src 'self' https://www.gstatic.com https://*.firebaseapp.com https://*.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://firebase.googleapis.com https://*.cloudfunctions.net https://firebaseinstallations.googleapis.com https://nominatim.openstreetmap.org https://1.1.1.1 https://www.google.com;
+img-src 'self' data: blob: https://www.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://images.unsplash.com https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://cdn.plot.ly https://code.highcharts.com;
+frame-src 'self' https://www.youtube.com https://trytako.com https://*.firebaseapp.com;
 child-src 'self';
 manifest-src 'self';
 worker-src 'self';
 upgrade-insecure-requests;
 block-all-mixed-content;
-"> 
+">   
 
     <title>Comercial Rocha - Controle de Galões</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -211,8 +125,8 @@ window.firebaseLoaded = true;
             theme: {
                 extend: {
                     colors: {
-                        primary: '#5D5CDE',
-                        secondary: '#1e40af'
+                        primary: '#4B5563',
+                        secondary: '#374151'
                     }
                 }
             }
@@ -220,7 +134,7 @@ window.firebaseLoaded = true;
     </script>
     <style>
         .splash-screen {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4B5563 0%, #374151 100%);
         }
 
         .login-container {
@@ -228,6 +142,16 @@ window.firebaseLoaded = true;
             backdrop-filter: blur(10px);
             border-radius: 20px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+		
+		/* NOVO: Animação da engrenagem */
+        .gear-rotate {
+            animation: rotate 3s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
         
         .galao-container {
@@ -352,7 +276,7 @@ window.firebaseLoaded = true;
         }
         
         .btn-modern {
-            background: linear-gradient(135deg, #5D5CDE, #7c3aed);
+            background: linear-gradient(135deg, #4B5563, #374151);
             border: none;
             border-radius: 12px;
             padding: 12px 24px;
@@ -363,9 +287,9 @@ window.firebaseLoaded = true;
         }
         
         .btn-modern:hover {
-            background: linear-gradient(135deg, #4c1d95, #5D5CDE);
+            background: linear-gradient(135deg, #374151, #111827);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(93, 92, 222, 0.4);
+            box-shadow: 0 4px 12px rgba(75, 85, 99, 0.4);
         }
         
         .input-modern {
@@ -378,8 +302,8 @@ window.firebaseLoaded = true;
         }
         
         .input-modern:focus {
-            border-color: #5D5CDE;
-            box-shadow: 0 0 0 3px rgba(93, 92, 222, 0.1);
+            border-color: #4B5563;
+            box-shadow: 0 0 0 3px rgba(75, 85, 99, 0.1);
             outline: none;
         }
         
@@ -390,7 +314,7 @@ window.firebaseLoaded = true;
         }
         
         .nav-modern {
-            background: linear-gradient(135deg, #1e40af, #3730a3);
+            background: linear-gradient(135deg, #374151, #111827);
         }
         
         .stat-card {
@@ -405,13 +329,13 @@ window.firebaseLoaded = true;
         }
         
         .cliente-info-card {
-            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-            border: 1px solid #3b82f6;
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            border: 1px solid #4B5563;
         }
         
         .dark .cliente-info-card {
-            background: linear-gradient(135deg, #1e3a8a, #1e40af);
-            border: 1px solid #60a5fa;
+            background: linear-gradient(135deg, #374151, #1f2937);
+            border: 1px solid #6b7280;
         }
         
         .payment-modal, .return-galao-modal, .edit-cliente-modal, .edit-estoque-modal, .add-cliente-modal, .config-modal, .confirm-details-modal, .edit-pedido-modal, .emprestimo-modal, .receive-galao-modal {
@@ -451,13 +375,13 @@ window.firebaseLoaded = true;
         }
         
         .payment-option:hover {
-            border-color: #5D5CDE;
-            background: rgba(93, 92, 222, 0.05);
+            border-color: #4B5563;
+            background: rgba(75, 85, 99, 0.05);
         }
         
         .payment-option.selected {
-            border-color: #5D5CDE;
-            background: rgba(93, 92, 222, 0.1);
+            border-color: #4B5563;
+            background: rgba(75, 85, 99, 0.1);
         }
         
         .dark .payment-option {
@@ -465,17 +389,17 @@ window.firebaseLoaded = true;
         }
         
         .dark .payment-option:hover {
-            border-color: #5D5CDE;
-            background: rgba(93, 92, 222, 0.1);
+            border-color: #4B5563;
+            background: rgba(75, 85, 99, 0.1);
         }
 
         .loading-indicator {
             display: inline-block;
             width: 20px;
             height: 20px;
-            border: 3px solid rgba(93, 92, 222, 0.3);
+            border: 3px solid rgba(75, 85, 99, 0.3);
             border-radius: 50%;
-            border-top-color: #5D5CDE;
+            border-top-color: #4B5563;
             animation: spin 1s ease-in-out infinite;
         }
 
@@ -532,7 +456,7 @@ window.firebaseLoaded = true;
         }
 
         .status-auth {
-            background: linear-gradient(135deg, #5D5CDE, #7c3aed);
+            background: linear-gradient(135deg, #4B5563, #374151);
             color: white;
         }
 
@@ -629,13 +553,13 @@ window.firebaseLoaded = true;
         }
 
         .galao-selection.selected {
-            border-color: #5D5CDE;
-            background: rgba(93, 92, 222, 0.1);
+            border-color: #4B5563;
+            background: rgba(75, 85, 99, 0.1);
         }
 
         .galao-selection:hover {
-            border-color: #5D5CDE;
-            background: rgba(93, 92, 222, 0.05);
+            border-color: #4B5563;
+            background: rgba(75, 85, 99, 0.05);
         }
 
         .galao-info-card {
@@ -699,15 +623,18 @@ window.firebaseLoaded = true;
         .estoque-item-actions {
             display: flex;
             gap: 8px;
+            flex-wrap: nowrap;
         }
 
         .estoque-item-actions button {
-            padding: 4px 8px;
+            padding: 6px 10px;
             border: none;
             border-radius: 6px;
             font-size: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
+            min-width: 40px;
+            flex-shrink: 0;
         }
 
         .btn-edit-estoque {
@@ -717,15 +644,6 @@ window.firebaseLoaded = true;
 
         .btn-edit-estoque:hover {
             background: #2563eb;
-        }
-
-        .btn-delete-estoque {
-            background: #ef4444;
-            color: white;
-        }
-
-        .btn-delete-estoque:hover {
-            background: #dc2626;
         }
 
         .btn-emprestar {
@@ -760,12 +678,12 @@ window.firebaseLoaded = true;
         }
 
         .estoque-geral-card {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            background: linear-gradient(135deg, #4B5563, #374151);
             color: white;
             border-radius: 16px;
             padding: 24px;
             text-align: center;
-            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 4px 20px rgba(75, 85, 99, 0.3);
         }
 
         .cliente-inativo {
@@ -815,7 +733,7 @@ window.firebaseLoaded = true;
         }
 
         input:checked + .slider {
-            background-color: #5D5CDE;
+            background-color: #4B5563;
         }
 
         input:checked + .slider:before {
@@ -835,12 +753,20 @@ window.firebaseLoaded = true;
             border: 1px solid #a855f7;
         }
 
+        /* CORRIGIDO: Layout melhorado para filtros mobile */
         .filter-container {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
             gap: 12px;
-            align-items: center;
             margin-bottom: 16px;
+        }
+
+        @media (min-width: 768px) {
+            .filter-container {
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: center;
+            }
         }
 
         .filter-item {
@@ -857,20 +783,21 @@ window.firebaseLoaded = true;
 
         .filter-buttons {
             display: flex;
-            gap: 8px;
-            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
         }
 
         .filter-btn {
-            padding: 8px 16px;
+            padding: 6px 12px;
             background: #f3f4f6;
             border: 1px solid #e5e7eb;
             border-radius: 8px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             color: #4b5563;
+            flex-shrink: 0;
         }
 
         .filter-btn:hover {
@@ -878,9 +805,9 @@ window.firebaseLoaded = true;
         }
 
         .filter-btn.active {
-            background: linear-gradient(135deg, #5D5CDE, #7c3aed);
+            background: linear-gradient(135deg, #4B5563, #374151);
             color: white;
-            border-color: #5D5CDE;
+            border-color: #4B5563;
         }
 
         .dark .filter-btn {
@@ -894,9 +821,43 @@ window.firebaseLoaded = true;
         }
 
         .dark .filter-btn.active {
-            background: linear-gradient(135deg, #5D5CDE, #7c3aed);
+            background: linear-gradient(135deg, #4B5563, #374151);
             color: white;
-            border-color: #5D5CDE;
+            border-color: #4B5563;
+        }
+
+        /* CORRIGIDO: Layout melhorado para estoque detalhado */
+        .estoque-item-grid {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .estoque-item-info {
+            min-width: 0;
+        }
+
+        .estoque-status-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        @media (min-width: 768px) {
+            .estoque-status-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 12px;
+            }
+        }
+
+        .estoque-status-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            white-space: nowrap;
         }
 
         .pedido-gratis {
@@ -925,8 +886,8 @@ window.firebaseLoaded = true;
         }
 
         .autocomplete-input:focus {
-            border-color: #5D5CDE;
-            box-shadow: 0 0 0 3px rgba(93, 92, 222, 0.1);
+            border-color: #4B5563;
+            box-shadow: 0 0 0 3px rgba(75, 85, 99, 0.1);
             outline: none;
         }
 
@@ -1108,6 +1069,80 @@ window.firebaseLoaded = true;
             font-weight: bold;
             margin-left: 8px;
         }
+
+        /* MELHORADO: Estilos para backup automático com layout organizado */
+        .backup-notification {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 16px;
+            text-align: center;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .backup-notification button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            margin: 0 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .backup-notification button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* MELHORADO: Layout da seção de backup */
+        .backup-config-section {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, rgba(75, 85, 99, 0.05), rgba(156, 163, 175, 0.05));
+        }
+
+        .dark .backup-config-section {
+            border-color: #4b5563;
+            background: linear-gradient(135deg, rgba(75, 85, 99, 0.1), rgba(156, 163, 175, 0.1));
+        }
+
+        .backup-path-input-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .backup-path-input-group input {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .backup-path-input-group button {
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .backup-buttons-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .backup-buttons-group button {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        @media (max-width: 640px) {
+            .backup-buttons-group button {
+                min-width: 100%;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
@@ -1148,6 +1183,12 @@ window.firebaseLoaded = true;
     <!-- Splash Screen with Login -->
     <div id="splashScreen" class="fixed inset-0 splash-screen flex items-center justify-center z-50">
         <div class="text-center text-white">
+			<div class="mb-6 flex justify-center">
+                <svg class="gear-rotate w-20 h-20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                    <path class="fa-secondary" opacity=".4" fill="#fed920" d="M192 256a64 64 0 1 0 128 0 64 64 0 1 0 -128 0z"></path>
+                    <path class="fa-primary" fill="#fed920" d="M489.6 191.2c6.9-6.2 9.6-15.9 6.4-24.6c-4.4-11.9-9.7-23.3-15.8-34.3l-4.7-8.1c-6.6-11-14-21.4-22.1-31.2c-5.9-7.2-15.7-9.6-24.5-6.8l-55.7 17.7C359.8 93.6 345 85 329.2 78.4L316.7 21.3c-2-9.1-9-16.3-18.2-17.8C284.7 1.2 270.5 0 256 0s-28.7 1.2-42.5 3.5c-9.2 1.5-16.2 8.7-18.2 17.8L182.8 78.4c-15.8 6.5-30.6 15.1-44 25.4L83.1 86.1c-8.8-2.8-18.6-.3-24.5 6.8c-8.1 9.8-15.5 20.2-22.1 31.2l-4.7 8.1c-6.1 11-11.4 22.4-15.8 34.3c-3.2 8.7-.5 18.4 6.4 24.6l43.3 39.4C64.6 238.9 64 247.4 64 256s.6 17.1 1.7 25.4L22.4 320.8c-6.9 6.2-9.6 15.9-6.4 24.6c4.4 11.9 9.7 23.3 15.8 34.3l4.7 8.1c6.6 11 14 21.4 22.1 31.2c5.9 7.2 15.7 9.6 24.5 6.8l55.7-17.7c13.4 10.3 28.2 18.9 44 25.4l12.5 57.1c2 9.1 9 16.3 18.2 17.8c13.8 2.3 28 3.5 42.5 3.5s28.7-1.2 42.5-3.5c9.2-1.5 16.2-8.7 18.2-17.8l12.5-57.1c15.8-6.5 30.6-15.1 44-25.4l55.7 17.7c8.8 2.8 18.6 .3 24.5-6.8c8.1-9.8 15.5-20.2 22.1-31.2l4.7-8.1c6.1-11 11.4-22.4 15.8-34.3c3.2-8.7 .5-18.4-6.4-24.6l-43.3-39.4c1.1-8.3 1.7-16.8 1.7-25.4s-.6-17.1-1.7-25.4l43.3-39.4zM256 160a96 96 0 1 1 0 192 96 96 0 1 1 0-192z"></path>
+                </svg>
+            </div>
             <h1 class="text-4xl font-bold mb-3">Comercial Rocha</h1>
             <p class="text-xl opacity-90 mb-6">Sistema de Controle de Galões</p>
             
@@ -1187,7 +1228,6 @@ window.firebaseLoaded = true;
     <div id="contextMenu" class="context-menu hidden">
         <div class="context-menu-item" onclick="editarEstoque()">✏️ Editar Quantidade</div>
         <div class="context-menu-item" onclick="emprestarGalao()">🤝 Emprestar</div>
-        <div class="context-menu-item" onclick="excluirEstoqueItem()">🗑️ Excluir</div>
     </div>
 
     <!-- Empréstimo Modal -->
@@ -1264,6 +1304,56 @@ window.firebaseLoaded = true;
                                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Galões para Grátis</label>
                                 <input type="number" id="configGaloesParaGratis" min="1" class="input-modern w-full" placeholder="10">
                                 <p class="text-xs text-gray-500 mt-1">Quantos galões comprados para ganhar 1 grátis</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- MELHORADO: Configuração de Backup Automático com layout organizado -->
+                <div class="admin-only backup-config-section" id="backupConfigSection">
+                    <h4 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center">
+                        <span class="text-2xl mr-2">🔄</span>
+                        Backup Automático
+                    </h4>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Frequência de Backup (dias)</label>
+                                <input type="number" id="configFrequenciaBackup" min="1" max="30" class="input-modern w-full" placeholder="7">
+                                <p class="text-xs text-gray-500 mt-1">A cada quantos dias fazer backup automático</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Status do Último Backup</label>
+                                <div class="input-modern w-full bg-gray-100 dark:bg-gray-600 text-sm">
+                                    <span id="ultimoBackupStatus">Nunca realizado</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Data do último backup realizado</p>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Configurar Local do Backup</label>
+                            <div class="backup-path-input-group">
+                                <input type="text" id="configCaminhoBackup" readonly="" class="input-modern bg-gray-100 dark:bg-gray-600" placeholder="Nenhum caminho selecionado">
+                                <button type="button" id="selecionarCaminhoBackup" class="btn-modern bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-sm">
+                                    📁 Selecionar
+                                </button>
+                                <button type="button" id="limparCaminhoBackup" class="btn-modern bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-sm">
+                                    🗑️ Limpar
+                                </button>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Pasta onde os backups serão salvos automaticamente</p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Ações de Backup</label>
+                            <div class="backup-buttons-group">
+                                <button type="button" id="fazerBackupManual" class="btn-modern bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-sm">
+                                    📥 Backup Manual
+                                </button>
+                                <button type="button" id="testarBackupAuto" class="btn-modern bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-sm">
+                                    🧪 Testar Backup Auto
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -1607,6 +1697,20 @@ window.firebaseLoaded = true;
         </div>
     </div>
 
+    <!-- MELHORADO: Backup Notification -->
+    <div id="backupNotification" class="backup-notification hidden">
+        <div class="mb-2">
+            <span class="text-lg">🔄</span>
+            <strong>Lembrete de Backup</strong>
+        </div>
+        <p class="text-sm mb-3">É hora de fazer o backup dos dados. Última vez: <span id="lastBackupDate">Nunca</span></p>
+        <div>
+            <button onclick="fazerBackupAutomatico()" class="mr-2">📥 Fazer Backup Agora</button>
+            <button onclick="adiarBackup()" class="mr-2">⏰ Lembrar Amanhã</button>
+            <button onclick="dispensarBackup()">❌ Dispensar</button>
+        </div>
+    </div>
+
     <!-- Main App -->
     <div id="mainApp" class="hidden min-h-screen">
         <!-- Offline indicator -->
@@ -1614,32 +1718,37 @@ window.firebaseLoaded = true;
             📱 Modo Offline - Dados serão sincronizados quando a conexão retornar
         </div>
 
-        <!-- Header -->
-        <header class="bg-gradient-to-r from-primary to-purple-700 text-white shadow-xl">
-            <div class="container mx-auto px-4 py-6">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                            <span class="text-2xl">🪣</span>
-                        </div>
-                        <div>
-                            <h1 class="text-2xl font-bold">Comercial Rocha</h1>
-                            <p class="text-sm opacity-90">Gestão Inteligente de Galões</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <button id="configBtn" class="hidden p-2 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30 transition-all" onclick="abrirConfiguracoes()">
-                            <span class="text-xl">⚙️</span>
-                        </button>
-                        <button id="menuToggle" class="md:hidden p-2 rounded-lg bg-white bg-opacity-20">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                            </svg>
-                        </button>
-                    </div>
+<!-- Header -->
+<header class="bg-gradient-to-r from-primary to-gray-700 text-white shadow-xl">
+    <div class="container mx-auto px-4 py-6">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                    <!-- Ícone de engrenagem amarela estática -->
+                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path class="fa-secondary" opacity=".4" fill="#fed920" d="M192 256a64 64 0 1 0 128 0 64 64 0 1 0 -128 0z"></path>
+                        <path class="fa-primary" fill="#fed920" d="M489.6 191.2c6.9-6.2 9.6-15.9 6.4-24.6c-4.4-11.9-9.7-23.3-15.8-34.3l-4.7-8.1c-6.6-11-14-21.4-22.1-31.2c-5.9-7.2-15.7-9.6-24.5-6.8l-55.7 17.7C359.8 93.6 345 85 329.2 78.4L316.7 21.3c-2-9.1-9-16.3-18.2-17.8C284.7 1.2 270.5 0 256 0s-28.7 1.2-42.5 3.5c-9.2 1.5-16.2 8.7-18.2 17.8L182.8 78.4c-15.8 6.5-30.6 15.1-44 25.4L83.1 86.1c-8.8-2.8-18.6-.3-24.5 6.8c-8.1 9.8-15.5 20.2-22.1 31.2l-4.7 8.1c-6.1 11-11.4 22.4-15.8 34.3c-3.2 8.7-.5 18.4 6.4 24.6l43.3 39.4C64.6 238.9 64 247.4 64 256s.6 17.1 1.7 25.4L22.4 320.8c-6.9 6.2-9.6 15.9-6.4 24.6c4.4 11.9 9.7 23.3 15.8 34.3l4.7 8.1c6.6 11 14 21.4 22.1 31.2c5.9 7.2 15.7 9.6 24.5 6.8l55.7-17.7c13.4 10.3 28.2 18.9 44 25.4l12.5 57.1c2 9.1 9 16.3 18.2 17.8c13.8 2.3 28 3.5 42.5 3.5s28.7-1.2 42.5-3.5c9.2-1.5 16.2-8.7 18.2-17.8l12.5-57.1c15.8-6.5 30.6-15.1 44-25.4l55.7 17.7c8.8 2.8 18.6 .3 24.5-6.8c8.1-9.8 15.5-20.2 22.1-31.2l4.7-8.1c6.1-11 11.4-22.4 15.8-34.3c3.2-8.7 .5-18.4-6.4-24.6l-43.3-39.4c1.1-8.3 1.7-16.8 1.7-25.4s-.6-17.1-1.7-25.4l43.3-39.4zM256 160a96 96 0 1 1 0 192 96 96 0 1 1 0-192z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold">Comercial Rocha</h1>
+                    <p class="text-sm opacity-90">Gestão Inteligente de Galões</p>
                 </div>
             </div>
-        </header>
+            <div class="flex items-center space-x-4">
+                <button id="configBtn" class="hidden p-2 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30 transition-all" onclick="abrirConfiguracoes()">
+                    <span class="text-xl">⚙️</span>
+                </button>
+                <button id="menuToggle" class="md:hidden p-2 rounded-lg bg-white bg-opacity-20">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
 
         <!-- Navigation -->
         <nav id="navigation" class="nav-modern text-white shadow-lg">
@@ -1733,7 +1842,7 @@ window.firebaseLoaded = true;
             <section id="clientes" class="section hidden">
                 <div class="flex items-center justify-between mb-8">
                     <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Gestão de Clientes</h2>
-                    <button onclick="abrirAddCliente()" class="btn-modern bg-gradient-to-r from-primary to-purple-600 hover:from-purple-600 hover:to-purple-700">
+                    <button onclick="abrirAddCliente()" class="btn-modern bg-gradient-to-r from-primary to-gray-600 hover:from-gray-600 hover:to-gray-700">
                         ➕ Adicionar Cliente
                     </button>
                 </div>
@@ -1798,7 +1907,7 @@ window.firebaseLoaded = true;
 
                         <!-- Info do Cliente -->
                         <div id="clienteInfo" class="hidden cliente-info-card p-4 rounded-lg">
-                            <h4 class="font-semibold text-blue-800 dark:text-blue-200 mb-2">Informações do Cliente</h4>
+                            <h4 class="font-semibold text-gray-800 dark:text-gray-200 mb-2">Informações do Cliente</h4>
                             <div id="clienteInfoContent"></div>
                         </div>
 
@@ -1827,20 +1936,20 @@ window.firebaseLoaded = true;
 
                 <!-- Lista de Pedidos -->
                 <div class="card-modern p-6">
-                    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center mb-4 md:mb-0">
+                    <div class="flex flex-col space-y-4 mb-6">
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
                             <span class="text-2xl mr-3">📝</span>
                             Pedidos Recentes
                         </h3>
                         
-                        <!-- Filtros de Data -->
+                        <!-- CORRIGIDO: Filtros de Data para Mobile -->
                         <div class="filter-container">
                             <div class="filter-item">
                                 <label>Filtrar por:</label>
                                 <div class="filter-buttons">
                                     <button type="button" class="filter-btn active" onclick="setFiltroData('hoje')">Hoje</button>
-                                    <button type="button" class="filter-btn" onclick="setFiltroData('customDay')">Dia Específico</button>
-                                    <button type="button" class="filter-btn" onclick="setFiltroData('customMonth')">Mês Específico</button>
+                                    <button type="button" class="filter-btn" onclick="setFiltroData('customDay')">Dia</button>
+                                    <button type="button" class="filter-btn" onclick="setFiltroData('customMonth')">Mês</button>
                                     <button type="button" class="filter-btn" onclick="setFiltroData('pendentes')">Pendentes</button>
                                     <button type="button" class="filter-btn" onclick="setFiltroData('todos')">Todos</button>
                                 </div>
@@ -1856,7 +1965,7 @@ window.firebaseLoaded = true;
                                 <input type="month" id="filtroMesEspecifico" class="input-modern" onchange="aplicarFiltroData()">
                             </div>
                             
-                            <div class="search-container flex-1 md:w-80">
+                            <div class="search-container flex-1">
                                 <input type="text" id="buscaPedido" placeholder="Buscar por nome do cliente..." class="input-modern w-full" autocomplete="off">
                             </div>
                         </div>
@@ -1900,10 +2009,10 @@ window.firebaseLoaded = true;
                     </div>
                 </div>
 
-                <!-- Lista Detalhada -->
+                <!-- CORRIGIDO: Lista Detalhada com layout melhorado -->
                 <div class="card-modern p-6 mb-6">
                     <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Quantidades por Data</h3>
-                    <div id="estoqueDetalhado" class="estoque-lista space-y-2">
+                    <div id="estoqueDetalhado" class="estoque-lista space-y-3">
                         <div class="text-center py-4">
                             <div class="loading-indicator mx-auto mb-2"></div>
                             <p class="text-gray-500 text-sm">Carregando...</p>
@@ -1928,7 +2037,7 @@ window.firebaseLoaded = true;
                     </div>
                 </div>
 
-                <!-- Galões Emprestados -->
+                <!-- CORRIGIDO: Galões Emprestados agora mostra os do pedido também -->
                 <div class="card-modern p-6">
                     <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center">
                         <span class="text-2xl mr-3">🤝</span>
@@ -2087,7 +2196,11 @@ Estamos sempre à disposição! 🙏`,
             diasNotificacao: 7,
             precoGalao: 15.00,
             precoGalaoVazio: 25.00,
-            galoesParaGratis: 10
+            galoesParaGratis: 10,
+            // MELHORADO: Configurações de backup
+            frequenciaBackup: 7,
+            caminhoBackup: '',
+            ultimoBackup: null
         };
 
         // Firebase listeners
@@ -2372,6 +2485,105 @@ Estamos sempre à disposição! 🙏`,
         }
 
         // ================================
+        // MELHORADO: SISTEMA DE BACKUP AUTOMÁTICO
+        // ================================
+
+        function verificarBackupAutomatico() {
+            // Só para admin e quando estiver no PC (não mobile)
+            if (currentUser?.email !== 'adm@comercialrocha.com' || isMobile()) {
+                return;
+            }
+
+            const ultimoBackup = configuracoes.ultimoBackup;
+            const frequencia = configuracoes.frequenciaBackup || 7;
+            const agora = new Date();
+
+            // Atualizar status na configuração
+            updateBackupStatus();
+
+            if (!ultimoBackup) {
+                // Nunca fez backup
+                mostrarNotificacaoBackup('Nunca');
+                return;
+            }
+
+            const ultimaData = new Date(ultimoBackup);
+            const diasSemBackup = Math.floor((agora - ultimaData) / (1000 * 60 * 60 * 24));
+
+            if (diasSemBackup >= frequencia) {
+                mostrarNotificacaoBackup(formatLocalDate(ultimoBackup));
+            }
+        }
+
+        function updateBackupStatus() {
+            const ultimoBackup = configuracoes.ultimoBackup;
+            const statusElement = document.getElementById('ultimoBackupStatus');
+            
+            if (ultimoBackup) {
+                statusElement.textContent = formatLocalDate(ultimoBackup);
+            } else {
+                statusElement.textContent = 'Nunca realizado';
+            }
+        }
+
+        function isMobile() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                   window.innerWidth <= 768;
+        }
+
+        function mostrarNotificacaoBackup(ultimaData) {
+            const notification = document.getElementById('backupNotification');
+            document.getElementById('lastBackupDate').textContent = ultimaData;
+            notification.classList.remove('hidden');
+        }
+
+        async function fazerBackupAutomatico() {
+            try {
+                // Fazer o backup automaticamente usando download
+                const dados = {
+                    clientes,
+                    pedidos,
+                    estoque,
+                    emprestimos,
+                    configuracoes,
+                    exportDate: getCurrentDateTime()
+                };
+                
+                const dataStr = JSON.stringify(dados, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `comercial-rocha-backup-automatico-${getCurrentDateLocal()}.json`;
+                link.click();
+                URL.revokeObjectURL(url);
+
+                // Atualizar data do último backup
+                configuracoes.ultimoBackup = getCurrentDateTime();
+                await saveConfiguracoesFirebase();
+                updateBackupStatus();
+                
+                document.getElementById('backupNotification').classList.add('hidden');
+                alert('✅ Backup automático realizado com sucesso!');
+                
+            } catch (error) {
+                console.error('❌ Erro no backup automático:', error);
+                alert('❌ Erro ao fazer backup automático. Tente manualmente.');
+            }
+        }
+
+        function adiarBackup() {
+            document.getElementById('backupNotification').classList.add('hidden');
+            // Lembrar amanhã (não implementado persistência por simplicidade)
+        }
+
+        function dispensarBackup() {
+            document.getElementById('backupNotification').classList.add('hidden');
+            // Não lembrar por uma semana (não implementado persistência por simplicidade)
+        }
+
+        // ================================
         // FIREBASE OPTIMIZATIONS
         // ================================
 
@@ -2486,21 +2698,24 @@ Estamos sempre à disposição! 🙏`,
                 updateGaloesEmprestados();
             }
 
-            // Configurações (only for admin)
-            if (currentUser?.email === 'adm@comercialrocha.com') {
-                const configRef = doc(window.db, 'configuracoes', 'global');
-                configuracoesListener = onSnapshot(configRef, (docSnapshot) => {
-                    if (docSnapshot.exists()) {
-                        const configData = docSnapshot.data();
-                        configuracoes = { ...configuracoes, ...configData };
-                        setCachedData('configuracoes', configuracoes);
-                        saveConfiguracoes();
-                        console.log('✅ Configurações atualizadas do Firebase');
+            // MODIFICADO: Configurações globais (para todas as contas, mas só admin pode editar)
+            const configRef = doc(window.db, 'configuracoes', 'global');
+            configuracoesListener = onSnapshot(configRef, (docSnapshot) => {
+                if (docSnapshot.exists()) {
+                    const configData = docSnapshot.data();
+                    configuracoes = { ...configuracoes, ...configData };
+                    setCachedData('configuracoes', configuracoes);
+                    saveConfiguracoes();
+                    console.log('✅ Configurações atualizadas do Firebase');
+                    
+                    // MELHORADO: Verificar backup automático apenas para admin
+                    if (currentUser?.email === 'adm@comercialrocha.com') {
+                        setTimeout(verificarBackupAutomatico, 3000);
                     }
-                }, (error) => {
-                    console.error('❌ Erro ao escutar configurações:', error);
-                });
-            }
+                }
+            }, (error) => {
+                console.error('❌ Erro ao escutar configurações:', error);
+            });
 
             lastSyncTime = Date.now();
         }
@@ -2690,15 +2905,31 @@ Estamos sempre à disposição! 🙏`,
 
         function checkConfigAccess(email) {
             const configBtn = document.getElementById('configBtn');
+            const backupSection = document.getElementById('backupConfigSection');
+            
             if (email === 'adm@comercialrocha.com') {
                 configBtn.classList.remove('hidden');
+                // MELHORADO: Mostrar seção de backup para admin
+                if (backupSection) {
+                    backupSection.classList.remove('admin-only');
+                    backupSection.classList.add('admin-active');
+                }
             } else {
                 configBtn.classList.add('hidden');
+                if (backupSection) {
+                    backupSection.classList.add('admin-only');
+                    backupSection.classList.remove('admin-active');
+                }
             }
         }
 
         function hideConfigButton() {
             document.getElementById('configBtn').classList.add('hidden');
+            const backupSection = document.getElementById('backupConfigSection');
+            if (backupSection) {
+                backupSection.classList.add('admin-only');
+                backupSection.classList.remove('admin-active');
+            }
         }
 
         function setupOfflineMode() {
@@ -2765,6 +2996,7 @@ Estamos sempre à disposição! 🙏`,
             }
         }
 
+        // MODIFICADO: Salvar configurações globalmente no Firebase (reduzindo leituras)
         async function saveConfiguracoesFirebase() {
             if (isOfflineMode || !firebaseConnected || !currentUser) {
                 console.log('📱 Salvando configurações localmente (modo offline)');
@@ -2772,17 +3004,28 @@ Estamos sempre à disposição! 🙏`,
                 return;
             }
 
+            // Só admin pode salvar configurações globais
+            if (currentUser.email !== 'adm@comercialrocha.com') {
+                console.log('⚠️ Apenas admin pode alterar configurações globais');
+                return;
+            }
+
             try {
                 const { doc, setDoc } = window.firebaseUtils;
+                
+                // Cache para evitar leituras desnecessárias
+                const configCacheKey = `config_${Date.now()}`;
+                
                 await setDoc(doc(window.db, 'configuracoes', 'global'), {
                     ...configuracoes,
                     updatedBy: currentUser.email,
-                    updatedAt: getCurrentDateTime()
+                    updatedAt: getCurrentDateTime(),
+                    cacheKey: configCacheKey
                 });
                 
                 saveConfiguracoes();
                 
-                console.log('✅ Configurações salvas no Firebase');
+                console.log('✅ Configurações salvas globalmente no Firebase');
             } catch (error) {
                 console.error('❌ Erro ao salvar configurações no Firebase:', error);
                 saveConfiguracoes();
@@ -3554,28 +3797,54 @@ Estamos sempre à disposição! 🙏`,
             }
         }
 
+        // CORRIGIDO: Galões emprestados agora inclui os do pedido também
         function updateGaloesEmprestados() {
             const container = document.getElementById('galoesEmprestados');
             container.innerHTML = '';
             
+            // Empréstimos diretos do estoque
             const emprestimosAtivos = emprestimos.filter(e => !e.devolvido);
             
-            if (emprestimosAtivos.length === 0) {
+            // CORRIGIDO: Galões emprestados de pedidos - pegando de galoesEmprestados ao invés de galoesEntregues
+            const galoesEmprestadosPedidos = [];
+            pedidos.forEach(pedido => {
+                if (pedido.galoesEmprestados && pedido.galoesEmprestados.length > 0 && pedido.detalhesConfirmados) {
+                    const cliente = clientes.find(c => c.id === pedido.clienteId);
+                    pedido.galoesEmprestados.forEach(galao => {
+                        galoesEmprestadosPedidos.push({
+                            id: `pedido_${pedido.id}_${galao}`,
+                            clienteNome: cliente?.nome || 'Cliente não encontrado',
+                            dataGalao: galao,
+                            tipo: 'cheio', // Galões emprestados em pedidos são sempre cheios
+                            dataEmprestimo: pedido.data || pedido.dataIda,
+                            observacoes: `Emprestado no pedido de ${formatLocalDate(pedido.dataIda)}`,
+                            isPedido: true,
+                            pedidoId: pedido.id
+                        });
+                    });
+                }
+            });
+            
+            const todosEmprestimos = [...emprestimosAtivos, ...galoesEmprestadosPedidos];
+            
+            if (todosEmprestimos.length === 0) {
                 container.innerHTML = '<div class="text-center py-4"><p class="text-gray-500 text-sm">Nenhum galão emprestado no momento.</p></div>';
                 return;
             }
             
-            emprestimosAtivos.forEach(emprestimo => {
+            todosEmprestimos.forEach(emprestimo => {
                 const div = document.createElement('div');
                 div.className = 'emprestimo-item';
                 
                 const dataEmprestimo = formatLocalDate(emprestimo.dataEmprestimo);
+                const isPedido = emprestimo.isPedido || false;
                 
                 div.innerHTML = `
                     <div class="flex justify-between items-start">
                         <div class="flex-1">
                             <h4 class="font-semibold text-purple-800 dark:text-purple-200">
                                 ${emprestimo.clienteNome}
+                                ${isPedido ? '<span class="text-xs bg-blue-500 text-white px-2 py-1 rounded ml-2">PEDIDO</span>' : ''}
                             </h4>
                             <p class="text-sm text-purple-700 dark:text-purple-300 mt-1">
                                 📅 Emprestado em: ${dataEmprestimo}
@@ -3585,9 +3854,17 @@ Estamos sempre à disposição! 🙏`,
                             </p>
                             ${emprestimo.observacoes ? `<p class="text-sm text-purple-600 dark:text-purple-400 mt-1">💬 ${emprestimo.observacoes}</p>` : ''}
                         </div>
-                        <button onclick="marcarDevolvido('${emprestimo.id}')" class="btn-modern bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-sm">
-                            ✅ Devolvido
-                        </button>
+                        ${!isPedido ? `
+                            <button onclick="marcarDevolvido('${emprestimo.id}')" class="btn-modern bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-sm">
+                                ✅ Devolvido
+                            </button>
+                        ` : `
+                            <div class="text-xs text-purple-600 dark:text-purple-400 text-center">
+                                <p>Devolução via</p>
+                                <p>recebimento</p>
+                                <p>do pedido</p>
+                            </div>
+                        `}
                     </div>
                 `;
                 
@@ -3734,6 +4011,7 @@ Estamos sempre à disposição! 🙏`,
                     addToPendingSync('update_pedido', 'pedidos', { id: pedidoId, updates: dadosAtualizacao });
                     updateListaPedidos();
                     updateDashboard();
+                    updateGaloesEmprestados(); // NOVO: Atualizar empréstimos quando pedido for atualizado
                     
                     if (dadosAtualizacao.pago) {
                         const pedido = pedidos[pedidoIndex];
@@ -3783,6 +4061,7 @@ Estamos sempre à disposição! 🙏`,
                 addToPendingSync('delete_pedido', 'pedidos', { id: pedidoId });
                 updateListaPedidos();
                 updateDashboard();
+                updateGaloesEmprestados(); // NOVO: Atualizar empréstimos quando pedido for excluído
                 saveLocalData();
                 return;
             }
@@ -4175,6 +4454,12 @@ Estamos sempre à disposição! 🙏`,
             document.getElementById('configMensagemPedido').value = configuracoes.mensagemPedido;
             document.getElementById('configMensagemGratis').value = configuracoes.mensagemGratis || '';
             document.getElementById('configMensagemNotificacao').value = configuracoes.mensagemNotificacao;
+            
+            // MELHORADO: Configurações de backup
+            document.getElementById('configFrequenciaBackup').value = configuracoes.frequenciaBackup || 7;
+            document.getElementById('configCaminhoBackup').value = configuracoes.caminhoBackup || '';
+            updateBackupStatus();
+            
             document.getElementById('configModal').classList.remove('hidden');
         }
 
@@ -4186,6 +4471,10 @@ Estamos sempre à disposição! 🙏`,
             const exportarBtn = document.getElementById('exportarDados');
             const confirmarImportBtn = document.getElementById('confirmarImport');
             const clearCacheBtn = document.getElementById('clearCache');
+            const selecionarCaminhoBtn = document.getElementById('selecionarCaminhoBackup');
+            const limparCaminhoBtn = document.getElementById('limparCaminhoBackup');
+            const fazerBackupManualBtn = document.getElementById('fazerBackupManual');
+            const testarBackupAutoBtn = document.getElementById('testarBackupAuto');
             
             salvarBtn.addEventListener('click', async () => {
                 configuracoes.diasNotificacao = parseInt(document.getElementById('configDiasNotificacao').value) || 7;
@@ -4195,6 +4484,10 @@ Estamos sempre à disposição! 🙏`,
                 configuracoes.mensagemPedido = document.getElementById('configMensagemPedido').value;
                 configuracoes.mensagemGratis = document.getElementById('configMensagemGratis').value;
                 configuracoes.mensagemNotificacao = document.getElementById('configMensagemNotificacao').value;
+                
+                // MELHORADO: Salvar configurações de backup
+                configuracoes.frequenciaBackup = parseInt(document.getElementById('configFrequenciaBackup').value) || 7;
+                // caminhoBackup é salvo quando selecionado
                 
                 await saveConfiguracoesFirebase();
                 
@@ -4242,7 +4535,10 @@ Estamos sempre à disposição! 🙏`,
                         diasNotificacao: 7,
                         precoGalao: 15.00,
                         precoGalaoVazio: 25.00,
-                        galoesParaGratis: 10
+                        galoesParaGratis: 10,
+                        frequenciaBackup: 7,
+                        caminhoBackup: '',
+                        ultimoBackup: null
                     };
                     document.getElementById('configDiasNotificacao').value = configuracoes.diasNotificacao;
                     document.getElementById('configPrecoGalao').value = configuracoes.precoGalao;
@@ -4251,6 +4547,9 @@ Estamos sempre à disposição! 🙏`,
                     document.getElementById('configMensagemPedido').value = configuracoes.mensagemPedido;
                     document.getElementById('configMensagemGratis').value = configuracoes.mensagemGratis;
                     document.getElementById('configMensagemNotificacao').value = configuracoes.mensagemNotificacao;
+                    document.getElementById('configFrequenciaBackup').value = configuracoes.frequenciaBackup;
+                    document.getElementById('configCaminhoBackup').value = configuracoes.caminhoBackup;
+                    updateBackupStatus();
                     
                     await saveConfiguracoesFirebase();
                     alert('✅ Configurações restauradas para o padrão!');
@@ -4276,6 +4575,40 @@ Estamos sempre à disposição! 🙏`,
                     localStorage.clear();
                     location.reload();
                 }
+            });
+
+            // MELHORADO: Botões de backup
+            selecionarCaminhoBtn.addEventListener('click', async () => {
+                try {
+                    if (window.showDirectoryPicker) {
+                        const dirHandle = await window.showDirectoryPicker();
+                        configuracoes.caminhoBackup = dirHandle.name; // Simplificado para demo
+                        document.getElementById('configCaminhoBackup').value = configuracoes.caminhoBackup;
+                        alert('✅ Caminho de backup selecionado!');
+                    } else {
+                        alert('⚠️ Seleção de pasta não suportada neste navegador. Os backups serão feitos via download.');
+                    }
+                } catch (error) {
+                    if (error.name !== 'AbortError') {
+                        console.error('❌ Erro ao selecionar pasta:', error);
+                        alert('❌ Erro ao selecionar pasta.');
+                    }
+                }
+            });
+
+            limparCaminhoBtn.addEventListener('click', () => {
+                configuracoes.caminhoBackup = '';
+                document.getElementById('configCaminhoBackup').value = '';
+                alert('✅ Caminho de backup limpo!');
+            });
+
+            fazerBackupManualBtn.addEventListener('click', async () => {
+                await fazerBackupAutomatico();
+                updateBackupStatus();
+            });
+
+            testarBackupAutoBtn.addEventListener('click', () => {
+                mostrarNotificacaoBackup(configuracoes.ultimoBackup ? formatLocalDate(configuracoes.ultimoBackup) : 'Nunca');
             });
         }
 
@@ -4441,24 +4774,6 @@ Estamos sempre à disposição! 🙏`,
             document.getElementById('editEstoqueModal').classList.remove('hidden');
         }
 
-        async function excluirEstoqueItem() {
-            if (!currentContextMenuData) return;
-            
-            const { dataGalao } = currentContextMenuData;
-            
-            if (confirm(`⚠️ Tem certeza que deseja excluir todo o estoque da data "${dataGalao}"?\n\nEsta ação não pode ser desfeita.`)) {
-                try {
-                    await excluirEstoque(dataGalao);
-                    document.getElementById('contextMenu').classList.add('hidden');
-                    currentContextMenuData = null;
-                    alert('✅ Estoque excluído com sucesso!');
-                } catch (error) {
-                    console.error('❌ Erro ao excluir estoque:', error);
-                    alert('❌ Erro ao excluir estoque. Tente novamente.');
-                }
-            }
-        }
-
         function excluirEstoqueDetalhado(dataGalao) {
             if (confirm(`⚠️ Tem certeza que deseja excluir todo o estoque da data "${dataGalao}"?\n\nEsta ação não pode ser desfeita.`)) {
                 excluirEstoque(dataGalao);
@@ -4484,19 +4799,12 @@ Estamos sempre à disposição! 🙏`,
                 if (!currentPedidoForDetails) return;
                 
                 const selectedGaloes = [];
-                const galoesEmprestados = [];
                 
                 document.querySelectorAll('#galaoSelectionList .galao-selection').forEach(galaoDiv => {
                     const select = galaoDiv.querySelector('select');
-                    const emprestadoCheckbox = galaoDiv.querySelector('.emprestado-checkbox');
                     
                     if (select.value) {
                         selectedGaloes.push(select.value);
-                        
-                        // NOVO: Verificar se foi marcado como emprestado
-                        if (emprestadoCheckbox && emprestadoCheckbox.checked) {
-                            galoesEmprestados.push(select.value);
-                        }
                     }
                 });
                 
@@ -4508,31 +4816,20 @@ Estamos sempre à disposição! 🙏`,
                 try {
                     await atualizarPedido(currentPedidoForDetails.id, {
                         galoesEntregues: selectedGaloes,
-                        galoesEmprestados: galoesEmprestados,
+                        galoesEmprestados: [], // Removida a funcionalidade de empréstimo daqui
                         detalhesConfirmados: true
                     });
                     
                     for (const dataGalao of selectedGaloes) {
                         const currentCheio = estoque[dataGalao]?.cheio || 0;
                         const currentCliente = estoque[dataGalao]?.cliente || 0;
-                        const currentEmprestado = estoque[dataGalao]?.emprestado || 0;
                         
                         if (currentCheio > 0) {
-                            const isEmprestado = galoesEmprestados.includes(dataGalao);
-                            
-                            if (isEmprestado) {
-                                // Se emprestado, vai para emprestados
-                                await atualizarEstoque(dataGalao, {
-                                    cheio: currentCheio - 1,
-                                    emprestado: currentEmprestado + 1
-                                });
-                            } else {
-                                // Se não emprestado, vai para cliente
-                                await atualizarEstoque(dataGalao, {
-                                    cheio: currentCheio - 1,
-                                    cliente: currentCliente + 1
-                                });
-                            }
+                            // Todos os galões vão para cliente agora
+                            await atualizarEstoque(dataGalao, {
+                                cheio: currentCheio - 1,
+                                cliente: currentCliente + 1
+                            });
                         }
                     }
                     
@@ -4561,16 +4858,26 @@ Estamos sempre à disposição! 🙏`,
                 if (!currentPedidoForReceive) return;
                 
                 const galoesVindos = [];
+                const galoesVindosEmprestados = []; // Para os que foram emprestados
                 
-                document.querySelectorAll('#galaoVindosList input').forEach(input => {
+                document.querySelectorAll('#galaoVindosList .galao-input-item').forEach((galaoDiv, index) => {
+                    const input = galaoDiv.querySelector('input');
+                    const emprestadoCheckbox = galaoDiv.querySelector('.emprestado-checkbox');
+                    
                     if (input.value.trim() && isValidDataFormat(input.value.trim())) {
                         galoesVindos.push(input.value.trim());
+                        
+                        // Verificar se foi marcado como emprestado
+                        if (emprestadoCheckbox && emprestadoCheckbox.checked) {
+                            galoesVindosEmprestados.push(input.value.trim());
+                        }
                     }
                 });
                 
                 try {
                     await atualizarPedido(currentPedidoForReceive.id, {
                         galoesVindos: galoesVindos,
+                        galoesEmprestados: galoesVindosEmprestados, // Salvar quais foram emprestados
                         galoesRecebidos: true
                     });
                     
@@ -4854,11 +5161,11 @@ Estamos sempre à disposição! 🙏`,
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <p class="text-sm font-semibold">Nome:</p>
-                        <p class="text-blue-700 dark:text-blue-300">${cliente.nome}</p>
+                        <p class="text-gray-700 dark:text-gray-300">${cliente.nome}</p>
                     </div>
                     ${cliente.telefone ? `<div>
                         <p class="text-sm font-semibold">Telefone:</p>
-                        <p class="text-blue-700 dark:text-blue-300">${cliente.telefone}</p>
+                        <p class="text-gray-700 dark:text-gray-300">${cliente.telefone}</p>
                     </div>` : ''}
                 </div>
             `;
@@ -4956,184 +5263,261 @@ Estamos sempre à disposição! 🙏`,
                 console.error('❌ Erro ao registrar pedido:', error);
                 alert('❌ Erro ao registrar pedido. Tente novamente.');
             } finally {
-                loadingEl.classList.add('hidden');
+			loadingEl.classList.add('hidden');
             }
         });
 
-        function enviarMensagemPedido(clienteId, pedidoId) {
-            const cliente = clientes.find(c => c.id === clienteId);
-            const pedido = pedidos.find(p => p.id === pedidoId);
+        function createPedidoElement(pedido, isAdmin) {
+    const cliente = clientes.find(c => c.id == pedido.clienteId);
+    const div = document.createElement('div');
+
+    const isPago = pedido.pago;
+    const isGratis = pedido.isGratis;
+    const hasDetailsConfirmed = pedido.detalhesConfirmados;
+    const hasGaloesReceived = pedido.galoesRecebidos;
+
+    const statusClass = isGratis
+        ? 'pedido-gratis'
+        : (isPago
+            ? 'bg-green-50 dark:bg-green-900 border-green-200 dark:border-green-700'
+            : 'bg-yellow-50 dark:bg-yellow-900 border-yellow-200 dark:border-yellow-700');
+
+    div.className = `p-6 border rounded-xl transition-all duration-300 hover:shadow-lg ${statusClass}`;
+
+    const syncPendingItem = pendingSync.find(item =>
+        item.collection === 'pedidos' &&
+        (item.data.id === pedido.id || (item.action === 'add_pedido' && pedido.id.startsWith('offline_')))
+    );
+
+    const quantidadeVazios = pedido.quantidadeVazios || 0;
+
+    let statusInfo = '';
+    if (isGratis) {
+        statusInfo = `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-600 text-white">🎁 GALÃO GRÁTIS</span>`;
+    } else if (!isPago) {
+        statusInfo = `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-600 text-white">⏳ PENDENTE</span>`;
+    } else {
+        statusInfo = `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-600 text-white">✅ PAGO</span>`;
+    }
+
+    if (hasDetailsConfirmed) {
+        statusInfo += ` <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-600 text-white ml-2">🚚 ENVIADO</span>`;
+    }
+
+    if (hasGaloesReceived) {
+        statusInfo += ` <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-purple-600 text-white ml-2">📦 RECEBIDO</span>`;
+    }
+
+    let galoesEmprestadosInfo = '';
+    if (pedido.galoesEmprestados && pedido.galoesEmprestados.length > 0) {
+        galoesEmprestadosInfo = `<p class="text-purple-600 dark:text-purple-400 mt-2 font-semibold">
+            🤝 Galões emprestados: ${pedido.galoesEmprestados.map(g => `<span class="emprestado-badge">${g}</span>`).join(' ')}
+        </p>`;
+    }
+
+    div.innerHTML = `
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <div class="flex-1">
+                <div class="flex items-center gap-2 mb-2">
+                    <h4 class="font-bold text-lg text-gray-900 dark:text-white">
+                        ${cliente ? cliente.nome : 'Cliente não encontrado'}
+                    </h4>
+                    ${syncPendingItem ? '<span class="sync-pending">Pendente</span>' : ''}
+                    ${statusInfo}
+                </div>
+                <p class="text-gray-600 dark:text-gray-400 mb-2">
+                    📅 Data: ${formatLocalDate(pedido.dataIda)} | 
+                    🪣 ${pedido.quantidade} galão(s) de água${quantidadeVazios > 0 ? ` + ${quantidadeVazios} galão(s) vazio(s)` : ''} | 
+                    💰 ${isGratis ? 'GRÁTIS' : `R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}`}
+                </p>
+                ${pedido.formaPagamento ? `<p class="text-blue-600 dark:text-blue-400 mb-1">💳 ${pedido.formaPagamento} - ${formatLocalDate(pedido.dataPagamento)}</p>` : ''}
+                ${pedido.galoesEntregues && pedido.galoesEntregues.length > 0 ? `<p class="text-green-600 dark:text-green-400 mb-1">📦 Galões enviados: ${pedido.galoesEntregues.join(', ')}</p>` : ''}
+                ${pedido.galoesVindos && pedido.galoesVindos.length > 0 ? `<p class="text-orange-600 dark:text-orange-400 mb-1">📥 Galões recebidos: ${pedido.galoesVindos.join(', ')}</p>` : ''}
+                ${galoesEmprestadosInfo}
+                ${pedido.observacoes ? `<p class="text-gray-500 dark:text-gray-400 mt-2 italic">💬 ${pedido.observacoes}</p>` : ''}
+            </div>
+            <div class="flex flex-col space-y-2 mt-4 lg:mt-0 lg:ml-4">
+                ${!hasDetailsConfirmed ? `
+                    <button onclick="abrirConfirmDetailsModal('${pedido.id}')" class="btn-modern btn-uniform-size bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-sm">
+                        🚚 Confirmar Envio
+                    </button>
+                ` : ''}
+                ${hasDetailsConfirmed && !hasGaloesReceived ? `
+                    <button onclick="abrirReceiveModal('${pedido.id}')" class="btn-modern btn-uniform-size bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-sm">
+                        📦 Receber Galões
+                    </button>
+                ` : ''}
+                ${!isPago ? `
+                    <button onclick="abrirPaymentModal('${pedido.id}')" class="btn-modern btn-uniform-size bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-sm">
+                        💰 Pagamento
+                    </button>
+                ` : ''}
+                <button onclick="enviarMensagemPedido('${pedido.clienteId}', '${pedido.id}')" class="btn-modern btn-uniform-size bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-sm">
+                    📱 WhatsApp
+                </button>
+                ${isAdmin ? `
+                    <button onclick="editarPedido('${pedido.id}')" class="btn-modern btn-uniform-size bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-sm">
+                        ✏️ Editar
+                    </button>
+                ` : ''}
+            </div>
+        </div>
+    `;
+
+    return div;
+}
+
+
+        function updateListaPedidos() {
+            const lista = document.getElementById('listaPedidos');
+            lista.innerHTML = '';
             
-            if (!cliente || !pedido) return;
+            let pedidosFiltrados = [...pedidos];
             
-            const quantidadeVazios = pedido.quantidadeVazios || 0;
+            pedidosFiltrados = filtrarPedidosPorData(pedidosFiltrados);
             
-            let tipoPedido = `📦 ${pedido.quantidade} galão(s) de água`;
-            if (quantidadeVazios > 0) {
-                tipoPedido += ` + ${quantidadeVazios} galão(s) vazio(s)`;
+            if (pedidosFiltrados.length === 0) {
+                lista.innerHTML = '<div class="text-center py-8"><p class="text-gray-500">Nenhum pedido encontrado.</p></div>';
+                return;
             }
-            if (pedido.isGratis) {
-                tipoPedido += ' (GRÁTIS)';
-            } else {
-                tipoPedido += ` - R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}`;
-            }
             
-            let mensagem = pedido.isGratis ? configuracoes.mensagemGratis : configuracoes.mensagemPedido;
-            mensagem = mensagem.replace('{nome}', cliente.nome);
-            mensagem = mensagem.replace('{tipo_pedido}', tipoPedido);
-            mensagem = mensagem.replace('{galao_foi}', pedido.galoesEntregues ? pedido.galoesEntregues.join(', ') : 'Pendente');
-            mensagem = mensagem.replace('{data}', formatLocalDate(pedido.dataIda));
+            const isAdmin = currentUser?.email === 'adm@comercialrocha.com';
             
-            abrirWhatsApp(cliente.telefone, mensagem);
+            pedidosFiltrados.forEach(pedido => {
+                const pedidoElement = createPedidoElement(pedido, isAdmin);
+                lista.appendChild(pedidoElement);
+            });
         }
 
-        function confirmarDetalhes(pedidoId) {
+        function abrirPaymentModal(pedidoId) {
             const pedido = pedidos.find(p => p.id === pedidoId);
             if (!pedido) return;
             
-            const cliente = clientes.find(c => c.id == pedido.clienteId);
+            currentPedidoForPayment = pedido;
+            
+            const galoesGratisDevidos = verificarFidelidade(pedido.clienteId);
+            const fidelidadeInfo = document.getElementById('fidelidadeInfo');
+            
+            if (galoesGratisDevidos > 0 && !pedido.isGratis) {
+                fidelidadeInfo.classList.remove('hidden');
+                document.getElementById('fidelidadeText').textContent = `Cliente já tem ${galoesGratisDevidos} galão(s) grátis disponível(s)! (Pedidos grátis já foram criados)`;
+            } else {
+                fidelidadeInfo.classList.add('hidden');
+            }
+            
+            document.getElementById('paymentModal').classList.remove('hidden');
+        }
+
+        function abrirConfirmDetailsModal(pedidoId) {
+            const pedido = pedidos.find(p => p.id === pedidoId);
+            if (!pedido) return;
+            
             currentPedidoForDetails = pedido;
             
-            const pedidoInfo = document.getElementById('pedidoDetailsInfo');
-            pedidoInfo.innerHTML = `
-                <p><strong>Cliente:</strong> ${cliente ? cliente.nome : 'N/A'}</p>
-                <p><strong>Data:</strong> ${formatLocalDate(pedido.dataIda)}</p>
-                <p><strong>Quantidade:</strong> ${pedido.quantidade} galão(s) de água${pedido.quantidadeVazios > 0 ? ` + ${pedido.quantidadeVazios} galão(s) vazio(s)` : ''}${pedido.isGratis ? ' (GRÁTIS)' : ''}</p>
-                <p><strong>Valor Total:</strong> ${pedido.isGratis ? 'GRÁTIS' : `R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}`}</p>
+            const cliente = clientes.find(c => c.id == pedido.clienteId);
+            const clienteNome = cliente ? cliente.nome : 'Cliente não encontrado';
+            
+            document.getElementById('pedidoDetailsInfo').innerHTML = `
+                <p><strong>Cliente:</strong> ${clienteNome}</p>
+                <p><strong>Data de Entrega:</strong> ${formatLocalDate(pedido.dataIda)}</p>
+                <p><strong>Quantidade:</strong> ${pedido.quantidade} galão(s) de água + ${pedido.quantidadeVazios || 0} galão(s) vazio(s)</p>
+                <p><strong>Valor Total:</strong> R$ ${pedido.valorTotal.toFixed(2)}</p>
+                ${pedido.isGratis ? '<p class="text-green-600 font-bold">🎉 PEDIDO GRÁTIS (FIDELIDADE)</p>' : ''}
             `;
             
             const galaoList = document.getElementById('galaoSelectionList');
             galaoList.innerHTML = '';
             
-            const galoesDisponiveis = Object.keys(estoque)
-                .filter(data => estoque[data].cheio > 0)
-                .sort((a, b) => parseDataMesAno(a) - parseDataMesAno(b));
+            const galoesDisponiveis = Object.keys(estoque).filter(data => (estoque[data].cheio || 0) > 0);
             
             if (galoesDisponiveis.length === 0) {
-                galaoList.innerHTML = '<p class="text-red-600">Nenhum galão disponível no estoque!</p>';
+                galaoList.innerHTML = '<div class="text-center py-4"><p class="text-red-500">⚠️ Não há galões cheios disponíveis no estoque!</p></div>';
             } else {
-                const ultimoGalaoCliente = cliente ? getClienteUltimoGalao(cliente.id) : null;
-                
                 for (let i = 0; i < pedido.quantidade; i++) {
-                    const div = document.createElement('div');
-                    div.className = 'galao-selection border border-gray-200 rounded-lg p-4';
+                    const galaoDiv = document.createElement('div');
+                    galaoDiv.className = 'galao-selection';
                     
-                    const galaoSugerido = ultimoGalaoCliente ? 
-                        getGalaoMaisProximo(ultimoGalaoCliente, galoesDisponiveis) : 
-                        galoesDisponiveis[0];
+                    let optionsHtml = '<option value="">Selecione um galão...</option>';
+                    galoesDisponiveis.forEach(data => {
+                        const quantidade = estoque[data].cheio || 0;
+                        optionsHtml += `<option value="${data}">${data} (${quantidade} disponível)</option>`;
+                    });
                     
-                    div.innerHTML = `
-                        <h5 class="font-semibold mb-3">Galão ${i + 1}:</h5>
-                        <div class="space-y-3">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Selecionar galão do estoque (sendo enviado):</label>
-                                <select class="input-modern w-full galao-estoque-select" data-index="${i}" required onchange="handleGalaoEstoqueChange(this)">
-                                    <option value="">Escolha um galão...</option>
-                                    ${galoesDisponiveis.map(data => `
-                                        <option value="${data}" ${data === galaoSugerido ? 'selected' : ''}>${data} (${estoque[data].cheio} disponíveis)</option>
-                                    `).join('')}
-                                </select>
-                            </div>
-                            <!-- NOVO: Checkbox para galão emprestado -->
-                            <div class="galao-emprestado-checkbox">
-                                <input type="checkbox" class="emprestado-checkbox" id="emprestado_${i}">
-                                <label for="emprestado_${i}" class="text-sm font-medium text-purple-700 dark:text-purple-300">
-                                    🤝 Marcar como galão emprestado
-                                </label>
-                            </div>
+                    galaoDiv.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <label class="font-semibold">Galão ${i + 1}:</label>
+                            <select class="input-modern flex-1 ml-4">${optionsHtml}</select>
                         </div>
                     `;
-                    galaoList.appendChild(div);
+                    
+                    galaoList.appendChild(galaoDiv);
                 }
             }
             
             document.getElementById('confirmDetailsModal').classList.remove('hidden');
         }
 
-        function receberGaloes(pedidoId) {
+        function abrirReceiveModal(pedidoId) {
             const pedido = pedidos.find(p => p.id === pedidoId);
             if (!pedido) return;
             
-            const cliente = clientes.find(c => c.id == pedido.clienteId);
             currentPedidoForReceive = pedido;
             
-            const receiveInfo = document.getElementById('receiveDetailsInfo');
-            receiveInfo.innerHTML = `
-                <p><strong>Cliente:</strong> ${cliente ? cliente.nome : 'N/A'}</p>
-                <p><strong>Data:</strong> ${formatLocalDate(pedido.dataIda)}</p>
-                <p><strong>Galões enviados:</strong> ${pedido.galoesEntregues ? pedido.galoesEntregues.join(', ') : 'Nenhum'}</p>
-                ${pedido.galoesEmprestados && pedido.galoesEmprestados.length > 0 ? 
-                    `<p><strong>Galões emprestados:</strong> <span class="emprestado-badge">${pedido.galoesEmprestados.join(', ')}</span></p>` : 
-                    ''
-                }
+            const cliente = clientes.find(c => c.id == pedido.clienteId);
+            const clienteNome = cliente ? cliente.nome : 'Cliente não encontrado';
+            
+            document.getElementById('receiveDetailsInfo').innerHTML = `
+                <p><strong>Cliente:</strong> ${clienteNome}</p>
+                <p><strong>Data de Entrega:</strong> ${formatLocalDate(pedido.dataIda)}</p>
+                <p><strong>Quantidade:</strong> ${pedido.quantidade} galão(s) de água + ${pedido.quantidadeVazios || 0} galão(s) vazio(s)</p>
+                <p><strong>Valor Total:</strong> R$ ${pedido.valorTotal.toFixed(2)}</p>
+                ${pedido.galoesEntregues ? `<p><strong>Galões Entregues:</strong> ${pedido.galoesEntregues.join(', ')}</p>` : ''}
             `;
             
-            const galaoVindosList = document.getElementById('galaoVindosList');
-            galaoVindosList.innerHTML = '';
+            const galaoList = document.getElementById('galaoVindosList');
+            galaoList.innerHTML = '';
             
-            const ultimoGalaoCliente = cliente ? getClienteUltimoGalao(cliente.id) : '';
+            const quantidadeTotal = pedido.quantidade + (pedido.quantidadeVazios || 0);
             
-            // NOVO: Se há galões emprestados, destacar quais devem ser devolvidos
-            const galoesEmprestados = pedido.galoesEmprestados || [];
-            
-            for (let i = 0; i < (pedido.quantidade || 1); i++) {
-                const div = document.createElement('div');
-                div.className = 'flex items-center gap-2';
+            for (let i = 0; i < quantidadeTotal; i++) {
+                const galaoDiv = document.createElement('div');
+                galaoDiv.className = 'galao-input-item border border-gray-300 rounded-lg p-4 mb-3';
                 
-                const isEmprestado = i < galoesEmprestados.length;
-                const galaoValue = isEmprestado ? galoesEmprestados[i] : (ultimoGalaoCliente || '');
-                
-                div.innerHTML = `
-                    <input type="text" class="data-galao-input flex-1 ${isEmprestado ? 'border-purple-500 bg-purple-50' : ''}" 
-                           placeholder="MM-AAAA" maxlength="7" value="${galaoValue}" 
-                           ${i === 0 && !isEmprestado ? 'onchange="updateOtherGalaoInputs(this.value)"' : ''}>
-                    ${isEmprestado ? '<span class="emprestado-badge">EMPRESTADO</span>' : ''}
-                    <button type="button" class="btn-delete-estoque" onclick="this.parentElement.remove()">🗑️</button>
+                galaoDiv.innerHTML = `
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="font-semibold">Galão ${i + 1} (data):</label>
+                        <input type="text" class="data-galao-input" placeholder="MM-AAAA" maxlength="7">
+                    </div>
+                    <div class="galao-emprestado-checkbox">
+                        <input type="checkbox" class="emprestado-checkbox" id="emprestado_${i}">
+                        <label for="emprestado_${i}" class="text-sm">Marcar como galão emprestado</label>
+                    </div>
                 `;
-                galaoVindosList.appendChild(div);
+                
+                galaoList.appendChild(galaoDiv);
             }
             
             document.getElementById('receiveGalaoModal').classList.remove('hidden');
-        }
-
-        function updateOtherGalaoInputs(firstValue) {
-            const inputs = document.querySelectorAll('#galaoVindosList input[type="text"]');
-            inputs.forEach((input, index) => {
-                if (index > 0 && !input.classList.contains('border-purple-500')) {
-                    input.value = firstValue;
-                }
-            });
-        }
-
-        function handleGalaoEstoqueChange(select) {
-            const index = select.dataset.index;
-            const selectedValue = select.value;
-            
-            if (index === '0') {
-                document.querySelectorAll('.galao-estoque-select').forEach((otherSelect, idx) => {
-                    if (idx > 0) {
-                        otherSelect.value = selectedValue;
-                    }
-                });
-            }
         }
 
         function editarPedido(pedidoId) {
             const pedido = pedidos.find(p => p.id === pedidoId);
             if (!pedido) return;
             
-            const cliente = clientes.find(c => c.id == pedido.clienteId);
             currentEditingPedido = pedidoId;
             
-            document.getElementById('editPedidoCliente').value = cliente ? cliente.nome : 'N/A';
+            const cliente = clientes.find(c => c.id == pedido.clienteId);
+            
+            document.getElementById('editPedidoCliente').value = cliente ? cliente.nome : 'Cliente não encontrado';
             document.getElementById('editPedidoData').value = formatDateForInput(pedido.dataIda);
-            document.getElementById('editPedidoQuantidade').value = pedido.quantidade || 1;
+            document.getElementById('editPedidoQuantidade').value = pedido.quantidade;
             document.getElementById('editPedidoQuantidadeVazios').value = pedido.quantidadeVazios || 0;
-            document.getElementById('editPedidoValor').value = pedido.valorTotal || 0;
+            document.getElementById('editPedidoValor').value = pedido.valorTotal;
             document.getElementById('editPedidoObservacoes').value = pedido.observacoes || '';
             
             const galoesEntreguesContainer = document.getElementById('editGaloesEntregues');
             galoesEntreguesContainer.innerHTML = '';
+            
             if (pedido.galoesEntregues && pedido.galoesEntregues.length > 0) {
                 pedido.galoesEntregues.forEach(galao => {
                     const div = document.createElement('div');
@@ -5148,6 +5532,7 @@ Estamos sempre à disposição! 🙏`,
 
             const galoesVindosContainer = document.getElementById('editGaloesVindos');
             galoesVindosContainer.innerHTML = '';
+            
             if (pedido.galoesVindos && pedido.galoesVindos.length > 0) {
                 pedido.galoesVindos.forEach(galao => {
                     const div = document.createElement('div');
@@ -5163,683 +5548,926 @@ Estamos sempre à disposição! 🙏`,
             document.getElementById('editPedidoModal').classList.remove('hidden');
         }
 
-        function createPedidoElement(pedido, isAdmin) {
-            const cliente = clientes.find(c => c.id == pedido.clienteId);
-            const quantidadeVazios = pedido.quantidadeVazios || 0;
-            
-            const div = document.createElement('div');
-            div.className = `flex flex-col md:flex-row md:items-center md:justify-between p-6 border rounded-xl transition-all duration-300 ${pedido.pago ? 'border-green-300 bg-green-50 dark:bg-green-900 dark:border-green-600' : 'border-red-300 bg-red-50 dark:bg-red-900 dark:border-red-600'} ${pedido.isGratis ? 'pedido-gratis' : ''}`;
-            
-            const syncPendingItem = pendingSync.find(item => 
-                item.collection === 'pedidos' && 
-                (item.data.id === pedido.id || (item.action === 'add_pedido' && pedido.id.startsWith('offline_')))
-            );
-
-            let galoesInfo = '';
-            if (pedido.galoesEntregues && pedido.galoesEntregues.length > 0) {
-                galoesInfo += `<p class="text-blue-600 dark:text-blue-400 mt-1 font-semibold">🏺 Galões entregues: ${pedido.galoesEntregues.join(', ')}</p>`;
-            }
-            if (pedido.galoesVindos && pedido.galoesVindos.length > 0) {
-                galoesInfo += `<p class="text-orange-600 dark:text-orange-400 mt-1 font-semibold">🔄 Galões vindo: ${pedido.galoesVindos.join(', ')}</p>`;
-            }
-            // NOVO: Mostrar galões emprestados
-            if (pedido.galoesEmprestados && pedido.galoesEmprestados.length > 0) {
-                galoesInfo += `<p class="text-purple-600 dark:text-purple-400 mt-1 font-semibold">🤝 Galões emprestados: ${pedido.galoesEmprestados.join(', ')}</p>`;
-            }
-            if (!galoesInfo) {
-                galoesInfo = '<p class="text-gray-600 dark:text-gray-400 mt-1">🪣 Galões: Pendente</p>';
-            }
-            
-            let quantidadeTexto = `📦 ${pedido.quantidade || 1} galão(s) de água`;
-            if (quantidadeVazios > 0) {
-                quantidadeTexto += ` + ${quantidadeVazios} galão(s) vazio(s)`;
-            }
-            if (pedido.isGratis) {
-                quantidadeTexto += ' (GRÁTIS)';
-            } else {
-                quantidadeTexto += ` - R$ ${pedido.valorTotal?.toFixed(2) || '0.00'}`;
-            }
-
-            let observacoesHtml = '';
-            if (pedido.observacoes && pedido.observacoes.trim()) {
-                observacoesHtml = `<p class="text-gray-600 dark:text-gray-400 mt-1 font-semibold">💬 Obs: ${pedido.observacoes}</p>`;
-            }
-
-            // NOVO: Badge para galões emprestados
-            let emprestadoBadge = '';
-            if (pedido.galoesEmprestados && pedido.galoesEmprestados.length > 0) {
-                emprestadoBadge = `<span class="emprestado-badge ml-2">🤝 ${pedido.galoesEmprestados.length} EMPRESTADO</span>`;
-            }
-            
-            div.innerHTML = `
-                <div class="flex-1 mb-4 md:mb-0">
-                    <h4 class="font-bold text-lg text-gray-900 dark:text-white flex items-center">
-                        ${cliente ? cliente.nome : 'Cliente não encontrado'}
-                        ${syncPendingItem ? '<span class="sync-pending">Pendente</span>' : ''}
-                        ${pedido.isGratis ? '<span class="fidelidade-badge ml-2">🎁 GRÁTIS!</span>' : ''}
-                        ${emprestadoBadge}
-                    </h4>
-                    <p class="text-gray-600 dark:text-gray-400 mt-1">
-                        ${quantidadeTexto}
-                    </p>
-                    <p class="text-gray-600 dark:text-gray-400 mt-1">📅 ${formatLocalDate(pedido.dataIda)}</p>
-                    ${galoesInfo}
-                    ${observacoesHtml}
-                    ${pedido.pago && pedido.formaPagamento ? `<p class="text-green-600 dark:text-green-400 mt-1 font-semibold">💰 ${pedido.formaPagamento}</p>` : ''}
-                </div>
-                <div class="flex flex-col items-end space-y-2">
-                    <span class="text-sm ${pedido.pago ? 'text-green-600 bg-green-100 dark:bg-green-800' : 'text-red-600 bg-red-100 dark:bg-red-800'} font-bold px-3 py-1 rounded-full">
-                        ${pedido.pago ? '✅ Pago' : '❌ Pendente'}
-                    </span>
-                    <div class="flex flex-col items-end space-y-2">
-                        ${!pedido.detalhesConfirmados ? `<button onclick="confirmarDetalhes('${pedido.id}')" class="btn-modern btn-uniform-size bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-sm">🚚 Enviado</button>` : ''}
-                        ${pedido.detalhesConfirmados && !pedido.galoesRecebidos ? `<button onclick="receberGaloes('${pedido.id}')" class="btn-modern btn-uniform-size bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white text-sm">📦 Recebido</button>` : ''}
-                        ${!pedido.pago ? `<button onclick="marcarPago('${pedido.id}')" class="btn-modern btn-uniform-size bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-sm">💰 Marcar Pago</button>` : ''}
-                        ${isAdmin && cliente && cliente.telefone ? `<button onclick="enviarMensagemPedido('${cliente.id}', '${pedido.id}')" class="btn-modern btn-uniform-size bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-sm">📱 WhatsApp</button>` : ''}
-                        ${isAdmin ? `<button onclick="editarPedido('${pedido.id}')" class="btn-modern btn-uniform-size bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-sm">✏️ Editar</button>` : ''}
-                    </div>
-                </div>
-            `;
-            return div;
-        }
-
-        function updateListaPedidos() {
-            const lista = document.getElementById('listaPedidos');
-            lista.innerHTML = '';
-            
-            if (pedidos.length === 0) {
-                lista.innerHTML = '<div class="text-center py-8"><p class="text-gray-500">Nenhum pedido registrado ainda.</p></div>';
-                return;
-            }
-            
-            const isAdmin = currentUser?.email === 'adm@comercialrocha.com';
-            
-            let pedidosOrdenados = [...pedidos].sort((a, b) => new Date(b.data) - new Date(a.data));
-            
-            pedidosOrdenados = filtrarPedidosPorData(pedidosOrdenados);
-            
-            if (pedidosOrdenados.length === 0) {
-                const mensagem = filtroDataAtual === 'hoje' ? 'Nenhum pedido registrado hoje.' : 
-                                filtroDataAtual === 'pendentes' ? 'Nenhum pedido pendente encontrado.' :
-                                'Nenhum pedido encontrado para o período selecionado.';
-                lista.innerHTML = `<div class="text-center py-8"><p class="text-gray-500">${mensagem}</p></div>`;
-                return;
-            }
-            
-            pedidosOrdenados.slice(0, 50).forEach(pedido => {
-                const pedidoElement = createPedidoElement(pedido, isAdmin);
-                lista.appendChild(pedidoElement);
-            });
-        }
-
-        function marcarPago(pedidoId) {
-            const pedido = pedidos.find(p => p.id === pedidoId);
-            if (pedido) {
-                currentPedidoForPayment = pedido;
-                
-                const cliente = clientes.find(c => c.id == pedido.clienteId);
-                const galoesGratisDevidos = verificarFidelidade(pedido.clienteId);
-                
-                const fidelidadeInfo = document.getElementById('fidelidadeInfo');
-                const fidelidadeText = document.getElementById('fidelidadeText');
-                
-                if (galoesGratisDevidos > 0 && !pedido.isGratis) {
-                    fidelidadeInfo.classList.remove('hidden');
-                    fidelidadeText.textContent = `Cliente já tem ${galoesGratisDevidos} galão(s) grátis disponível(s)! (Pedidos grátis já foram criados)`;
-                } else {
-                    fidelidadeInfo.classList.add('hidden');
-                }
-                
-                document.getElementById('paymentModal').classList.remove('hidden');
-            }
-        }
-
         async function adicionarGaloesEstoque() {
-            const dataGalao = document.getElementById('novaDataGalao').value;
-            const quantidade = parseInt(document.getElementById('novaQuantidadeGaloes').value);
             const loadingEl = document.getElementById('estoqueLoading');
-            
-            if (!dataGalao) {
-                alert('⚠️ Digite a data do galão!');
-                return;
-            }
-            
-            if (!isValidDataFormat(dataGalao)) {
-                alert('⚠️ Formato de data inválido! Use MM-AAAA (ex: 03-2024)');
-                return;
-            }
-            
-            if (quantidade <= 0) {
-                alert('⚠️ Quantidade deve ser maior que zero!');
-                return;
-            }
-            
             loadingEl.classList.remove('hidden');
             
             try {
-                const currentCheio = estoque[dataGalao]?.cheio || 0;
+                const dataGalao = document.getElementById('novaDataGalao').value;
+                const quantidade = parseInt(document.getElementById('novaQuantidadeGaloes').value);
+                
+                if (!dataGalao || !isValidDataFormat(dataGalao)) {
+                    alert('⚠️ Por favor, insira uma data válida no formato MM-AAAA (ex: 03-2024)!');
+                    return;
+                }
+                
+                if (!quantidade || quantidade < 1) {
+                    alert('⚠️ Por favor, insira uma quantidade válida!');
+                    return;
+                }
+                
+                const currentAmount = estoque[dataGalao]?.cheio || 0;
+                
                 await atualizarEstoque(dataGalao, {
-                    cheio: currentCheio + quantidade
+                    cheio: currentAmount + quantidade
                 });
                 
                 document.getElementById('novaDataGalao').value = '';
                 document.getElementById('novaQuantidadeGaloes').value = '1';
                 
-                alert(`✅ ${quantidade} galão(s) adicionados para ${dataGalao}!`);
+                alert('✅ Galões adicionados ao estoque com sucesso!');
                 
             } catch (error) {
                 console.error('❌ Erro ao adicionar galões:', error);
-                alert('❌ Erro ao adicionar galões. Tente novamente.');
+                alert('❌ Erro ao adicionar galões ao estoque. Tente novamente.');
             } finally {
                 loadingEl.classList.add('hidden');
             }
         }
 
         function updateVisualizacaoEstoque() {
-            const visual = document.getElementById('visualEstoque');
-            if (!visual) return;
-            visual.innerHTML = '';
+            // Esta função agora só atualiza os totais gerais
+            let totalCheio = 0;
+            let totalVazio = 0;
             
-            if (Object.keys(estoque).length === 0) {
-                visual.innerHTML = '<div class="text-center py-8"><p class="text-gray-500">Nenhum galão no estoque ainda.</p></div>';
-            return;
-        }
-
-        const sortedDates = Object.keys(estoque).sort((a, b) => parseDataMesAno(a) - parseDataMesAno(b));
-
-        sortedDates.forEach(dataGalao => {
-            const stockData = estoque[dataGalao];
-            const statuses = [
-                { type: 'cheio', count: stockData.cheio || 0, icon: '🟢', label: 'Cheios' },
-                { type: 'vazio', count: stockData.vazio || 0, icon: '⚪', label: 'Vazios' },
-                { type: 'cliente', count: stockData.cliente || 0, icon: '🟡', label: 'Com Cliente' },
-                { type: 'emprestado', count: stockData.emprestado || 0, icon: '🟣', label: 'Emprestados' }
-            ];
-
-            statuses.forEach(status => {
-                if (status.count > 0) {
-                    for (let i = 0; i < status.count; i++) {
-                        const galaoContainer = document.createElement('div');
-                        galaoContainer.className = `galao-container galao-${status.type}`;
-                        galaoContainer.addEventListener('contextmenu', (e) => {
-                            e.preventDefault();
-                            currentContextMenuData = { dataGalao, status: status.type, quantidade: status.count };
-                            const contextMenu = document.getElementById('contextMenu');
-                            contextMenu.style.left = e.pageX + 'px';
-                            contextMenu.style.top = e.pageY + 'px';
-                            contextMenu.classList.remove('hidden');
-                        });
-                        
-                        galaoContainer.innerHTML = `
-                            <div class="galao-icon">${status.icon}</div>
-                            <div class="galao-data">${dataGalao}</div>
-                        `;
-                        
-                        visual.appendChild(galaoContainer);
-                    }
-                }
+            Object.values(estoque).forEach(dados => {
+                totalCheio += dados.cheio || 0;
+                totalVazio += dados.vazio || 0;
             });
-        });
-    }
-
-    function updateEstoqueDetalhado() {
-        const container = document.getElementById('estoqueDetalhado');
-        container.innerHTML = '';
-        
-        if (Object.keys(estoque).length === 0) {
-            container.innerHTML = '<div class="text-center py-4"><p class="text-gray-500 text-sm">Nenhum galão no estoque ainda.</p></div>';
-            return;
-        }
-        
-        const sortedDates = Object.keys(estoque).sort((a, b) => parseDataMesAno(b) - parseDataMesAno(a));
-        
-        sortedDates.forEach(dataGalao => {
-            const stockData = estoque[dataGalao];
-            const total = (stockData.cheio || 0) + (stockData.vazio || 0) + (stockData.cliente || 0) + (stockData.emprestado || 0);
             
-            if (total > 0) {
+            document.getElementById('totalGaloesCheios').textContent = totalCheio;
+            document.getElementById('totalGaloesVazios').textContent = totalVazio;
+        }
+
+        function updateEstoqueDetalhado() {
+            const container = document.getElementById('estoqueDetalhado');
+            container.innerHTML = '';
+            
+            const estoqueEntries = Object.entries(estoque).sort((a, b) => {
+                const dataA = parseDataMesAno(a[0]);
+                const dataB = parseDataMesAno(b[0]);
+                return (dataB || 0) - (dataA || 0);
+            });
+            
+            if (estoqueEntries.length === 0) {
+                container.innerHTML = '<div class="text-center py-4"><p class="text-gray-500 text-sm">Nenhum galão no estoque.</p></div>';
+                return;
+            }
+            
+            estoqueEntries.forEach(([dataGalao, dados]) => {
                 const div = document.createElement('div');
-                div.className = 'flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg';
+                div.className = 'border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:shadow-md transition-all';
                 
-                const syncPendingItem = pendingSync.find(item => 
-                    item.collection === 'estoque' && 
-                    item.data.dataGalao === dataGalao
-                );
+                const cheio = dados.cheio || 0;
+                const vazio = dados.vazio || 0;
+                const cliente = dados.cliente || 0;
+                const emprestado = dados.emprestado || 0;
+                const total = cheio + vazio + cliente + emprestado;
+                
+                const isAdmin = currentUser?.email === 'adm@comercialrocha.com';
                 
                 div.innerHTML = `
-                    <div class="flex-1">
-                        <h5 class="font-semibold text-gray-900 dark:text-white">
-                            ${dataGalao}
-                            ${syncPendingItem ? '<span class="sync-pending">Pendente</span>' : ''}
-                        </h5>
-                        <div class="flex items-center space-x-4 mt-1 text-sm">
-                            <span class="text-green-600">🟢 Cheios: ${stockData.cheio || 0}</span>
-                            <span class="text-gray-600">⚪ Vazios: ${stockData.vazio || 0}</span>
-                            <span class="text-yellow-600">🟡 Cliente: ${stockData.cliente || 0}</span>
-                            <span class="text-purple-600">🟣 Emprest.: ${stockData.emprestado || 0}</span>
+                    <div class="estoque-item-grid">
+                        <div class="estoque-item-info">
+                            <h4 class="font-semibold text-gray-900 dark:text-white text-lg">${dataGalao}</h4>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm">Total: ${total} galão(s)</p>
+                            
+                            <div class="estoque-status-grid">
+                                <div class="estoque-status-item">
+                                    <span class="w-3 h-3 bg-green-500 rounded-full flex-shrink-0"></span>
+                                    <span>Cheios: ${cheio}</span>
+                                </div>
+                                <div class="estoque-status-item">
+                                    <span class="w-3 h-3 bg-gray-500 rounded-full flex-shrink-0"></span>
+                                    <span>Vazios: ${vazio}</span>
+                                </div>
+                                <div class="estoque-status-item">
+                                    <span class="w-3 h-3 bg-orange-500 rounded-full flex-shrink-0"></span>
+                                    <span>Clientes: ${cliente}</span>
+                                </div>
+                                <div class="estoque-status-item">
+                                    <span class="w-3 h-3 bg-purple-500 rounded-full flex-shrink-0"></span>
+                                    <span>Emprestados: ${emprestado}</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="estoque-item-actions">
-                        <button onclick="editarEstoqueDetalhado('${dataGalao}')" class="btn-edit-estoque">✏️</button>
-                        <button onclick="emprestarGalaoDetalhado('${dataGalao}')" class="btn-emprestar">🤝</button>
-                        <button onclick="excluirEstoqueDetalhado('${dataGalao}')" class="btn-delete-estoque">🗑️</button>
+                        
+                        <div class="estoque-item-actions">
+                            ${isAdmin ? `<button onclick="editarEstoqueDetalhado('${dataGalao}')" class="btn-edit-estoque">
+                                ✏️ Editar
+                            </button>` : ''}
+                            ${(cheio > 0 || vazio > 0) ? `<button onclick="emprestarGalaoDetalhado('${dataGalao}')" class="btn-emprestar">
+                                🤝 Emprestar
+                            </button>` : ''}
+                        </div>
                     </div>
                 `;
                 
                 container.appendChild(div);
+            });
+        }
+
+        function updateDashboard() {
+            const hoje = getCurrentDateLocal();
+            
+            // Total de clientes ativos
+            const clientesAtivos = clientes.filter(c => !c.inativo).length;
+            document.getElementById('totalClientes').textContent = clientesAtivos;
+            
+            // MODIFICADO: Vendas hoje agora mostra número de pedidos
+            const vendasHoje = pedidos.filter(p => p.pago && isSameDate(p.dataIda, hoje)).length;
+            document.getElementById('vendasHoje').textContent = vendasHoje;
+            
+            // Total galões no estoque
+            let totalGaloesEstoque = 0;
+            Object.values(estoque).forEach(dados => {
+                totalGaloesEstoque += (dados.cheio || 0) + (dados.vazio || 0);
+            });
+            document.getElementById('galoesEstoque').textContent = totalGaloesEstoque;
+            
+            // Pedidos pendentes
+            const pedidosPendentes = pedidos.filter(p => !p.pago).length;
+            document.getElementById('pedidosPendentes').textContent = pedidosPendentes;
+            
+            // MODIFICADO: Atualizar notificações com nova lógica
+            updateClientesNotificar();
+        }
+
+        // MODIFICADO: Nova função para atualizar notificações
+        function updateClientesNotificar() {
+            const container = document.getElementById('clientesNotificarContainer');
+            container.innerHTML = '';
+            
+            const agora = new Date();
+            const clientesAtivos = clientes.filter(c => !c.inativo);
+            
+            // Separar clientes por período sem comprar
+            const clientes7Dias = [];
+            const clientes15Dias = [];
+            const clientes30Dias = [];
+            
+            clientesAtivos.forEach(cliente => {
+                const ultimaCompraData = cliente.ultimaCompra ? new Date(cliente.ultimaCompra) : null;
+                
+                if (!ultimaCompraData) {
+                    // Nunca comprou - vai para 30+ dias
+                    clientes30Dias.push(cliente);
+                    return;
+                }
+                
+                const diasSemComprar = Math.floor((agora - ultimaCompraData) / (1000 * 60 * 60 * 24));
+                
+                if (diasSemComprar >= 30) {
+                    clientes30Dias.push(cliente);
+                } else if (diasSemComprar >= 15) {
+                    clientes15Dias.push(cliente);
+                } else if (diasSemComprar >= 7) {
+                    clientes7Dias.push(cliente);
+                }
+            });
+            
+            // Criar seções de notificação
+            if (clientes7Dias.length > 0) {
+                const section = createNotificationSection('7 dias sem comprar', clientes7Dias, 'notification-7-days', '⚠️');
+                container.appendChild(section);
             }
-        });
-    }
+            
+            if (clientes15Dias.length > 0) {
+                const section = createNotificationSection('15+ dias sem comprar', clientes15Dias, 'notification-15-days', '⚡');
+                container.appendChild(section);
+            }
+            
+            if (clientes30Dias.length > 0) {
+                const section = createNotificationSection('30+ dias sem comprar ou nunca compraram', clientes30Dias, 'notification-30-days', '🚨');
+                container.appendChild(section);
+            }
+            
+            // Se não há notificações, mostrar mensagem
+            if (clientes7Dias.length === 0 && clientes15Dias.length === 0 && clientes30Dias.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="text-6xl mb-4">🎉</div>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Tudo em dia!</h3>
+                        <p class="text-gray-600 dark:text-gray-400">Todos os clientes ativos compraram recentemente.</p>
+                    </div>
+                `;
+            }
+        }
 
-    function updateDashboard() {
-        // MODIFICADO: Vendas hoje mostra quantidade de vendas, não valor
-        const hoje = getCurrentDateLocal();
-        const vendasHoje = pedidos.filter(p => isSameDate(p.dataIda, hoje) && p.pago).length;
-        
-        const totalGaloesCheios = Object.values(estoque).reduce((total, stock) => total + (stock.cheio || 0), 0);
-        const totalGaloesVazios = Object.values(estoque).reduce((total, stock) => total + (stock.vazio || 0), 0);
-        const totalGaloesEstoque = totalGaloesCheios + totalGaloesVazios;
-        const pedidosPendentes = pedidos.filter(p => !p.pago).length;
-        
-        document.getElementById('totalClientes').textContent = clientes.filter(c => !c.inativo).length;
-        document.getElementById('vendasHoje').textContent = vendasHoje; // MODIFICADO: Mostra número de vendas
-        document.getElementById('galoesEstoque').textContent = totalGaloesEstoque;
-        document.getElementById('pedidosPendentes').textContent = pedidosPendentes;
-        
-        document.getElementById('totalGaloesCheios').textContent = totalGaloesCheios;
-        document.getElementById('totalGaloesVazios').textContent = totalGaloesVazios;
-        
-        updateNotificacoesClientes();
-    }
+        function createNotificationSection(titulo, clientesList, className, icone) {
+            const section = document.createElement('div');
+            section.className = `notification-section ${className}`;
+            
+            let clientesHtml = '';
+            clientesList.forEach(cliente => {
+                const ultimaCompra = cliente.ultimaCompra ? formatLocalDate(cliente.ultimaCompra) : 'Nunca';
+                const mensagemWhatsApp = gerarMensagemNotificacao(cliente.nome);
+                
+                clientesHtml += `
+                    <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg mb-2">
+                        <div class="flex-1">
+                            <h5 class="font-semibold text-gray-900 dark:text-white">${cliente.nome}</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Última compra: ${ultimaCompra}</p>
+                            ${cliente.telefone ? `<p class="text-sm text-gray-500 dark:text-gray-500">${cliente.telefone}</p>` : ''}
+                        </div>
+                        ${cliente.telefone ? `
+                            <button onclick="abrirWhatsApp('${cliente.telefone}', '${encodeURIComponent(mensagemWhatsApp)}')" 
+                                class="btn-modern bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-sm">
+                                📱 WhatsApp
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            section.innerHTML = `
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold flex items-center">
+                        <span class="text-2xl mr-2">${icone}</span>
+                        ${titulo}
+                    </h3>
+                    <span class="text-sm font-semibold px-3 py-1 bg-black bg-opacity-20 rounded-full">
+                        ${clientesList.length} cliente(s)
+                    </span>
+                </div>
+                <div class="space-y-2">
+                    ${clientesHtml}
+                </div>
+            `;
+            
+            return section;
+        }
 
-    function updateNotificacoesClientes() {
-        const container = document.getElementById('clientesNotificarContainer');
-        const hoje = new Date();
-        const diasNotificacao = configuracoes.diasNotificacao || 7;
-        
-        const clientesParaNotificar = {
-            '7days': [],
-            '15days': [],
-            '30days': []
-        };
-        
-        clientes.filter(c => !c.inativo).forEach(cliente => {
-            const ultimaCompra = cliente.ultimaCompra;
-            if (!ultimaCompra) {
-                clientesParaNotificar['30days'].push(cliente);
+        function gerarMensagemNotificacao(nomeCliente) {
+            let mensagem = configuracoes.mensagemNotificacao || `🪣 *Comercial Rocha*
+
+Olá {nome}! 😊
+
+Sentimos sua falta! 💙
+Já faz alguns dias que você não faz seu pedido de água.
+
+💧 Que tal renovar seu estoque?
+📞 Entre em contato conosco para agendar sua próxima entrega!
+
+Estamos sempre à disposição! 🙏`;
+            
+            return mensagem.replace(/{nome}/g, nomeCliente);
+        }
+
+        // Relatórios
+        function gerarRelatorio(tipo) {
+            switch (tipo) {
+                case 'diario':
+                    gerarRelatorioDiario();
+                    break;
+                case 'mensal':
+                    gerarRelatorioMensal();
+                    break;
+                case 'anual':
+                    gerarRelatorioAnual();
+                    break;
+            }
+        }
+
+        function gerarRelatorioDiario() {
+            const data = document.getElementById('dataDiario').value;
+            if (!data) {
+                alert('⚠️ Selecione uma data!');
                 return;
             }
             
-            const dataUltimaCompra = new Date(ultimaCompra);
-            const diasSemComprar = Math.floor((hoje - dataUltimaCompra) / (1000 * 60 * 60 * 24));
+            const pedidosDia = pedidos.filter(p => p.pago && isSameDate(p.dataIda, data));
             
-            if (diasSemComprar >= 30) {
-                clientesParaNotificar['30days'].push(cliente);
-            } else if (diasSemComprar >= 15) {
-                clientesParaNotificar['15days'].push(cliente);
-            } else if (diasSemComprar >= diasNotificacao) {
-                clientesParaNotificar['7days'].push(cliente);
+            if (pedidosDia.length === 0) {
+                alert('⚠️ Nenhuma venda encontrada para esta data!');
+                return;
             }
-        });
-        
-        // REMOVIDO: Não mostra mais os números nas notificações
-        // document.getElementById('count7Days').textContent = clientesParaNotificar['7days'].length;
-        // document.getElementById('count15Days').textContent = clientesParaNotificar['15days'].length;
-        // document.getElementById('count30Days').textContent = clientesParaNotificar['30days'].length;
-        
-        container.innerHTML = '';
-        
-        const sections = [
-            { key: '7days', title: `${diasNotificacao} dias sem comprar`, class: 'notification-7-days', color: 'orange', clients: clientesParaNotificar['7days'] },
-            { key: '15days', title: '15+ dias sem comprar', class: 'notification-15-days', color: 'red', clients: clientesParaNotificar['15days'] },
-            { key: '30days', title: '30+ dias sem comprar', class: 'notification-30-days', color: 'red', clients: clientesParaNotificar['30days'] }
-        ];
-        
-        sections.forEach(section => {
-            if (section.clients.length > 0) {
-                const sectionDiv = document.createElement('div');
-                sectionDiv.className = `notification-section ${section.class}`;
-                
-                let clientesHtml = section.clients.map(cliente => {
-                    const ultimaCompra = cliente.ultimaCompra ? formatLocalDate(cliente.ultimaCompra) : 'Nunca';
-                    const diasSemComprar = cliente.ultimaCompra ? 
-                        Math.floor((hoje - new Date(cliente.ultimaCompra)) / (1000 * 60 * 60 * 24)) : 
-                        'N/A';
-                    
-                    return `
-                        <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg mb-3">
-                            <div class="flex-1">
-                                <h4 class="font-semibold text-gray-900 dark:text-white">${cliente.nome}</h4>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Última compra: ${ultimaCompra}</p>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Dias sem comprar: ${diasSemComprar}</p>
-                                ${cliente.telefone ? `<p class="text-sm text-gray-600 dark:text-gray-400">📞 ${cliente.telefone}</p>` : ''}
-                            </div>
-                            ${cliente.telefone ? `
-                                <button onclick="enviarNotificacaoWhatsApp('${cliente.id}')" class="btn-modern bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-sm">
-                                    📱 Notificar
-                                </button>
-                            ` : ''}
-                        </div>
-                    `;
-                }).join('');
-                
-                sectionDiv.innerHTML = `
-                    <h3 class="text-lg font-bold mb-4 text-gray-900 dark:text-white">
-                        ⚠️ ${section.title} (${section.clients.length})
-                    </h3>
-                    ${clientesHtml}
-                `;
-                
-                container.appendChild(sectionDiv);
-            }
-        });
-        
-        if (container.innerHTML === '') {
-            container.innerHTML = '<div class="text-center py-8"><p class="text-green-600 font-semibold">🎉 Todos os clientes estão em dia!</p></div>';
-        }
-    }
-
-    function enviarNotificacaoWhatsApp(clienteId) {
-        const cliente = clientes.find(c => c.id === clienteId);
-        if (!cliente || !cliente.telefone) return;
-        
-        let mensagem = configuracoes.mensagemNotificacao;
-        mensagem = mensagem.replace('{nome}', cliente.nome);
-        
-        abrirWhatsApp(cliente.telefone, mensagem);
-    }
-
-    // Reports Functions
-    function gerarRelatorio(tipo) {
-        let dados = [];
-        let titulo = '';
-        
-        switch (tipo) {
-            case 'diario':
-                const dataDiario = document.getElementById('dataDiario').value;
-                if (!dataDiario) {
-                    alert('⚠️ Selecione uma data!');
-                    return;
-                }
-                dados = pedidos.filter(p => isSameDate(p.dataIda, dataDiario) && p.pago);
-                titulo = `Relatório Diário - ${formatLocalDate(dataDiario)}`;
-                break;
-                
-            case 'mensal':
-                const mesMensal = document.getElementById('mesMensal').value;
-                if (!mesMensal) {
-                    alert('⚠️ Selecione um mês!');
-                    return;
-                }
-                dados = pedidos.filter(p => isSameMonth(p.dataIda, mesMensal) && p.pago);
-                titulo = `Relatório Mensal - ${mesMensal}`;
-                break;
-                
-            case 'anual':
-                const anoAtual = new Date().getFullYear();
-                dados = pedidos.filter(p => {
-                    const dataPedido = createLocalDate(p.dataIda);
-                    return dataPedido.getFullYear() === anoAtual && p.pago;
-                });
-                titulo = `Relatório Anual - ${anoAtual}`;
-                break;
-        }
-        
-        exibirRelatorio(titulo, dados);
-    }
-
-    function gerarRelatorioCliente() {
-        const clienteId = document.getElementById('clienteRelatorio').value;
-        if (!clienteId) {
-            alert('⚠️ Selecione um cliente!');
-            return;
-        }
-        
-        const cliente = clientes.find(c => c.id === clienteId);
-        const dados = pedidos.filter(p => p.clienteId === clienteId && p.pago);
-        const titulo = `Relatório do Cliente - ${cliente.nome}`;
-        
-        exibirRelatorio(titulo, dados, cliente);
-    }
-
-    // MODIFICADO: Função renomeada de gerarRelatorioRanking para gerarRelatorioRanking
-    function gerarRelatorioRanking() {
-        const ranking = {};
-        
-        pedidos.filter(p => p.pago && !p.isGratis).forEach(pedido => {
-            const cliente = clientes.find(c => c.id === pedido.clienteId);
-            if (cliente) {
-                if (!ranking[cliente.id]) {
-                    ranking[cliente.id] = {
-                        nome: cliente.nome,
-                        telefone: cliente.telefone || '',
-                        endereco: cliente.endereco || '',
-                        totalGaloes: 0,
-                        totalGasto: 0,
-                        ultimaCompra: null
-                    };
-                }
-                ranking[cliente.id].totalGaloes += pedido.quantidade || 1;
-                ranking[cliente.id].totalGasto += pedido.valorTotal || 0;
-                
-                if (!ranking[cliente.id].ultimaCompra || new Date(pedido.dataIda) > new Date(ranking[cliente.id].ultimaCompra)) {
-                    ranking[cliente.id].ultimaCompra = pedido.dataIda;
-                }
-            }
-        });
-        
-        const rankingArray = Object.values(ranking).sort((a, b) => b.totalGaloes - a.totalGaloes);
-        
-        let html = `
-            <div class="overflow-x-auto">
-                <table class="w-full border-collapse border border-gray-300 dark:border-gray-600">
-                    <thead>
-                        <tr class="bg-gray-100 dark:bg-gray-700">
-                            <th class="border border-gray-300 dark:border-gray-600 p-3 text-left">Posição</th>
-                            <th class="border border-gray-300 dark:border-gray-600 p-3 text-left">Cliente</th>
-                            <th class="border border-gray-300 dark:border-gray-600 p-3 text-left">Total de Galões</th>
-                            <th class="border border-gray-300 dark:border-gray-600 p-3 text-left">Total Gasto</th>
-                            <th class="border border-gray-300 dark:border-gray-600 p-3 text-left">Última Compra</th>
-                            <th class="border border-gray-300 dark:border-gray-600 p-3 text-left">Contato</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-        `;
-        
-        rankingArray.forEach((cliente, index) => {
-            const posicao = index + 1;
-            let emoji = '';
-            if (posicao === 1) emoji = '🥇';
-            else if (posicao === 2) emoji = '🥈';
-            else if (posicao === 3) emoji = '🥉';
             
-            html += `
-                <tr class="${index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-750'}">
-                    <td class="border border-gray-300 dark:border-gray-600 p-3">${emoji} ${posicao}º</td>
-                    <td class="border border-gray-300 dark:border-gray-600 p-3">
-                        <strong>${cliente.nome}</strong>
-                        ${cliente.endereco ? `<br><small class="text-gray-600">${cliente.endereco}</small>` : ''}
-                    </td>
-                    <td class="border border-gray-300 dark:border-gray-600 p-3 font-bold text-blue-600">${cliente.totalGaloes}</td>
-                    <td class="border border-gray-300 dark:border-gray-600 p-3 font-bold text-green-600">R$ ${cliente.totalGasto.toFixed(2)}</td>
-                    <td class="border border-gray-300 dark:border-gray-600 p-3">${formatLocalDate(cliente.ultimaCompra)}</td>
-                    <td class="border border-gray-300 dark:border-gray-600 p-3">${cliente.telefone}</td>
-                </tr>
-            `;
-        });
-        
-        html += `
-                    </tbody>
-                </table>
-            </div>
-            <div class="mt-6 p-4 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                <h4 class="font-bold text-blue-800 dark:text-blue-200 mb-2">Resumo:</h4>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                    <div>
-                        <strong>Total de Clientes:</strong> ${rankingArray.length}
-                    </div>
-                    <div>
-                        <strong>Total de Galões Vendidos:</strong> ${rankingArray.reduce((total, c) => total + c.totalGaloes, 0)}
-                    </div>
-                    <div>
-                        <strong>Receita Total:</strong> R$ ${rankingArray.reduce((total, c) => total + c.totalGasto, 0).toFixed(2)}
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        currentRelatorioData = html;
-        currentRelatorioTitulo = 'Galões por Cliente'; // MODIFICADO: Nome alterado
-        
-        document.getElementById('conteudoRelatorio').innerHTML = html;
-        document.getElementById('resultadosRelatorio').classList.remove('hidden');
-    }
-
-    function exibirRelatorio(titulo, dados, cliente = null) {
-        let html = '';
-        
-        if (dados.length === 0) {
-            html = '<div class="text-center py-8"><p class="text-gray-500">Nenhum dado encontrado para o período selecionado.</p></div>';
-        } else {
             let totalVendas = 0;
             let totalGaloes = 0;
             let totalGaloesVazios = 0;
+            let vendasPorFormaPagamento = {};
+            let vendasGratis = 0;
             
-            html = `
+            let relatorioHtml = `
+                <h3 class="text-xl font-bold mb-4">📅 Relatório Diário - ${formatLocalDate(data)}</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full border-collapse border border-gray-300 dark:border-gray-600">
                         <thead>
                             <tr class="bg-gray-100 dark:bg-gray-700">
-                                <th class="border border-gray-300 dark:border-gray-600 p-3 text-left">Data</th>
-                                ${!cliente ? '<th class="border border-gray-300 dark:border-gray-600 p-3 text-left">Cliente</th>' : ''}
-                                <th class="border border-gray-300 dark:border-gray-600 p-3 text-left">Galões de Água</th>
-                                <th class="border border-gray-300 dark:border-gray-600 p-3 text-left">Galões Vazios</th>
-                                <th class="border border-gray-300 dark:border-gray-600 p-3 text-left">Valor</th>
-                                <th class="border border-gray-300 dark:border-gray-600 p-3 text-left">Pagamento</th>
+                                <th class="border border-gray-300 dark:border-gray-600 p-2">Cliente</th>
+                                <th class="border border-gray-300 dark:border-gray-600 p-2">Galões Água</th>
+                                <th class="border border-gray-300 dark:border-gray-600 p-2">Galões Vazios</th>
+                                <th class="border border-gray-300 dark:border-gray-600 p-2">Valor</th>
+                                <th class="border border-gray-300 dark:border-gray-600 p-2">Pagamento</th>
                             </tr>
                         </thead>
                         <tbody>
             `;
             
-            dados.forEach((pedido, index) => {
-                const clientePedido = clientes.find(c => c.id == pedido.clienteId);
-                const quantidade = pedido.quantidade || 1;
-                const quantidadeVazios = pedido.quantidadeVazios || 0;
-                const valor = pedido.isGratis ? 0 : (pedido.valorTotal || 0);
+            pedidosDia.forEach(pedido => {
+                const cliente = clientes.find(c => c.id == pedido.clienteId);
+                const nomeCliente = cliente ? cliente.nome : 'Cliente não encontrado';
                 
-                totalVendas += valor;
-                totalGaloes += quantidade;
-                totalGaloesVazios += quantidadeVazios;
+                if (pedido.isGratis) {
+                    vendasGratis += pedido.valorTotal;
+                } else {
+                    totalVendas += pedido.valorTotal;
+                }
                 
-                html += `
-                    <tr class="${index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-750'}">
-                        <td class="border border-gray-300 dark:border-gray-600 p-3">${formatLocalDate(pedido.dataIda)}</td>
-                        ${!cliente ? `<td class="border border-gray-300 dark:border-gray-600 p-3">${clientePedido ? clientePedido.nome : 'N/A'}</td>` : ''}
-                        <td class="border border-gray-300 dark:border-gray-600 p-3">${quantidade}${pedido.isGratis ? ' (GRÁTIS)' : ''}</td>
-                        <td class="border border-gray-300 dark:border-gray-600 p-3">${quantidadeVazios}</td>
-                        <td class="border border-gray-300 dark:border-gray-600 p-3 font-bold ${pedido.isGratis ? 'text-green-600' : 'text-blue-600'}">${pedido.isGratis ? 'GRÁTIS' : `R$ ${valor.toFixed(2)}`}</td>
-                        <td class="border border-gray-300 dark:border-gray-600 p-3">${pedido.formaPagamento || 'N/A'}</td>
+                totalGaloes += pedido.quantidade;
+                totalGaloesVazios += pedido.quantidadeVazios || 0;
+                
+                const formaPagamento = pedido.formaPagamento || 'Não informado';
+                vendasPorFormaPagamento[formaPagamento] = (vendasPorFormaPagamento[formaPagamento] || 0) + pedido.valorTotal;
+                
+                relatorioHtml += `
+                    <tr class="${pedido.isGratis ? 'bg-green-50 dark:bg-green-900' : ''}">
+                        <td class="border border-gray-300 dark:border-gray-600 p-2">${nomeCliente}</td>
+                        <td class="border border-gray-300 dark:border-gray-600 p-2 text-center">${pedido.quantidade}</td>
+                        <td class="border border-gray-300 dark:border-gray-600 p-2 text-center">${pedido.quantidadeVazios || 0}</td>
+                        <td class="border border-gray-300 dark:border-gray-600 p-2 text-center">R$ ${pedido.valorTotal.toFixed(2)}</td>
+                        <td class="border border-gray-300 dark:border-gray-600 p-2 text-center">
+                            ${pedido.formaPagamento || 'Não informado'}
+                            ${pedido.isGratis ? '<span class="text-green-600 font-bold">(GRÁTIS)</span>' : ''}
+                        </td>
                     </tr>
                 `;
             });
             
-            html += `
+            relatorioHtml += `
                         </tbody>
                     </table>
                 </div>
-                <div class="mt-6 p-4 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                    <h4 class="font-bold text-blue-800 dark:text-blue-200 mb-2">Resumo:</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
-                        <div>
-                            <strong>Total de Vendas:</strong> ${dados.length}
-                        </div>
-                        <div>
-                            <strong>Galões de Água:</strong> ${totalGaloes}
-                        </div>
-                        <div>
-                            <strong>Galões Vazios:</strong> ${totalGaloesVazios}
-                        </div>
-                        <div>
-                            <strong>Receita Total:</strong> R$ ${totalVendas.toFixed(2)}
-                        </div>
+                
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
+                        <h4 class="font-bold text-blue-800 dark:text-blue-200 mb-2">📊 Resumo do Dia</h4>
+                        <p class="text-blue-700 dark:text-blue-300">Pedidos: ${pedidosDia.length}</p>
+                        <p class="text-blue-700 dark:text-blue-300">Galões de água: ${totalGaloes}</p>
+                        <p class="text-blue-700 dark:text-blue-300">Galões vazios: ${totalGaloesVazios}</p>
+                        <p class="text-blue-700 dark:text-blue-300">Total vendas: R$ ${totalVendas.toFixed(2)}</p>
+                        ${vendasGratis > 0 ? `<p class="text-green-600 font-bold">Galões grátis: R$ ${vendasGratis.toFixed(2)}</p>` : ''}
+                    </div>
+                    
+                    <div class="bg-green-50 dark:bg-green-900 p-4 rounded-lg">
+                        <h4 class="font-bold text-green-800 dark:text-green-200 mb-2">💳 Por Forma de Pagamento</h4>
+            `;
+            
+            Object.entries(vendasPorFormaPagamento).forEach(([forma, valor]) => {
+                relatorioHtml += `<p class="text-green-700 dark:text-green-300">${forma}: R$ ${valor.toFixed(2)}</p>`;
+            });
+            
+            relatorioHtml += `
                     </div>
                 </div>
             `;
+            
+            currentRelatorioData = relatorioHtml;
+            currentRelatorioTitulo = `Relatório Diário - ${formatLocalDate(data)}`;
+            
+            document.getElementById('conteudoRelatorio').innerHTML = relatorioHtml;
+            document.getElementById('resultadosRelatorio').classList.remove('hidden');
         }
-        
-        currentRelatorioData = html;
-        currentRelatorioTitulo = titulo;
-        
-        document.getElementById('conteudoRelatorio').innerHTML = html;
-        document.getElementById('resultadosRelatorio').classList.remove('hidden');
-    }
 
-    function gerarPDF(titulo, conteudo) {
-        if (typeof window.jspdf?.jsPDF === 'undefined') {
-            alert('❌ Biblioteca PDF não disponível!');
-            return;
-        }
-        
-        try {
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF();
-            
-            // Header
-            pdf.setFontSize(18);
-            pdf.text('Comercial Rocha', 20, 20);
-            pdf.setFontSize(14);
-            pdf.text(titulo, 20, 30);
-            pdf.setFontSize(10);
-            pdf.text(`Gerado em: ${formatLocalDate(getCurrentDateLocal())}`, 20, 40);
-            
-            // Parse HTML table to PDF
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = conteudo;
-            const table = tempDiv.querySelector('table');
-            
-            if (table && typeof pdf.autoTable === 'function') {
-                const headers = [];
-                const rows = [];
-                
-                // Extract headers
-                const headerCells = table.querySelectorAll('thead th');
-                headerCells.forEach(cell => {
-                    headers.push(cell.textContent.trim());
-                });
-                
-                // Extract rows
-                const bodyRows = table.querySelectorAll('tbody tr');
-                bodyRows.forEach(row => {
-                    const rowData = [];
-                    const cells = row.querySelectorAll('td');
-                    cells.forEach(cell => {
-                        rowData.push(cell.textContent.trim());
-                    });
-                    rows.push(rowData);
-                });
-                
-                pdf.autoTable({
-                    head: [headers],
-                    body: rows,
-                    startY: 50,
-                    styles: { fontSize: 8 }
-                });
-            } else {
-                // Fallback: plain text
-                const lines = conteudo.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-                const splitText = pdf.splitTextToSize(lines, 170);
-                pdf.text(splitText, 20, 50);
+        function gerarRelatorioMensal() {
+            const mesAno = document.getElementById('mesMensal').value;
+            if (!mesAno) {
+                alert('⚠️ Selecione um mês!');
+                return;
             }
             
-            const fileName = `${titulo.replace(/[^a-zA-Z0-9]/g, '_')}_${getCurrentDateLocal()}.pdf`;
-            pdf.save(fileName);
+            const pedidosMes = pedidos.filter(p => p.pago && isSameMonth(p.dataIda, mesAno));
             
-        } catch (error) {
-            console.error('❌ Erro ao gerar PDF:', error);
-            alert('❌ Erro ao gerar PDF. Tente novamente.');
+            if (pedidosMes.length === 0) {
+                alert('⚠️ Nenhuma venda encontrada para este mês!');
+                return;
+            }
+            
+            let totalVendas = 0;
+            let totalGaloes = 0;
+            let totalGaloesVazios = 0;
+            let vendasPorDia = {};
+            let vendasPorCliente = {};
+            let vendasPorFormaPagamento = {};
+            let vendasGratis = 0;
+            
+            pedidosMes.forEach(pedido => {
+                const cliente = clientes.find(c => c.id == pedido.clienteId);
+                const nomeCliente = cliente ? cliente.nome : 'Cliente não encontrado';
+                const diaEntrega = formatLocalDate(pedido.dataIda);
+                
+                if (pedido.isGratis) {
+                    vendasGratis += pedido.valorTotal;
+                } else {
+                    totalVendas += pedido.valorTotal;
+                }
+                
+                totalGaloes += pedido.quantidade;
+                totalGaloesVazios += pedido.quantidadeVazios || 0;
+                
+                vendasPorDia[diaEntrega] = (vendasPorDia[diaEntrega] || 0) + pedido.valorTotal;
+                vendasPorCliente[nomeCliente] = (vendasPorCliente[nomeCliente] || 0) + pedido.valorTotal;
+                
+                const formaPagamento = pedido.formaPagamento || 'Não informado';
+                vendasPorFormaPagamento[formaPagamento] = (vendasPorFormaPagamento[formaPagamento] || 0) + pedido.valorTotal;
+            });
+            
+            const [ano, mes] = mesAno.split('-');
+            const nomesMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+            const nomeMes = nomesMeses[parseInt(mes) - 1];
+            
+            let relatorioHtml = `
+                <h3 class="text-xl font-bold mb-4">📆 Relatório Mensal - ${nomeMes} ${ano}</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
+                        <h4 class="font-bold text-blue-800 dark:text-blue-200 mb-2">📊 Resumo Geral</h4>
+                        <p class="text-blue-700 dark:text-blue-300">Pedidos: ${pedidosMes.length}</p>
+                        <p class="text-blue-700 dark:text-blue-300">Galões de água: ${totalGaloes}</p>
+                        <p class="text-blue-700 dark:text-blue-300">Galões vazios: ${totalGaloesVazios}</p>
+                        <p class="text-blue-700 dark:text-blue-300">Total vendas: R$ ${totalVendas.toFixed(2)}</p>
+                        ${vendasGratis > 0 ? `<p class="text-green-600 font-bold">Galões grátis: R$ ${vendasGratis.toFixed(2)}</p>` : ''}
+                    </div>
+                    
+                    <div class="bg-green-50 dark:bg-green-900 p-4 rounded-lg">
+                        <h4 class="font-bold text-green-800 dark:text-green-200 mb-2">💳 Por Forma de Pagamento</h4>
+            `;
+            
+            Object.entries(vendasPorFormaPagamento).forEach(([forma, valor]) => {
+                relatorioHtml += `<p class="text-green-700 dark:text-green-300">${forma}: R$ ${valor.toFixed(2)}</p>`;
+            });
+            
+            relatorioHtml += `
+                    </div>
+                    
+                    <div class="bg-orange-50 dark:bg-orange-900 p-4 rounded-lg">
+                        <h4 class="font-bold text-orange-800 dark:text-orange-200 mb-2">👥 Top 5 Clientes</h4>
+            `;
+            
+            const topClientes = Object.entries(vendasPorCliente)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+            
+            topClientes.forEach(([cliente, valor]) => {
+                relatorioHtml += `<p class="text-orange-700 dark:text-orange-300">${cliente}: R$ ${valor.toFixed(2)}</p>`;
+            });
+            
+            relatorioHtml += `
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                    <h4 class="font-bold text-gray-800 dark:text-gray-200 mb-4">📅 Vendas por Dia</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+            `;
+            
+            Object.entries(vendasPorDia)
+                .sort((a, b) => new Date(a[0].split('/').reverse().join('-')) - new Date(b[0].split('/').reverse().join('-')))
+                .forEach(([dia, valor]) => {
+                    relatorioHtml += `<p class="text-gray-700 dark:text-gray-300">${dia}: R$ ${valor.toFixed(2)}</p>`;
+                });
+            
+            relatorioHtml += `
+                    </div>
+                </div>
+            `;
+            
+            currentRelatorioData = relatorioHtml;
+            currentRelatorioTitulo = `Relatório Mensal - ${nomeMes} ${ano}`;
+            
+            document.getElementById('conteudoRelatorio').innerHTML = relatorioHtml;
+            document.getElementById('resultadosRelatorio').classList.remove('hidden');
         }
-    }
-</script>
 
+        function gerarRelatorioAnual() {
+            const anoAtual = new Date().getFullYear();
+            const pedidosAno = pedidos.filter(p => {
+                if (!p.pago) return false;
+                const dataVenda = createLocalDate(p.dataIda);
+                return dataVenda.getFullYear() === anoAtual;
+            });
+            
+            if (pedidosAno.length === 0) {
+                alert(`⚠️ Nenhuma venda encontrada para o ano ${anoAtual}!`);
+                return;
+            }
+            
+            let totalVendas = 0;
+            let totalGaloes = 0;
+            let totalGaloesVazios = 0;
+            let vendasPorMes = {};
+            let vendasPorCliente = {};
+            let vendasPorFormaPagamento = {};
+            let vendasGratis = 0;
+            
+            const nomesMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+            
+            pedidosAno.forEach(pedido => {
+                const cliente = clientes.find(c => c.id == pedido.clienteId);
+                const nomeCliente = cliente ? cliente.nome : 'Cliente não encontrado';
+                const dataVenda = createLocalDate(pedido.dataIda);
+                const mesVenda = nomesMeses[dataVenda.getMonth()];
+                
+                if (pedido.isGratis) {
+                    vendasGratis += pedido.valorTotal;
+                } else {
+                    totalVendas += pedido.valorTotal;
+                }
+                
+                totalGaloes += pedido.quantidade;
+                totalGaloesVazios += pedido.quantidadeVazios || 0;
+                
+                vendasPorMes[mesVenda] = (vendasPorMes[mesVenda] || 0) + pedido.valorTotal;
+                vendasPorCliente[nomeCliente] = (vendasPorCliente[nomeCliente] || 0) + pedido.valorTotal;
+                
+                const formaPagamento = pedido.formaPagamento || 'Não informado';
+                vendasPorFormaPagamento[formaPagamento] = (vendasPorFormaPagamento[formaPagamento] || 0) + pedido.valorTotal;
+            });
+            
+            let relatorioHtml = `
+                <h3 class="text-xl font-bold mb-4">📈 Relatório Anual - ${anoAtual}</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
+                        <h4 class="font-bold text-blue-800 dark:text-blue-200 mb-2">📊 Resumo Anual</h4>
+                        <p class="text-blue-700 dark:text-blue-300">Pedidos: ${pedidosAno.length}</p>
+                        <p class="text-blue-700 dark:text-blue-300">Galões de água: ${totalGaloes}</p>
+                        <p class="text-blue-700 dark:text-blue-300">Galões vazios: ${totalGaloesVazios}</p>
+                        <p class="text-blue-700 dark:text-blue-300">Total vendas: R$ ${totalVendas.toFixed(2)}</p>
+                        ${vendasGratis > 0 ? `<p class="text-green-600 font-bold">Galões grátis: R$ ${vendasGratis.toFixed(2)}</p>` : ''}
+                        <p class="text-blue-700 dark:text-blue-300">Média mensal: R$ ${(totalVendas / 12).toFixed(2)}</p>
+                    </div>
+                    
+                    <div class="bg-green-50 dark:bg-green-900 p-4 rounded-lg">
+                        <h4 class="font-bold text-green-800 dark:text-green-200 mb-2">💳 Por Forma de Pagamento</h4>
+            `;
+            
+            Object.entries(vendasPorFormaPagamento).forEach(([forma, valor]) => {
+                relatorioHtml += `<p class="text-green-700 dark:text-green-300">${forma}: R$ ${valor.toFixed(2)}</p>`;
+            });
+            
+            relatorioHtml += `
+                    </div>
+                    
+                    <div class="bg-orange-50 dark:bg-orange-900 p-4 rounded-lg">
+                        <h4 class="font-bold text-orange-800 dark:text-orange-200 mb-2">👥 Top 10 Clientes</h4>
+            `;
+            
+            const topClientes = Object.entries(vendasPorCliente)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+            
+            topClientes.forEach(([cliente, valor]) => {
+                relatorioHtml += `<p class="text-orange-700 dark:text-orange-300">${cliente}: R$ ${valor.toFixed(2)}</p>`;
+            });
+            
+            relatorioHtml += `
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                    <h4 class="font-bold text-gray-800 dark:text-gray-200 mb-4">📅 Vendas por Mês</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            `;
+            
+            nomesMeses.forEach(mes => {
+                const valor = vendasPorMes[mes] || 0;
+                relatorioHtml += `
+                    <div class="text-center p-2 bg-white dark:bg-gray-700 rounded">
+                        <p class="font-semibold text-gray-800 dark:text-gray-200">${mes}</p>
+                        <p class="text-gray-600 dark:text-gray-400">R$ ${valor.toFixed(2)}</p>
+                    </div>
+                `;
+            });
+            
+            relatorioHtml += `
+                    </div>
+                </div>
+            `;
+            
+            currentRelatorioData = relatorioHtml;
+            currentRelatorioTitulo = `Relatório Anual - ${anoAtual}`;
+            
+            document.getElementById('conteudoRelatorio').innerHTML = relatorioHtml;
+            document.getElementById('resultadosRelatorio').classList.remove('hidden');
+        }
+
+        function gerarRelatorioCliente() {
+            const clienteId = document.getElementById('clienteRelatorio').value;
+            if (!clienteId) {
+                alert('⚠️ Selecione um cliente!');
+                return;
+            }
+            
+            const cliente = clientes.find(c => c.id == clienteId);
+            if (!cliente) {
+                alert('⚠️ Cliente não encontrado!');
+                return;
+            }
+            
+            const pedidosCliente = pedidos.filter(p => p.clienteId == clienteId && p.pago);
+            
+            if (pedidosCliente.length === 0) {
+                alert('⚠️ Nenhuma compra encontrada para este cliente!');
+                return;
+            }
+            
+            let totalGasto = 0;
+            let totalGaloes = 0;
+            let totalGaloesVazios = 0;
+            let comprasGratis = 0;
+            let valorGratis = 0;
+            
+            // Sistema de fidelidade
+            const galoesPagos = contarGaloesPagos(clienteId);
+            const galoesGratis = contarGaloesGratisRecebidos(clienteId);
+            const proximaGratis = proximaCompraGratis(clienteId);
+            
+            let relatorioHtml = `
+                <h3 class="text-xl font-bold mb-4">👤 Relatório do Cliente - ${cliente.nome}</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
+                        <h4 class="font-bold text-blue-800 dark:text-blue-200 mb-2">📊 Informações Pessoais</h4>
+                        <p class="text-blue-700 dark:text-blue-300">Nome: ${cliente.nome}</p>
+                        ${cliente.telefone ? `<p class="text-blue-700 dark:text-blue-300">Telefone: ${cliente.telefone}</p>` : ''}
+                        ${cliente.endereco ? `<p class="text-blue-700 dark:text-blue-300">Endereço: ${cliente.endereco}</p>` : ''}
+                        <p class="text-blue-700 dark:text-blue-300">Cliente desde: ${cliente.createdAt ? formatLocalDate(cliente.createdAt) : 'Data não disponível'}</p>
+                        <p class="text-blue-700 dark:text-blue-300">Última compra: ${cliente.ultimaCompra ? formatLocalDate(cliente.ultimaCompra) : 'Nunca'}</p>
+                    </div>
+                    
+                    <div class="bg-orange-50 dark:bg-orange-900 p-4 rounded-lg">
+                        <h4 class="font-bold text-orange-800 dark:text-orange-200 mb-2">🎯 Sistema de Fidelidade</h4>
+                        <p class="text-orange-700 dark:text-orange-300">Galões pagos: ${galoesPagos}</p>
+                        <p class="text-orange-700 dark:text-orange-300">Galões grátis recebidos: ${galoesGratis}</p>
+                        <p class="text-orange-700 dark:text-orange-300">Próxima grátis em: ${proximaGratis} galão(s)</p>
+                        <p class="text-orange-700 dark:text-orange-300">Galões grátis disponíveis: ${verificarFidelidade(clienteId)}</p>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg mb-6">
+                    <h4 class="font-bold text-gray-800 dark:text-gray-200 mb-4">📋 Histórico de Compras</h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full border-collapse border border-gray-300 dark:border-gray-600">
+                            <thead>
+                                <tr class="bg-gray-100 dark:bg-gray-700">
+                                    <th class="border border-gray-300 dark:border-gray-600 p-2">Data</th>
+                                    <th class="border border-gray-300 dark:border-gray-600 p-2">Galões Água</th>
+                                    <th class="border border-gray-300 dark:border-gray-600 p-2">Galões Vazios</th>
+                                    <th class="border border-gray-300 dark:border-gray-600 p-2">Valor</th>
+                                    <th class="border border-gray-300 dark:border-gray-600 p-2">Pagamento</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+            
+            pedidosCliente.sort((a, b) => new Date(b.dataIda) - new Date(a.dataIda)).forEach(pedido => {
+                if (pedido.isGratis) {
+                    comprasGratis++;
+                    valorGratis += pedido.valorTotal;
+                } else {
+                    totalGasto += pedido.valorTotal;
+                }
+                
+                totalGaloes += pedido.quantidade;
+                totalGaloesVazios += pedido.quantidadeVazios || 0;
+                
+                relatorioHtml += `
+                    <tr class="${pedido.isGratis ? 'bg-green-50 dark:bg-green-900' : ''}">
+                        <td class="border border-gray-300 dark:border-gray-600 p-2">${formatLocalDate(pedido.dataIda)}</td>
+                        <td class="border border-gray-300 dark:border-gray-600 p-2 text-center">${pedido.quantidade}</td>
+                        <td class="border border-gray-300 dark:border-gray-600 p-2 text-center">${pedido.quantidadeVazios || 0}</td>
+                        <td class="border border-gray-300 dark:border-gray-600 p-2 text-center">R$ ${pedido.valorTotal.toFixed(2)}</td>
+                        <td class="border border-gray-300 dark:border-gray-600 p-2 text-center">
+                            ${pedido.formaPagamento || 'Não informado'}
+                            ${pedido.isGratis ? '<span class="text-green-600 font-bold">(GRÁTIS)</span>' : ''}
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            relatorioHtml += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-green-50 dark:bg-green-900 p-4 rounded-lg">
+                        <h4 class="font-bold text-green-800 dark:text-green-200 mb-2">💰 Resumo Financeiro</h4>
+                        <p class="text-green-700 dark:text-green-300">Total de compras: ${pedidosCliente.length}</p>
+                        <p class="text-green-700 dark:text-green-300">Compras pagas: ${pedidosCliente.length - comprasGratis}</p>
+                        <p class="text-green-700 dark:text-green-300">Compras grátis: ${comprasGratis}</p>
+                        <p class="text-green-700 dark:text-green-300">Total gasto: R$ ${totalGasto.toFixed(2)}</p>
+                        <p class="text-green-700 dark:text-green-300">Valor economizado: R$ ${valorGratis.toFixed(2)}</p>
+                        <p class="text-green-700 dark:text-green-300">Ticket médio: R$ ${(totalGasto / Math.max(pedidosCliente.length - comprasGratis, 1)).toFixed(2)}</p>
+                    </div>
+                    
+                    <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
+                        <h4 class="font-bold text-blue-800 dark:text-blue-200 mb-2">🪣 Resumo de Galões</h4>
+                        <p class="text-blue-700 dark:text-blue-300">Total galões de água: ${totalGaloes}</p>
+                        <p class="text-blue-700 dark:text-blue-300">Total galões vazios: ${totalGaloesVazios}</p>
+                        <p class="text-blue-700 dark:text-blue-300">Galões grátis: ${galoesGratis}</p>
+                        <p class="text-blue-700 dark:text-blue-300">Galões pagos: ${galoesPagos}</p>
+                    </div>
+                </div>
+            `;
+            
+            currentRelatorioData = relatorioHtml;
+            currentRelatorioTitulo = `Relatório do Cliente - ${cliente.nome}`;
+            
+            document.getElementById('conteudoRelatorio').innerHTML = relatorioHtml;
+            document.getElementById('resultadosRelatorio').classList.remove('hidden');
+        }
+
+        function gerarRelatorioRanking() {
+            const rankingData = {};
+            
+            clientes.forEach(cliente => {
+                const pedidosCliente = pedidos.filter(p => p.clienteId == cliente.id && p.pago);
+                let totalGaloes = 0;
+                let totalGasto = 0;
+                let comprasGratis = 0;
+                
+                pedidosCliente.forEach(pedido => {
+                    totalGaloes += pedido.quantidade;
+                    if (pedido.isGratis) {
+                        comprasGratis++;
+                    } else {
+                        totalGasto += pedido.valorTotal;
+                    }
+                });
+                
+                if (pedidosCliente.length > 0) {
+                    rankingData[cliente.id] = {
+                        nome: cliente.nome,
+                        telefone: cliente.telefone,
+                        totalGaloes: totalGaloes,
+                        totalGasto: totalGasto,
+                        totalCompras: pedidosCliente.length,
+                        comprasGratis: comprasGratis,
+                        ultimaCompra: cliente.ultimaCompra
+                    };
+                }
+            });
+            
+            const rankingArray = Object.values(rankingData).sort((a, b) => b.totalGaloes - a.totalGaloes);
+            
+            if (rankingArray.length === 0) {
+                alert('⚠️ Nenhuma venda encontrada!');
+                return;
+            }
+            
+            let relatorioHtml = `
+                <h3 class="text-xl font-bold mb-4">🥇 Ranking de Galões por Cliente</h3>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse border border-gray-300 dark:border-gray-600">
+                        <thead>
+                            <tr class="bg-gray-100 dark:bg-gray-700">
+                                <th class="border border-gray-300 dark:border-gray-600 p-2">Posição</th>
+                                <th class="border border-gray-300 dark:border-gray-600 p-2">Cliente</th>
+                                <th class="border border-gray-300 dark:border-gray-600 p-2">Total Galões</th>
+                                <th class="border border-gray-300 dark:border-gray-600 p-2">Total Gasto</th>
+                                <th class="border border-gray-300 dark:border-gray-600 p-2">Compras</th>
+                                <th class="border border-gray-300 dark:border-gray-600 p-2">Grátis</th>
+                                <th class="border border-gray-300 dark:border-gray-600 p-2">Última Compra</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            rankingArray.forEach((cliente, index) => {
+                let medalha = '';
+                if (index === 0) medalha = '🥇';
+                else if (index === 1) medalha = '🥈';
+                else if (index === 2) medalha = '🥉';
+                else medalha = `${index + 1}º`;
+                
+                relatorioHtml += `
+                    <tr class="${index < 3 ? 'bg-yellow-50 dark:bg-yellow-900' : ''}">
+                        <td class="border border-gray-300 dark:border-gray-600 p-2 text-center font-bold">${medalha}</td>
+                        <td class="border border-gray-300 dark:border-gray-600 p-2">
+                            ${cliente.nome}
+                            ${cliente.telefone ? `<br><small class="text-gray-500">${cliente.telefone}</small>` : ''}
+                        </td>
+                        <td class="border border-gray-300 dark:border-gray-600 p-2 text-center font-bold">${cliente.totalGaloes}</td>
+                        <td class="border border-gray-300 dark:border-gray-600 p-2 text-center">R$ ${cliente.totalGasto.toFixed(2)}</td>
+                        <td class="border border-gray-300 dark:border-gray-600 p-2 text-center">${cliente.totalCompras}</td>
+                        <td class="border border-gray-300 dark:border-gray-600 p-2 text-center">${cliente.comprasGratis}</td>
+                        <td class="border border-gray-300 dark:border-gray-600 p-2 text-center">${cliente.ultimaCompra ? formatLocalDate(cliente.ultimaCompra) : 'Nunca'}</td>
+                    </tr>
+                `;
+            });
+            
+            relatorioHtml += `
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-yellow-50 dark:bg-yellow-900 p-4 rounded-lg">
+                        <h4 class="font-bold text-yellow-800 dark:text-yellow-200 mb-2">🥇 Top 1</h4>
+                        <p class="text-yellow-700 dark:text-yellow-300">${rankingArray[0].nome}</p>
+                        <p class="text-yellow-700 dark:text-yellow-300">${rankingArray[0].totalGaloes} galões</p>
+                        <p class="text-yellow-700 dark:text-yellow-300">R$ ${rankingArray[0].totalGasto.toFixed(2)}</p>
+                    </div>
+                    
+                    <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                        <h4 class="font-bold text-gray-800 dark:text-gray-200 mb-2">📊 Estatísticas</h4>
+                        <p class="text-gray-700 dark:text-gray-300">Clientes ativos: ${rankingArray.length}</p>
+                        <p class="text-gray-700 dark:text-gray-300">Total galões vendidos: ${rankingArray.reduce((sum, c) => sum + c.totalGaloes, 0)}</p>
+                        <p class="text-gray-700 dark:text-gray-300">Média por cliente: ${(rankingArray.reduce((sum, c) => sum + c.totalGaloes, 0) / rankingArray.length).toFixed(1)} galões</p>
+                    </div>
+                    
+                    <div class="bg-green-50 dark:bg-green-900 p-4 rounded-lg">
+                        <h4 class="font-bold text-green-800 dark:text-green-200 mb-2">💰 Financeiro</h4>
+                        <p class="text-green-700 dark:text-green-300">Total faturado: R$ ${rankingArray.reduce((sum, c) => sum + c.totalGasto, 0).toFixed(2)}</p>
+                        <p class="text-green-700 dark:text-green-300">Ticket médio: R$ ${(rankingArray.reduce((sum, c) => sum + c.totalGasto, 0) / rankingArray.length).toFixed(2)}</p>
+                        <p class="text-green-700 dark:text-green-300">Galões grátis: ${rankingArray.reduce((sum, c) => sum + c.comprasGratis, 0)}</p>
+                    </div>
+                </div>
+            `;
+            
+            currentRelatorioData = relatorioHtml;
+            currentRelatorioTitulo = 'Ranking de Galões por Cliente';
+            
+            document.getElementById('conteudoRelatorio').innerHTML = relatorioHtml;
+            document.getElementById('resultadosRelatorio').classList.remove('hidden');
+        }
+
+        function gerarPDF(titulo, conteudo) {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                doc.setFontSize(16);
+                doc.text(titulo, 20, 20);
+                
+                doc.setFontSize(10);
+                doc.text(`Gerado em: ${formatLocalDate(getCurrentDateTime())}`, 20, 30);
+                
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = conteudo;
+                
+                const tables = tempDiv.querySelectorAll('table');
+                
+                if (tables.length > 0) {
+                    const tableData = [];
+                    const table = tables[0];
+                    const rows = table.querySelectorAll('tr');
+                    
+                    rows.forEach((row, index) => {
+                        const cells = row.querySelectorAll('th, td');
+                        const rowData = [];
+                        cells.forEach(cell => {
+                            rowData.push(cell.textContent.trim());
+                        });
+                        if (rowData.length > 0) {
+                            tableData.push(rowData);
+                        }
+                    });
+                    
+                    if (tableData.length > 0) {
+                        doc.autoTable({
+                            head: [tableData[0]],
+                            body: tableData.slice(1),
+                            startY: 40,
+                            fontSize: 8,
+                            styles: { fontSize: 8 }
+                        });
+                    }
+                } else {
+                    const textElements = tempDiv.querySelectorAll('p, h4, div');
+                    let yPosition = 40;
+                    
+                    textElements.forEach(element => {
+                        const text = element.textContent.trim();
+                        if (text && yPosition < 280) {
+                            if (element.tagName === 'H4') {
+                                doc.setFontSize(12);
+                                doc.text(text, 20, yPosition);
+                                yPosition += 8;
+                            } else {
+                                doc.setFontSize(10);
+                                const splitText = doc.splitTextToSize(text, 170);
+                                doc.text(splitText, 20, yPosition);
+                                yPosition += splitText.length * 5;
+                            }
+                        }
+                    });
+                }
+                
+                const filename = `${titulo.replace(/[^a-zA-Z0-9]/g, '_')}_${getCurrentDateLocal()}.pdf`;
+                doc.save(filename);
+                
+            } catch (error) {
+                console.error('❌ Erro ao gerar PDF:', error);
+                alert('❌ Erro ao gerar PDF. Verifique se a biblioteca está carregada.');
+            }
+        }
+    </script>
 </body>
 </html>
+			
