@@ -2631,10 +2631,7 @@ Estamos sempre à disposição! 🙏`,
                     const newPedidos = [];
                     let count = 0;
                     snapshot.forEach((doc) => {
-                        if (count < 100) {
                             newPedidos.push({ id: doc.id, ...doc.data() });
-                            count++;
-                        }
                     });
                     pedidos = newPedidos;
                     setCachedData('pedidos', pedidos);
@@ -4056,28 +4053,40 @@ Estamos sempre à disposição! 🙏`,
         }
 
         async function excluirPedido(pedidoId) {
-            if (isOfflineMode) {
-                pedidos = pedidos.filter(p => p.id !== pedidoId);
-                addToPendingSync('delete_pedido', 'pedidos', { id: pedidoId });
-                updateListaPedidos();
-                updateDashboard();
-                updateGaloesEmprestados(); // NOVO: Atualizar empréstimos quando pedido for excluído
-                saveLocalData();
-                return;
-            }
+    if (isOfflineMode) {
+        pedidos = pedidos.filter(p => p.id !== pedidoId);
+        addToPendingSync('delete_pedido', 'pedidos', { id: pedidoId });
+        updateListaPedidos();
+        updateDashboard();
+        saveLocalData();
+        return;
+    }
 
-            if (!firebaseConnected || !currentUser) {
-                throw new Error('Usuário não autenticado');
-            }
+    if (!firebaseConnected || !currentUser) {
+        throw new Error('Usuário não autenticado');
+    }
 
-            try {
-                const { deleteDoc, doc } = window.firebaseUtils;
-                await deleteDoc(doc(window.db, 'pedidos', pedidoId));
-            } catch (error) {
-                console.error('❌ Erro ao excluir pedido:', error);
-                throw error;
+    try {
+        // Excluindo o pedido
+        const { deleteDoc, doc } = window.firebaseUtils;
+        await deleteDoc(doc(window.db, 'pedidos', pedidoId));
+
+        // Atualizando a última compra do cliente
+        const pedido = pedidos.find(p => p.id === pedidoId);
+        if (pedido && pedido.clienteId) {
+            const cliente = clientes.find(c => c.id === pedido.clienteId);
+            if (cliente) {
+                await atualizarCliente(cliente.id, {
+                    ultimaCompra: null, // ou outra lógica para atualizar
+                    galaoAtual: null
+                });
             }
         }
+    } catch (error) {
+        console.error('❌ Erro ao excluir pedido:', error);
+        throw error;
+    }
+}
 
         async function atualizarEstoque(dataGalao, dadosEstoque) {
             if (isOfflineMode) {
@@ -5267,7 +5276,7 @@ Estamos sempre à disposição! 🙏`,
             }
         });
 
-        function createPedidoElement(pedido, isAdmin) {
+ function createPedidoElement(pedido, isAdmin) {
     const cliente = clientes.find(c => c.id == pedido.clienteId);
     const div = document.createElement('div');
 
@@ -5293,19 +5302,27 @@ Estamos sempre à disposição! 🙏`,
 
     let statusInfo = '';
     if (isGratis) {
-        statusInfo = `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-600 text-white">🎁 GALÃO GRÁTIS</span>`;
+        statusInfo += `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-600 text-white">🎁 GALÃO GRÁTIS</span>`;
     } else if (!isPago) {
-        statusInfo = `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-600 text-white">⏳ PENDENTE</span>`;
+        statusInfo += `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-600 text-white">⏳ PENDENTE</span>`;
     } else {
-        statusInfo = `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-600 text-white">✅ PAGO</span>`;
+        statusInfo += `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-600 text-white">✅ PAGO</span>`;
     }
 
     if (hasDetailsConfirmed) {
-        statusInfo += ` <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-600 text-white ml-2">🚚 ENVIADO</span>`;
+        statusInfo += `
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-600 text-white">
+                <span class="sm:inline hidden">🚚 ENVIADO</span>
+                <span class="inline sm:hidden">🚚</span>
+            </span>`;
     }
 
     if (hasGaloesReceived) {
-        statusInfo += ` <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-purple-600 text-white ml-2">📦 RECEBIDO</span>`;
+        statusInfo += `
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-purple-600 text-white">
+                <span class="sm:inline hidden">📦 RECEBIDO</span>
+                <span class="inline sm:hidden">📦</span>
+            </span>`;
     }
 
     let galoesEmprestadosInfo = '';
@@ -5318,13 +5335,26 @@ Estamos sempre à disposição! 🙏`,
     div.innerHTML = `
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
             <div class="flex-1">
-                <div class="flex items-center gap-2 mb-2">
-                    <h4 class="font-bold text-lg text-gray-900 dark:text-white">
-                        ${cliente ? cliente.nome : 'Cliente não encontrado'}
-                    </h4>
-                    ${syncPendingItem ? '<span class="sync-pending">Pendente</span>' : ''}
-                    ${statusInfo}
+                <!-- Cabeçalho com nome e badges -->
+                <div class="sm:flex sm:items-center sm:gap-2 mb-2">
+                    <div>
+                        <h4 class="font-bold text-lg text-gray-900 dark:text-white break-words">
+                            ${cliente ? cliente.nome : 'Cliente não encontrado'}
+                        </h4>
+                        <!-- Mobile: badges abaixo do nome -->
+                        <div class="flex flex-wrap gap-2 sm:hidden mt-2">
+                            ${statusInfo}
+                            ${syncPendingItem ? '<span class="sync-pending">Pendente</span>' : ''}
+                        </div>
+                    </div>
+                    <!-- Desktop: badges ao lado do nome -->
+                    <div class="hidden sm:flex flex-wrap gap-2">
+                        ${statusInfo}
+                        ${syncPendingItem ? '<span class="sync-pending">Pendente</span>' : ''}
+                    </div>
                 </div>
+
+                <!-- Informações do pedido -->
                 <p class="text-gray-600 dark:text-gray-400 mb-2">
                     📅 Data: ${formatLocalDate(pedido.dataIda)} | 
                     🪣 ${pedido.quantidade} galão(s) de água${quantidadeVazios > 0 ? ` + ${quantidadeVazios} galão(s) vazio(s)` : ''} | 
@@ -5336,6 +5366,8 @@ Estamos sempre à disposição! 🙏`,
                 ${galoesEmprestadosInfo}
                 ${pedido.observacoes ? `<p class="text-gray-500 dark:text-gray-400 mt-2 italic">💬 ${pedido.observacoes}</p>` : ''}
             </div>
+
+            <!-- Botões -->
             <div class="flex flex-col space-y-2 mt-4 lg:mt-0 lg:ml-4">
                 ${!hasDetailsConfirmed ? `
                     <button onclick="abrirConfirmDetailsModal('${pedido.id}')" class="btn-modern btn-uniform-size bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-sm">
@@ -5366,7 +5398,6 @@ Estamos sempre à disposição! 🙏`,
 
     return div;
 }
-
 
         function updateListaPedidos() {
             const lista = document.getElementById('listaPedidos');
