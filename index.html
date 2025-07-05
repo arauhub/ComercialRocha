@@ -143,8 +143,8 @@ window.firebaseLoaded = true;
             border-radius: 20px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
-		
-		/* NOVO: Animação da engrenagem */
+                
+                /* NOVO: Animação da engrenagem */
         .gear-rotate {
             animation: rotate 3s linear infinite;
         }
@@ -670,6 +670,23 @@ window.firebaseLoaded = true;
             width: 80px;
         }
 
+        /* Estilo especial para campos de data no modal de recebimento - um pouco mais largo */
+        .data-galao-input.data-galao-wider {
+            width: 120px !important;
+            padding: 8px 12px !important;
+            font-size: 14px !important;
+            text-align: center !important;
+            border: 2px solid #3b82f6 !important;
+            border-radius: 8px !important;
+            background: white !important;
+            transition: all 0.3s ease;
+        }
+
+        .data-galao-input.data-galao-wider:focus {
+            border-color: #1d4ed8 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+        }
+
         .btn-uniform-size {
             min-width: 120px;
             padding: 8px 12px;
@@ -1183,7 +1200,7 @@ window.firebaseLoaded = true;
     <!-- Splash Screen with Login -->
     <div id="splashScreen" class="fixed inset-0 splash-screen flex items-center justify-center z-50">
         <div class="text-center text-white">
-			<div class="mb-6 flex justify-center">
+                        <div class="mb-6 flex justify-center">
                 <svg class="gear-rotate w-20 h-20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                     <path class="fa-secondary" opacity=".4" fill="#fed920" d="M192 256a64 64 0 1 0 128 0 64 64 0 1 0 -128 0z"></path>
                     <path class="fa-primary" fill="#fed920" d="M489.6 191.2c6.9-6.2 9.6-15.9 6.4-24.6c-4.4-11.9-9.7-23.3-15.8-34.3l-4.7-8.1c-6.6-11-14-21.4-22.1-31.2c-5.9-7.2-15.7-9.6-24.5-6.8l-55.7 17.7C359.8 93.6 345 85 329.2 78.4L316.7 21.3c-2-9.1-9-16.3-18.2-17.8C284.7 1.2 270.5 0 256 0s-28.7 1.2-42.5 3.5c-9.2 1.5-16.2 8.7-18.2 17.8L182.8 78.4c-15.8 6.5-30.6 15.1-44 25.4L83.1 86.1c-8.8-2.8-18.6-.3-24.5 6.8c-8.1 9.8-15.5 20.2-22.1 31.2l-4.7 8.1c-6.1 11-11.4 22.4-15.8 34.3c-3.2 8.7-.5 18.4 6.4 24.6l43.3 39.4C64.6 238.9 64 247.4 64 256s.6 17.1 1.7 25.4L22.4 320.8c-6.9 6.2-9.6 15.9-6.4 24.6c4.4 11.9 9.7 23.3 15.8 34.3l4.7 8.1c6.6 11 14 21.4 22.1 31.2c5.9 7.2 15.7 9.6 24.5 6.8l55.7-17.7c13.4 10.3 28.2 18.9 44 25.4l12.5 57.1c2 9.1 9 16.3 18.2 17.8c13.8 2.3 28 3.5 42.5 3.5s28.7-1.2 42.5-3.5c9.2-1.5 16.2-8.7 18.2-17.8l12.5-57.1c15.8-6.5 30.6-15.1 44-25.4l55.7 17.7c8.8 2.8 18.6 .3 24.5-6.8c8.1-9.8 15.5-20.2 22.1-31.2l4.7-8.1c6.1-11 11.4-22.4 15.8-34.3c3.2-8.7 .5-18.4-6.4-24.6l-43.3-39.4c1.1-8.3 1.7-16.8 1.7-25.4s-.6-17.1-1.7-25.4l43.3-39.4zM256 160a96 96 0 1 1 0 192 96 96 0 1 1 0-192z"></path>
@@ -1520,6 +1537,17 @@ window.firebaseLoaded = true;
                     </div>
                     <button type="button" id="addGalaoVindo" class="btn-modern mt-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-sm">
                         ➕ Adicionar Galão Vindo
+                    </button>
+                </div>
+
+                <!-- MELHORIA 4: Galões Emprestados -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">🤝 Galões Emprestados</h4>
+                    <div id="editGaloesEmprestados" class="space-y-2">
+                        <!-- Será preenchido dinamicamente -->
+                    </div>
+                    <button type="button" id="addGalaoEmprestado" class="btn-modern mt-2 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-sm">
+                        ➕ Adicionar Galão Emprestado
                     </button>
                 </div>
 
@@ -1909,6 +1937,12 @@ window.firebaseLoaded = true;
                         <div id="clienteInfo" class="hidden cliente-info-card p-4 rounded-lg">
                             <h4 class="font-semibold text-gray-800 dark:text-gray-200 mb-2">Informações do Cliente</h4>
                             <div id="clienteInfoContent"></div>
+                            <div id="clienteGalaoEmprestado" class="hidden mt-3 p-3 bg-purple-100 dark:bg-purple-900 border border-purple-300 dark:border-purple-700 rounded-lg">
+                                <div class="flex items-center">
+                                    <span class="text-purple-600 dark:text-purple-400 mr-2">🤝</span>
+                                    <span class="text-purple-800 dark:text-purple-200 font-semibold">Este cliente possui galões emprestados</span>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1925,6 +1959,7 @@ window.firebaseLoaded = true;
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Valor Total (R$)</label>
                             <input type="number" id="valorTotal" step="0.01" readonly="" class="input-modern w-full bg-gray-100 dark:bg-gray-600">
+                            <div id="totalDisplay" class="mt-2 text-sm text-gray-600 dark:text-gray-400"></div>
                         </div>
 
                         <button type="submit" class="btn-modern w-full md:w-auto">
@@ -3379,7 +3414,7 @@ Estamos sempre à disposição! 🙏`,
         // Sistema de Fidelidade
         function contarGaloesPagos(clienteId) {
             return pedidos.filter(p => p.clienteId === clienteId && !p.isGratis)
-                          .reduce((total, pedido) => total + (pedido.quantidade || 1), 0);
+                          .reduce((total, pedido) => total + (pedido.galoesPagos || pedido.quantidade || 1), 0);
         }
 
         function contarGaloesGratisRecebidos(clienteId) {
@@ -3392,22 +3427,73 @@ Estamos sempre à disposição! 🙏`,
             const galoesGratis = contarGaloesGratisRecebidos(clienteId);
             const galoesParaGratis = configuracoes.galoesParaGratis || 10;
             
-            const galoesGratisMerecidos = Math.floor(galoesPagos / galoesParaGratis);
+            // Calculate how many free jugs the customer has earned
+            // Free jugs are earned at exactly 10 paid jugs and then every 10 after that
+            let galoesGratisMerecidos = 0;
+            if (galoesPagos >= galoesParaGratis) {
+                // How many complete sets of 10 they have
+                galoesGratisMerecidos = Math.floor(galoesPagos / galoesParaGratis);
+            }
             
             return Math.max(0, galoesGratisMerecidos - galoesGratis);
         }
 
-        async function verificarECriarPedidosGratis(clienteId) {
+        function calcularGaloesGratisParaEstesPedido(clienteId, quantidadeNovaPedido) {
+            const galoesPagosAtuais = contarGaloesPagos(clienteId);
+            const galoesGratisRecebidos = contarGaloesGratisRecebidos(clienteId);
+            const galoesParaGratis = configuracoes.galoesParaGratis || 10;
+            
+            // Calculate total paid jugs after this order
+            const totalPagosDepoisOrder = galoesPagosAtuais + quantidadeNovaPedido;
+            
+            // Free jugs are only earned when going BEYOND multiples of 10
+            // Examples:
+            // - 10 jugs total = 0 free (wait for next order)
+            // - 11 jugs total = 1 free (the 11th)
+            // - 20 jugs total = 1 free (wait for next order after 20th)
+            // - 21 jugs total = 2 free (11th and 21st)
+            
+            let galoesGratisNovosEarnados = 0;
+            
+            // Only give free jugs if we go beyond multiples of 10
+            if (totalPagosDepoisOrder > galoesParaGratis) {
+                // Count how many "extra" jugs beyond the last multiple of 10
+                const extraJugs = totalPagosDepoisOrder % galoesParaGratis;
+                
+                // Only give free jugs if we have extra jugs beyond a multiple of 10
+                // This means 11, 12, 13... get free jugs, but 10, 20, 30... don't
+                if (extraJugs > 0) {
+                    // Calculate how many complete cycles we've crossed
+                    const completeCycles = Math.floor(totalPagosDepoisOrder / galoesParaGratis);
+                    const previousCompleteCycles = Math.floor(galoesPagosAtuais / galoesParaGratis);
+                    
+                    // New free jugs = new complete cycles crossed
+                    galoesGratisNovosEarnados = completeCycles - previousCompleteCycles;
+                }
+            }
+            return galoesGratisNovosEarnados;
+        }
+
+        async function verificarECriarPedidosGratis(clienteId, quantidadePedida = 1) {
             const galoesGratisDevidos = verificarFidelidade(clienteId);
             
             if (galoesGratisDevidos > 0) {
-                for (let i = 0; i < galoesGratisDevidos; i++) {
+                // Calculate how many free jugs should be created based on the current order
+                const galoesGratisParaCriar = Math.min(galoesGratisDevidos, quantidadePedida);
+                
+                // Create separate free orders for the free jugs
+                for (let i = 0; i < galoesGratisParaCriar; i++) {
                     await criarPedidoGratis(clienteId);
                 }
                 
                 const cliente = clientes.find(c => c.id === clienteId);
-                alert(`🎉 GALÃO GRÁTIS!\n\nO cliente ${cliente?.nome} tinha ${galoesGratisDevidos} galão(s) grátis disponível(s)!\n\n${galoesGratisDevidos} pedido(s) grátis foi(ram) criado(s) automaticamente.`);
+                alert(`🎉 GALÃO GRÁTIS!\n\nO cliente ${cliente?.nome} tinha ${galoesGratisDevidos} galão(s) grátis disponível(s)!\n\n${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`);
             }
+        }
+
+        // Function to check how many free jugs a customer has available for the next order
+        function calcularGaloesGratisDisponiveis(clienteId) {
+            return verificarFidelidade(clienteId);
         }
 
         async function criarPedidoGratis(clienteId) {
@@ -3452,7 +3538,25 @@ Estamos sempre à disposição! 🙏`,
         function proximaCompraGratis(clienteId) {
             const galoesPagos = contarGaloesPagos(clienteId);
             const galoesParaGratis = configuracoes.galoesParaGratis || 10;
-            return galoesParaGratis - (galoesPagos % galoesParaGratis);
+            
+            if (galoesPagos < galoesParaGratis) {
+                // Still working towards the first free jug
+                return galoesParaGratis - galoesPagos;
+            } else if (galoesPagos === galoesParaGratis) {
+                // Exactly at 10 - next is free
+                return 0;
+            } else {
+                // Calculate next cycle - free jugs are earned after every 10 paid jugs
+                const galoesDesdePrimeiro = galoesPagos - galoesParaGratis;
+                const restoCiclo = galoesDesdePrimeiro % galoesParaGratis;
+                
+                if (restoCiclo === 0) {
+                    // Just completed another cycle, next is free
+                    return 0;
+                } else {
+                    return galoesParaGratis - restoCiclo;
+                }
+            }
         }
 
         function calcularValorTotal() {
@@ -3461,11 +3565,49 @@ Estamos sempre à disposição! 🙏`,
             const valorUnitario = configuracoes.precoGalao || 15.00;
             const valorUnitarioVazio = configuracoes.precoGalaoVazio || 25.00;
             
-            const valorGaloes = quantidade * valorUnitario;
+            // Check if customer has free jugs available
+            const clienteId = document.getElementById('clientePedido').value;
+            let galoesGratisDisponiveis = 0;
+            let galoesGratisParaEstesPedido = 0;
+            
+            if (clienteId) {
+                galoesGratisDisponiveis = verificarFidelidade(clienteId);
+                galoesGratisParaEstesPedido = calcularGaloesGratisParaEstesPedido(clienteId, quantidade);
+            }
+            
+            // Calculate how many free jugs can be used
+            let galoesGratisParaUsar = Math.min(galoesGratisDisponiveis, quantidade);
+            
+            // Then see how many new free jugs can be applied in this order
+            const galoesRestantesParaPagar = quantidade - galoesGratisParaUsar;
+            const novosGaloesGratisParaUsar = Math.min(galoesGratisParaEstesPedido, galoesRestantesParaPagar);
+            galoesGratisParaUsar += novosGaloesGratisParaUsar;
+            
+            const galoesPagos = quantidade - galoesGratisParaUsar;
+            
+            // Calculate costs
+            const valorGaloes = galoesPagos * valorUnitario;
             const valorVazios = quantidadeVazios * valorUnitarioVazio;
             const valorTotal = valorGaloes + valorVazios;
             
             document.getElementById('valorTotal').value = valorTotal.toFixed(2);
+            
+            // Show free jugs info if applicable
+            const totalDisplayEl = document.getElementById('totalDisplay');
+            if (galoesGratisParaUsar > 0) {
+                let infoText = `<span class="text-green-600">Galões grátis: ${galoesGratisParaUsar}</span><br>`;
+                
+                if (galoesGratisParaEstesPedido > 0) {
+                    infoText += `<span class="text-blue-600">Galões grátis conquistados agora: ${galoesGratisParaEstesPedido}</span><br>`;
+                }
+                
+                infoText += `<span>Galões pagos: ${galoesPagos}</span><br>`;
+                infoText += `<span class="font-bold">Total a pagar: R$ ${valorTotal.toFixed(2)}</span>`;
+                
+                totalDisplayEl.innerHTML = infoText;
+            } else {
+                totalDisplayEl.innerHTML = '';
+            }
         }
 
         function getClienteUltimaCompra(clienteId) {
@@ -3794,6 +3936,58 @@ Estamos sempre à disposição! 🙏`,
             }
         }
 
+        // Nova função para marcar galões emprestados de pedidos como devolvidos
+        async function marcarDevolvidoPedido(pedidoId, dataGalao) {
+            try {
+                const pedido = pedidos.find(p => p.id === pedidoId);
+                if (!pedido) {
+                    alert('❌ Pedido não encontrado!');
+                    return;
+                }
+
+                // Remove o galão da lista de emprestados do pedido
+                if (pedido.galoesEmprestados) {
+                    pedido.galoesEmprestados = pedido.galoesEmprestados.filter(g => g !== dataGalao);
+                }
+
+                // Atualiza o pedido no banco de dados
+                if (isOfflineMode) {
+                    const pedidoIndex = pedidos.findIndex(p => p.id === pedidoId);
+                    if (pedidoIndex !== -1) {
+                        pedidos[pedidoIndex] = pedido;
+                        addToPendingSync('update_pedido', 'pedidos', pedido);
+                        saveLocalData();
+                    }
+                } else {
+                    await atualizarPedido(pedidoId, { galoesEmprestados: pedido.galoesEmprestados });
+                }
+
+                // Atualiza o estoque - devolve o galão
+                const estoqueAtual = estoque[dataGalao] || { cheio: 0, vazio: 0, cliente: 0, emprestado: 0 };
+                const currentEmprestado = estoqueAtual.emprestado || 0;
+                const currentCheio = estoqueAtual.cheio || 0;
+                
+                const updateData = {
+                    cheio: currentCheio + 1, // Galão devolvido vira cheio
+                    emprestado: Math.max(0, currentEmprestado - 1)
+                };
+                
+                await atualizarEstoque(dataGalao, updateData);
+                
+                // Atualiza as listas
+                updateGaloesEmprestados();
+                updateListaPedidos();
+                updateVisualizacaoEstoque();
+                updateDashboard();
+                
+                alert('✅ Galão marcado como devolvido e devolvido ao estoque!');
+                
+            } catch (error) {
+                console.error('❌ Erro ao marcar galão emprestado como devolvido:', error);
+                alert('❌ Erro ao marcar como devolvido. Tente novamente.');
+            }
+        }
+
         // CORRIGIDO: Galões emprestados agora inclui os do pedido também
         function updateGaloesEmprestados() {
             const container = document.getElementById('galoesEmprestados');
@@ -3813,8 +4007,8 @@ Estamos sempre à disposição! 🙏`,
                             clienteNome: cliente?.nome || 'Cliente não encontrado',
                             dataGalao: galao,
                             tipo: 'cheio', // Galões emprestados em pedidos são sempre cheios
-                            dataEmprestimo: pedido.data || pedido.dataIda,
-                            observacoes: `Emprestado no pedido de ${formatLocalDate(pedido.dataIda)}`,
+                            dataEmprestimo: pedido.dataIda || pedido.data, // CORREÇÃO 3: Usar sempre dataIda (data do envio)
+                            observacoes: `Emprestado no pedido de ${formatLocalDate(pedido.dataIda || pedido.data)}`,
                             isPedido: true,
                             pedidoId: pedido.id
                         });
@@ -3856,11 +4050,9 @@ Estamos sempre à disposição! 🙏`,
                                 ✅ Devolvido
                             </button>
                         ` : `
-                            <div class="text-xs text-purple-600 dark:text-purple-400 text-center">
-                                <p>Devolução via</p>
-                                <p>recebimento</p>
-                                <p>do pedido</p>
-                            </div>
+                            <button onclick="marcarDevolvidoPedido('${emprestimo.pedidoId}', '${emprestimo.dataGalao}')" class="btn-modern bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-sm">
+                                ✅ Devolvido
+                            </button>
                         `}
                     </div>
                 `;
@@ -3967,6 +4159,7 @@ Estamos sempre à disposição! 🙏`,
                 pedidos.unshift(pedido);
                 addToPendingSync('add_pedido', 'pedidos', pedidoData);
                 updateListaPedidos();
+                updateGaloesEmprestados();
                 updateDashboard();
                 saveLocalData();
                 return id;
@@ -4053,40 +4246,155 @@ Estamos sempre à disposição! 🙏`,
         }
 
         async function excluirPedido(pedidoId) {
-    if (isOfflineMode) {
-        pedidos = pedidos.filter(p => p.id !== pedidoId);
-        addToPendingSync('delete_pedido', 'pedidos', { id: pedidoId });
-        updateListaPedidos();
-        updateDashboard();
-        saveLocalData();
-        return;
-    }
+            const pedido = pedidos.find(p => p.id === pedidoId);
+            if (!pedido) {
+                alert('❌ Pedido não encontrado!');
+                return;
+            }
 
-    if (!firebaseConnected || !currentUser) {
-        throw new Error('Usuário não autenticado');
-    }
+            if (isOfflineMode) {
+                // CORREÇÃO 1: Revert stock changes for offline mode
+                await revertStockChanges(pedido);
+                
+                // Remove from last purchase if needed
+                await updateCustomerLastPurchase(pedido);
+                
+                pedidos = pedidos.filter(p => p.id !== pedidoId);
+                addToPendingSync('delete_pedido', 'pedidos', { id: pedidoId });
+                
+                // CORREÇÃO 1: Atualizar interface IMEDIATAMENTE
+                updateListaPedidos();
+                updateDashboard();
+                updateVisualizacaoEstoque();
+                updateGaloesEmprestados();
+                saveLocalData();
+                alert('✅ Pedido excluído com sucesso! Estoque atualizado automaticamente.');
+                return;
+            }
 
-    try {
-        // Excluindo o pedido
-        const { deleteDoc, doc } = window.firebaseUtils;
-        await deleteDoc(doc(window.db, 'pedidos', pedidoId));
+            if (!firebaseConnected || !currentUser) {
+                throw new Error('Usuário não autenticado');
+            }
 
-        // Atualizando a última compra do cliente
-        const pedido = pedidos.find(p => p.id === pedidoId);
-        if (pedido && pedido.clienteId) {
-            const cliente = clientes.find(c => c.id === pedido.clienteId);
-            if (cliente) {
-                await atualizarCliente(cliente.id, {
-                    ultimaCompra: null, // ou outra lógica para atualizar
-                    galaoAtual: null
-                });
+            try {
+                // CORREÇÃO 1: Revert stock changes before deleting
+                await revertStockChanges(pedido);
+                
+                // Update customer's last purchase
+                await updateCustomerLastPurchase(pedido);
+                
+                // Delete the order
+                const { deleteDoc, doc } = window.firebaseUtils;
+                await deleteDoc(doc(window.db, 'pedidos', pedidoId));
+
+                // Update local arrays
+                pedidos = pedidos.filter(p => p.id !== pedidoId);
+                
+                // CORREÇÃO 1: Update all displays IMMEDIATELY
+                updateListaPedidos();
+                updateDashboard();
+                updateVisualizacaoEstoque();
+                updateGaloesEmprestados();
+                
+                alert('✅ Pedido excluído com sucesso! Estoque atualizado automaticamente.');
+                
+            } catch (error) {
+                console.error('❌ Erro ao excluir pedido:', error);
+                alert('❌ Erro ao excluir pedido. Tente novamente.');
+                throw error;
             }
         }
-    } catch (error) {
-        console.error('❌ Erro ao excluir pedido:', error);
-        throw error;
-    }
-}
+
+        // CORREÇÃO 1: Function to revert stock changes when deleting an order
+        async function revertStockChanges(pedido) {
+            try {
+                console.log('🔄 Revertendo mudanças no estoque para pedido:', pedido.id);
+                
+                if (pedido.detalhesConfirmados) {
+                    // If the order was confirmed, we need to revert the stock changes
+                    
+                    // CORREÇÃO 1: Get jugs that were sent to customer - return them to stock
+                    const galoesIda = pedido.galoesIda || [];
+                    console.log('📤 Revertendo galões enviados:', galoesIda);
+                    for (const galao of galoesIda) {
+                        const estoqueAtual = estoque[galao] || { cheio: 0, vazio: 0, cliente: 0, emprestado: 0 };
+                        const currentCliente = estoqueAtual.cliente || 0;
+                        const currentCheio = estoqueAtual.cheio || 0;
+                        
+                        const updateData = {
+                            cheio: currentCheio + 1, // Return sent jug to stock
+                            cliente: Math.max(0, currentCliente - 1)
+                        };
+                        
+                        await atualizarEstoque(galao, updateData);
+                        console.log(`✅ Galão ${galao} retornado ao estoque (cheio)`);
+                    }
+                    
+                    // CORREÇÃO 1: Get jugs that came from customer - remove them from stock (they weren't really received)
+                    const galoesVolta = pedido.galoesVolta || pedido.galoesVindos || [];
+                    console.log('📥 Revertendo galões recebidos:', galoesVolta);
+                    for (const galao of galoesVolta) {
+                        const estoqueAtual = estoque[galao] || { cheio: 0, vazio: 0, cliente: 0, emprestado: 0 };
+                        const currentVazio = estoqueAtual.vazio || 0;
+                        
+                        const updateData = {
+                            vazio: Math.max(0, currentVazio - 1) // Remove from empty stock
+                        };
+                        
+                        await atualizarEstoque(galao, updateData);
+                        console.log(`✅ Galão ${galao} removido do estoque (vazio)`);
+                    }
+                    
+                    // CORREÇÃO 1: Handle borrowed jugs - return them to stock
+                    const galoesEmprestados = pedido.galoesEmprestados || [];
+                    console.log('🤝 Revertendo galões emprestados:', galoesEmprestados);
+                    for (const galao of galoesEmprestados) {
+                        const estoqueAtual = estoque[galao] || { cheio: 0, vazio: 0, cliente: 0, emprestado: 0 };
+                        const currentEmprestado = estoqueAtual.emprestado || 0;
+                        const currentCheio = estoqueAtual.cheio || 0;
+                        
+                        const updateData = {
+                            cheio: currentCheio + 1, // Return borrowed jug to stock
+                            emprestado: Math.max(0, currentEmprestado - 1)
+                        };
+                        
+                        await atualizarEstoque(galao, updateData);
+                        console.log(`✅ Galão emprestado ${galao} retornado ao estoque`);
+                    }
+                }
+                
+                console.log('✅ Reversão do estoque concluída com sucesso');
+            } catch (error) {
+                console.error('❌ Erro ao reverter mudanças no estoque:', error);
+                throw error;
+            }
+        }
+
+        // New function to update customer's last purchase when deleting an order
+        async function updateCustomerLastPurchase(pedido) {
+            if (pedido.clienteId) {
+                try {
+                    const cliente = clientes.find(c => c.id === pedido.clienteId);
+                    if (cliente) {
+                        // Find the previous purchase for this customer
+                        const customerOrders = pedidos
+                            .filter(p => p.clienteId === pedido.clienteId && p.id !== pedido.id)
+                            .sort((a, b) => new Date(b.dataIda || b.data) - new Date(a.dataIda || a.data));
+                        
+                        const lastPurchase = customerOrders.length > 0 ? customerOrders[0] : null;
+                        
+                        const updateData = {
+                            ultimaCompra: lastPurchase ? (lastPurchase.dataIda || lastPurchase.data) : null,
+                            galaoAtual: lastPurchase ? (lastPurchase.galoesIda?.[0] || null) : null
+                        };
+                        
+                        await atualizarCliente(cliente.id, updateData);
+                    }
+                } catch (error) {
+                    console.error('❌ Erro ao atualizar última compra do cliente:', error);
+                }
+            }
+        }
 
         async function atualizarEstoque(dataGalao, dadosEstoque) {
             if (isOfflineMode) {
@@ -4844,6 +5152,13 @@ Estamos sempre à disposição! 🙏`,
                     
                     modal.classList.add('hidden');
                     currentPedidoForDetails = null;
+                    
+                    // Update all lists
+                    updateListaPedidos();
+                    updateVisualizacaoEstoque();
+                    updateGaloesEmprestados();
+                    updateDashboard();
+                    
                     alert('✅ Envio confirmado com sucesso!');
                     
                 } catch (error) {
@@ -4902,6 +5217,11 @@ Estamos sempre à disposição! 🙏`,
                         });
                     }
                     
+                    // CORREÇÃO 2: Atualizar interface IMEDIATAMENTE após marcar galões como emprestados
+                    updateGaloesEmprestados();
+                    updateDashboard();
+                    updateVisualizacaoEstoque();
+                    
                     modal.classList.add('hidden');
                     currentPedidoForReceive = null;
                     alert('✅ Galões recebidos com sucesso!');
@@ -4925,6 +5245,7 @@ Estamos sempre à disposição! 🙏`,
             const excluirBtn = document.getElementById('excluirPedido');
             const addGalaoEntregueBtn = document.getElementById('addGalaoEntregue');
             const addGalaoVindoBtn = document.getElementById('addGalaoVindo');
+            const addGalaoEmprestadoBtn = document.getElementById('addGalaoEmprestado');
             
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -4946,6 +5267,14 @@ Estamos sempre à disposição! 🙏`,
                         }
                     });
                     
+                    // MELHORIA 4: Coletar galões emprestados
+                    const galoesEmprestados = [];
+                    document.querySelectorAll('#editGaloesEmprestados input').forEach(input => {
+                        if (input.value.trim() && isValidDataFormat(input.value.trim())) {
+                            galoesEmprestados.push(input.value.trim());
+                        }
+                    });
+                    
                     const dadosAtualizacao = {
                         dataIda: document.getElementById('editPedidoData').value,
                         quantidade: parseInt(document.getElementById('editPedidoQuantidade').value),
@@ -4953,10 +5282,17 @@ Estamos sempre à disposição! 🙏`,
                         valorTotal: parseFloat(document.getElementById('editPedidoValor').value),
                         galoesEntregues: galoesEntregues,
                         galoesVindos: galoesVindos,
+                        galoesEmprestados: galoesEmprestados, // MELHORIA 4: Incluir galões emprestados
                         observacoes: document.getElementById('editPedidoObservacoes').value
                     };
                     
                     await atualizarPedido(currentEditingPedido, dadosAtualizacao);
+                    
+                    // MELHORIA 4: Atualizar interface imediatamente
+                    updateGaloesEmprestados();
+                    updateDashboard();
+                    updateVisualizacaoEstoque();
+                    
                     modal.classList.add('hidden');
                     currentEditingPedido = null;
                     alert('✅ Pedido atualizado com sucesso!');
@@ -4973,6 +5309,11 @@ Estamos sempre à disposição! 🙏`,
 
             addGalaoVindoBtn.addEventListener('click', () => {
                 addGalaoVindoInput();
+            });
+            
+            // MELHORIA 4: Event listener para adicionar galões emprestados
+            addGalaoEmprestadoBtn.addEventListener('click', () => {
+                addGalaoEmprestadoInput();
             });
             
             excluirBtn.addEventListener('click', async () => {
@@ -5010,6 +5351,18 @@ Estamos sempre à disposição! 🙏`,
 
         function addGalaoVindoInput() {
             const container = document.getElementById('editGaloesVindos');
+            const div = document.createElement('div');
+            div.className = 'flex items-center gap-2';
+            div.innerHTML = `
+                <input type="text" class="data-galao-input flex-1" placeholder="MM-AAAA" maxlength="7">
+                <button type="button" class="btn-delete-estoque" onclick="this.parentElement.remove()">🗑️</button>
+            `;
+            container.appendChild(div);
+        }
+
+        // MELHORIA 4: Função para adicionar campos de galões emprestados
+        function addGalaoEmprestadoInput() {
+            const container = document.getElementById('editGaloesEmprestados');
             const div = document.createElement('div');
             div.className = 'flex items-center gap-2';
             div.innerHTML = `
@@ -5184,7 +5537,7 @@ Estamos sempre à disposição! 🙏`,
                     <div class="mt-3 p-3 bg-green-100 dark:bg-green-800 rounded-lg">
                         <p class="text-sm font-semibold text-green-800 dark:text-green-200">🎉 FIDELIDADE:</p>
                         <p class="text-green-700 dark:text-green-300 font-bold">Cliente tem ${galoesGratisDevidos} galão(s) grátis disponível(s)!</p>
-                        <p class="text-green-600 dark:text-green-400 text-sm">Pedidos grátis serão criados automaticamente ao registrar este pedido.</p>
+                        <p class="text-green-600 dark:text-green-400 text-sm">Ao registrar o próximo pedido, galões grátis serão criados automaticamente.</p>
                     </div>
                 `;
             } else {
@@ -5214,6 +5567,38 @@ Estamos sempre à disposição! 🙏`,
             
             clienteInfoContent.innerHTML = infoHtml;
             clienteInfo.classList.remove('hidden');
+            
+            // Check if customer has borrowed jugs and show warning
+            const clienteGalaoEmprestado = document.getElementById('clienteGalaoEmprestado');
+            const hasEmprestimos = checkClienteEmprestimos(clienteId);
+            
+            if (hasEmprestimos) {
+                clienteGalaoEmprestado.classList.remove('hidden');
+            } else {
+                clienteGalaoEmprestado.classList.add('hidden');
+            }
+            
+            // Update total calculation to account for free jugs
+            calcularValorTotal();
+        }
+
+        // Function to check if a customer has borrowed jugs
+        function checkClienteEmprestimos(clienteId) {
+            const cliente = clientes.find(c => c.id == clienteId);
+            if (!cliente) return false;
+            
+            // Check direct loans from stock
+            const emprestimosAtivos = emprestimos.filter(e => !e.devolvido && e.clienteNome === cliente.nome);
+            
+            // Check borrowed jugs from orders
+            const galoesEmprestadosPedidos = pedidos.filter(pedido => 
+                pedido.clienteId == clienteId && 
+                pedido.galoesEmprestados && 
+                pedido.galoesEmprestados.length > 0 && 
+                pedido.detalhesConfirmados
+            );
+            
+            return emprestimosAtivos.length > 0 || galoesEmprestadosPedidos.length > 0;
         }
 
         function abrirWhatsApp(telefone, mensagem = '') {
@@ -5234,15 +5619,36 @@ Estamos sempre à disposição! 🙏`,
                 const cliente = clientes.find(c => c.id == clienteId);
                 const quantidade = parseInt(document.getElementById('quantidadeGaloes').value);
                 const quantidadeVazios = parseInt(document.getElementById('quantidadeGaloesVazios').value) || 0;
-                const valorTotal = parseFloat(document.getElementById('valorTotal').value);
+                const valorUnitario = configuracoes.precoGalao || 15.00;
+                
+                // Calculate the correct distribution of paid vs free jugs
+                const galoesPagosAtuais = contarGaloesPagos(clienteId);
+                const galoesGratisDisponiveis = verificarFidelidade(clienteId);
+                const galoesGratisParaEstesPedido = calcularGaloesGratisParaEstesPedido(clienteId, quantidade);
+                
+                // First use available free jugs, then apply newly earned ones
+                let galoesGratisParaUsar = Math.min(galoesGratisDisponiveis, quantidade);
+                
+                // Then see how many new free jugs can be applied in this order
+                const galoesRestantesParaPagar = quantidade - galoesGratisParaUsar;
+                const novosGaloesGratisParaUsar = Math.min(galoesGratisParaEstesPedido, galoesRestantesParaPagar);
+                galoesGratisParaUsar += novosGaloesGratisParaUsar;
+                
+                const galoesPagos = quantidade - galoesGratisParaUsar;
+                
+                // Calculate the correct total value (only charge for paid jugs)
+                const valorTotal = galoesPagos * valorUnitario;
                 
                 const pedido = {
                     clienteId: clienteId,
                     dataIda: document.getElementById('dataIda').value,
-                    quantidade: quantidade,
+                    quantidade: galoesPagos, // Only show paid jugs in the main order
+                    quantidadeOriginal: quantidade, // Keep track of original order quantity
                     quantidadeVazios: quantidadeVazios,
                     valorTotal: valorTotal,
                     isGratis: false,
+                    galoesGratis: galoesGratisParaUsar, // Track how many free jugs in this order
+                    galoesPagos: galoesPagos, // Track how many paid jugs in this order
                     galoesEntregues: [],
                     galoesVindos: [],
                     galoesEmprestados: [],
@@ -5251,12 +5657,28 @@ Estamos sempre à disposição! 🙏`,
                     pago: false,
                     formaPagamento: null,
                     dataPagamento: null,
-                    observacoes: ''
+                    observacoes: galoesGratisParaUsar > 0 ? `Pedido de ${quantidade} galões (${galoesPagos} pagos + ${galoesGratisParaUsar} grátis)` : ''
                 };
                 
                 const pedidoId = await salvarPedido(pedido);
                 
-                await verificarECriarPedidosGratis(clienteId);
+                // Create separate free orders for tracking loyalty program
+                if (galoesGratisParaUsar > 0) {
+                    for (let i = 0; i < galoesGratisParaUsar; i++) {
+                        await criarPedidoGratis(clienteId);
+                    }
+                    
+                    let alertMessage = `🎉 GALÃO GRÁTIS!\n\nO cliente ${cliente?.nome} usou ${galoesGratisParaUsar} galão(s) grátis neste pedido!`;
+                    alertMessage += `\nGalões pagos: ${galoesPagos}`;
+                    
+                    if (galoesGratisParaEstesPedido > 0) {
+                        alertMessage += `\n\nGalões grátis conquistados neste pedido: ${galoesGratisParaEstesPedido}`;
+                    }
+                    
+                    alertMessage += `\n\nTotal a pagar: R$ ${valorTotal.toFixed(2)}`;
+                    
+                    alert(alertMessage);
+                }
                 
                 this.reset();
                 document.getElementById('clienteInfo').classList.add('hidden');
@@ -5272,7 +5694,7 @@ Estamos sempre à disposição! 🙏`,
                 console.error('❌ Erro ao registrar pedido:', error);
                 alert('❌ Erro ao registrar pedido. Tente novamente.');
             } finally {
-			loadingEl.classList.add('hidden');
+                        loadingEl.classList.add('hidden');
             }
         });
 
@@ -5459,7 +5881,28 @@ Estamos sempre à disposição! 🙏`,
             const galaoList = document.getElementById('galaoSelectionList');
             galaoList.innerHTML = '';
             
-            const galoesDisponiveis = Object.keys(estoque).filter(data => (estoque[data].cheio || 0) > 0);
+            const galoesDisponiveis = Object.keys(estoque)
+                .filter(data => (estoque[data].cheio || 0) > 0)
+                .sort((a, b) => {
+                    // MELHORIA 1: Ordenação decrescente por data (ano primeiro, depois mês)
+                    const parseDate = (dateStr) => {
+                        const parts = dateStr.split('-');
+                        if (parts.length === 2) {
+                            const month = parseInt(parts[0]);
+                            const year = parseInt(parts[1]);
+                            return { year: year, month: month };
+                        }
+                        return { year: 0, month: 0 };
+                    };
+                    
+                    const dateA = parseDate(a);
+                    const dateB = parseDate(b);
+                    
+                    if (dateA.year !== dateB.year) {
+                        return dateB.year - dateA.year; // Ano decrescente
+                    }
+                    return dateB.month - dateA.month; // Mês decrescente
+                });
             
             if (galoesDisponiveis.length === 0) {
                 galaoList.innerHTML = '<div class="text-center py-4"><p class="text-red-500">⚠️ Não há galões cheios disponíveis no estoque!</p></div>';
@@ -5477,11 +5920,26 @@ Estamos sempre à disposição! 🙏`,
                     galaoDiv.innerHTML = `
                         <div class="flex items-center justify-between">
                             <label class="font-semibold">Galão ${i + 1}:</label>
-                            <select class="input-modern flex-1 ml-4">${optionsHtml}</select>
+                            <select class="input-modern flex-1 ml-4 galao-select" data-index="${i}">${optionsHtml}</select>
                         </div>
                     `;
                     
                     galaoList.appendChild(galaoDiv);
+                }
+                
+                // MELHORIA 2: Auto-preenchimento quando seleciona o primeiro galão
+                const firstSelect = galaoList.querySelector('.galao-select[data-index="0"]');
+                if (firstSelect) {
+                    firstSelect.addEventListener('change', function() {
+                        if (this.value && pedido.quantidade > 1) {
+                            const allSelects = galaoList.querySelectorAll('.galao-select');
+                            for (let i = 1; i < allSelects.length; i++) {
+                                if (!allSelects[i].value) {
+                                    allSelects[i].value = this.value;
+                                }
+                            }
+                        }
+                    });
                 }
             }
             
@@ -5510,22 +5968,70 @@ Estamos sempre à disposição! 🙏`,
             
             const quantidadeTotal = pedido.quantidade + (pedido.quantidadeVazios || 0);
             
+            // MELHORIA 1: Obter galões disponíveis ordenados por data decrescente
+            const todasAsDatas = Object.keys(estoque)
+                .sort((a, b) => {
+                    const parseDate = (dateStr) => {
+                        const parts = dateStr.split('-');
+                        if (parts.length === 2) {
+                            const month = parseInt(parts[0]);
+                            const year = parseInt(parts[1]);
+                            return { year: year, month: month };
+                        }
+                        return { year: 0, month: 0 };
+                    };
+                    
+                    const dateA = parseDate(a);
+                    const dateB = parseDate(b);
+                    
+                    if (dateA.year !== dateB.year) {
+                        return dateB.year - dateA.year; // Ano decrescente
+                    }
+                    return dateB.month - dateA.month; // Mês decrescente
+                });
+
             for (let i = 0; i < quantidadeTotal; i++) {
                 const galaoDiv = document.createElement('div');
                 galaoDiv.className = 'galao-input-item border border-gray-300 rounded-lg p-4 mb-3';
                 
+                // MELHORIA 1: Criar datalist com opções ordenadas
+                let datalistHtml = '';
+                if (todasAsDatas.length > 0) {
+                    datalistHtml = `<datalist id="galoes_list_${i}">`;
+                    todasAsDatas.forEach(data => {
+                        datalistHtml += `<option value="${data}">`;
+                    });
+                    datalistHtml += `</datalist>`;
+                }
+                
                 galaoDiv.innerHTML = `
-                    <div class="flex items-center justify-between mb-2">
-                        <label class="font-semibold">Galão ${i + 1} (data):</label>
-                        <input type="text" class="data-galao-input" placeholder="MM-AAAA" maxlength="7">
-                    </div>
-                    <div class="galao-emprestado-checkbox">
+                    <div class="galao-emprestado-checkbox mb-3">
                         <input type="checkbox" class="emprestado-checkbox" id="emprestado_${i}">
-                        <label for="emprestado_${i}" class="text-sm">Marcar como galão emprestado</label>
+                        <label for="emprestado_${i}" class="text-sm">🤝 Marcar como galão emprestado</label>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <label class="font-semibold">Galão ${i + 1} (data):</label>
+                        <input type="text" class="data-galao-input data-galao-wider" data-index="${i}" placeholder="MM-AAAA" maxlength="7" list="galoes_list_${i}">
+                        ${datalistHtml}
                     </div>
                 `;
                 
                 galaoList.appendChild(galaoDiv);
+            }
+            
+            // MELHORIA 2: Auto-preenchimento quando escreve a data do primeiro galão
+            const firstInput = galaoList.querySelector('.data-galao-input[data-index="0"]');
+            if (firstInput) {
+                firstInput.addEventListener('input', function() {
+                    if (this.value && quantidadeTotal > 1) {
+                        const allInputs = galaoList.querySelectorAll('.data-galao-input');
+                        for (let i = 1; i < allInputs.length; i++) {
+                            if (!allInputs[i].value) {
+                                allInputs[i].value = this.value;
+                            }
+                        }
+                    }
+                });
             }
             
             document.getElementById('receiveGalaoModal').classList.remove('hidden');
@@ -5573,6 +6079,22 @@ Estamos sempre à disposição! 🙏`,
                         <button type="button" class="btn-delete-estoque" onclick="this.parentElement.remove()">🗑️</button>
                     `;
                     galoesVindosContainer.appendChild(div);
+                });
+            }
+
+            // MELHORIA 4: Preencher galões emprestados
+            const galoesEmprestadosContainer = document.getElementById('editGaloesEmprestados');
+            galoesEmprestadosContainer.innerHTML = '';
+            
+            if (pedido.galoesEmprestados && pedido.galoesEmprestados.length > 0) {
+                pedido.galoesEmprestados.forEach(galao => {
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center gap-2';
+                    div.innerHTML = `
+                        <input type="text" class="data-galao-input flex-1" value="${galao}" maxlength="7">
+                        <button type="button" class="btn-delete-estoque" onclick="this.parentElement.remove()">🗑️</button>
+                    `;
+                    galoesEmprestadosContainer.appendChild(div);
                 });
             }
             
@@ -6501,4 +7023,4 @@ Estamos sempre à disposição! 🙏`;
     </script>
 </body>
 </html>
-			
+                        
