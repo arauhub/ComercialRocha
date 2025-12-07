@@ -1,7 +1,7 @@
 // Service Worker Corrigido - Comercial Rocha
 // Versão corrigida que resolve o erro de chrome-extension
 
-const CACHE_NAME = 'comercial-rocha-cache-v7';
+const CACHE_NAME = 'comercial-rocha-cache-v8';
 
 const urlsToCache = [
   './index.html'

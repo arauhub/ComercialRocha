@@ -2180,6 +2180,9 @@ window.firebaseLoaded = true;
                             <button onclick="gerarRelatorioRanking()" class="btn-modern w-full bg-gradient-to-r from-purple-500 to-purple-600">
                                 🥇 Galões por Cliente
                             </button>
+                            <button onclick="gerarRelatorioUltimaCompra()" class="btn-modern w-full bg-gradient-to-r from-orange-500 to-orange-600">
+                                📅 Última Compra de Galão
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -2191,9 +2194,14 @@ window.firebaseLoaded = true;
                             <span class="text-2xl mr-3">📄</span>
                             Resultados
                         </h3>
-                        <button id="salvarPDF" class="btn-modern bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700">
-                            📄 Salvar PDF
-                        </button>
+                        <div class="flex gap-2">
+                            <button id="salvarPDF" class="btn-modern bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700">
+                                📄 Salvar PDF
+                            </button>
+                            <button id="salvarExcel" class="btn-modern bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800">
+                                📊 Salvar Excel
+                            </button>
+                        </div>
                     </div>
                     <div id="conteudoRelatorio"></div>
                 </div>
@@ -3364,6 +3372,14 @@ Estamos sempre à disposição! 🙏`,
                     gerarPDF(currentRelatorioTitulo, currentRelatorioData);
                 } else {
                     alert('❌ Erro: Biblioteca PDF não está disponível ou dados não carregados.');
+                }
+            });
+            
+            document.getElementById('salvarExcel').addEventListener('click', function() {
+                if (currentRelatorioData && currentRelatorioTitulo) {
+                    exportarParaExcel(currentRelatorioTitulo);
+                } else {
+                    alert('❌ Erro: Nenhum relatório gerado para exportar.');
                 }
             });
         }
@@ -7181,13 +7197,198 @@ Estamos sempre à disposição! 🙏`;
             document.getElementById('resultadosRelatorio').classList.remove('hidden');
         }
 
+        function gerarRelatorioUltimaCompra() {
+            const clientesData = [];
+            
+            clientes.forEach(cliente => {
+                const pedidosCliente = pedidos.filter(p => p.clienteId == cliente.id && p.pago);
+                let ultimaCompraData = null;
+                
+                if (pedidosCliente.length > 0) {
+                    const pedidosOrdenados = pedidosCliente.sort((a, b) => {
+                        const dataA = new Date(a.data);
+                        const dataB = new Date(b.data);
+                        return dataB - dataA;
+                    });
+                    ultimaCompraData = pedidosOrdenados[0].data;
+                }
+                
+                clientesData.push({
+                    nome: cliente.nome,
+                    telefone: cliente.telefone || '',
+                    ultimaCompra: ultimaCompraData,
+                    ultimaCompraTimestamp: ultimaCompraData ? new Date(ultimaCompraData).getTime() : 0
+                });
+            });
+            
+            clientesData.sort((a, b) => {
+                if (a.ultimaCompraTimestamp === 0 && b.ultimaCompraTimestamp === 0) return 0;
+                if (a.ultimaCompraTimestamp === 0) return 1;
+                if (b.ultimaCompraTimestamp === 0) return -1;
+                return b.ultimaCompraTimestamp - a.ultimaCompraTimestamp;
+            });
+            
+            if (clientesData.length === 0) {
+                alert('⚠️ Nenhum cliente encontrado!');
+                return;
+            }
+            
+            let relatorioHtml = `
+                <h3 class="text-xl font-bold mb-4">📅 Última Compra de Galão por Cliente</h3>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse border border-gray-300 dark:border-gray-600">
+                        <thead>
+                            <tr class="bg-gray-100 dark:bg-gray-700">
+                                <th class="border border-gray-300 dark:border-gray-600 p-2">#</th>
+                                <th class="border border-gray-300 dark:border-gray-600 p-2">Cliente</th>
+                                <th class="border border-gray-300 dark:border-gray-600 p-2">Última Compra</th>
+                                <th class="border border-gray-300 dark:border-gray-600 p-2">Telefone</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            clientesData.forEach((cliente, index) => {
+                const diasSemComprar = cliente.ultimaCompra 
+                    ? Math.floor((new Date() - new Date(cliente.ultimaCompra)) / (1000 * 60 * 60 * 24))
+                    : null;
+                
+                let statusClass = '';
+                let statusIcon = '';
+                if (diasSemComprar === null) {
+                    statusClass = 'bg-gray-100 dark:bg-gray-800';
+                    statusIcon = '⚪';
+                } else if (diasSemComprar <= 7) {
+                    statusClass = 'bg-green-50 dark:bg-green-900';
+                    statusIcon = '🟢';
+                } else if (diasSemComprar <= 30) {
+                    statusClass = 'bg-yellow-50 dark:bg-yellow-900';
+                    statusIcon = '🟡';
+                } else {
+                    statusClass = 'bg-red-50 dark:bg-red-900';
+                    statusIcon = '🔴';
+                }
+                
+                relatorioHtml += `
+                    <tr class="${statusClass}">
+                        <td class="border border-gray-300 dark:border-gray-600 p-2 text-center">${index + 1}</td>
+                        <td class="border border-gray-300 dark:border-gray-600 p-2">${cliente.nome}</td>
+                        <td class="border border-gray-300 dark:border-gray-600 p-2 text-center">
+                            ${statusIcon} ${cliente.ultimaCompra ? formatLocalDate(cliente.ultimaCompra) : 'Nunca comprou'}
+                            ${diasSemComprar !== null ? `<br><small class="text-gray-500">(${diasSemComprar} dias atrás)</small>` : ''}
+                        </td>
+                        <td class="border border-gray-300 dark:border-gray-600 p-2 text-center">${cliente.telefone || '-'}</td>
+                    </tr>
+                `;
+            });
+            
+            relatorioHtml += `
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-green-50 dark:bg-green-900 p-4 rounded-lg text-center">
+                        <span class="text-2xl">🟢</span>
+                        <p class="font-bold text-green-800 dark:text-green-200">Últimos 7 dias</p>
+                        <p class="text-2xl font-bold text-green-700 dark:text-green-300">${clientesData.filter(c => c.ultimaCompra && Math.floor((new Date() - new Date(c.ultimaCompra)) / (1000 * 60 * 60 * 24)) <= 7).length}</p>
+                    </div>
+                    <div class="bg-yellow-50 dark:bg-yellow-900 p-4 rounded-lg text-center">
+                        <span class="text-2xl">🟡</span>
+                        <p class="font-bold text-yellow-800 dark:text-yellow-200">8 a 30 dias</p>
+                        <p class="text-2xl font-bold text-yellow-700 dark:text-yellow-300">${clientesData.filter(c => {
+                            if (!c.ultimaCompra) return false;
+                            const dias = Math.floor((new Date() - new Date(c.ultimaCompra)) / (1000 * 60 * 60 * 24));
+                            return dias > 7 && dias <= 30;
+                        }).length}</p>
+                    </div>
+                    <div class="bg-red-50 dark:bg-red-900 p-4 rounded-lg text-center">
+                        <span class="text-2xl">🔴</span>
+                        <p class="font-bold text-red-800 dark:text-red-200">Mais de 30 dias</p>
+                        <p class="text-2xl font-bold text-red-700 dark:text-red-300">${clientesData.filter(c => c.ultimaCompra && Math.floor((new Date() - new Date(c.ultimaCompra)) / (1000 * 60 * 60 * 24)) > 30).length}</p>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg text-center">
+                        <span class="text-2xl">⚪</span>
+                        <p class="font-bold text-gray-800 dark:text-gray-200">Nunca comprou</p>
+                        <p class="text-2xl font-bold text-gray-700 dark:text-gray-300">${clientesData.filter(c => !c.ultimaCompra).length}</p>
+                    </div>
+                </div>
+            `;
+            
+            currentRelatorioData = relatorioHtml;
+            currentRelatorioTitulo = 'Última Compra de Galão por Cliente';
+            
+            document.getElementById('conteudoRelatorio').innerHTML = relatorioHtml;
+            document.getElementById('resultadosRelatorio').classList.remove('hidden');
+        }
+
+        function exportarParaExcel(titulo) {
+            try {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = currentRelatorioData;
+                
+                const tables = tempDiv.querySelectorAll('table');
+                
+                if (tables.length === 0) {
+                    alert('⚠️ Não há tabela para exportar neste relatório.');
+                    return;
+                }
+                
+                const table = tables[0];
+                let csvContent = '\uFEFF';
+                
+                const rows = table.querySelectorAll('tr');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('th, td');
+                    const rowData = [];
+                    cells.forEach(cell => {
+                        let text = cell.textContent.trim().replace(/"/g, '""');
+                        text = text.replace(/\s+/g, ' ');
+                        rowData.push(`"${text}"`);
+                    });
+                    csvContent += rowData.join(';') + '\n';
+                });
+                
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                
+                const filename = `${titulo.replace(/[^a-zA-Z0-9]/g, '_')}_${getCurrentDateLocal()}.csv`;
+                
+                link.setAttribute('href', url);
+                link.setAttribute('download', filename);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+            } catch (error) {
+                console.error('❌ Erro ao exportar Excel:', error);
+                alert('❌ Erro ao exportar. Tente novamente.');
+            }
+        }
+
+        function removerEmojis(texto) {
+            if (!texto) return '';
+            const emojisConhecidos = ['🟢', '🟡', '🔴', '⚪', '🥇', '🥈', '🥉', '📅', '📊', '📋', '📄', '💰', '🪣', '👤', '📈', '📆', '⚠️', '✅', '❌', '🚀', '🔍', '🔥', '🏠', '📞', '📍', '💧', '🏷️', '⭐', '🎉', '🛒', '💳', '🎁', '✨', '🔔', '📦', '🗑️', '✏️', '➕', '➖'];
+            let resultado = texto;
+            emojisConhecidos.forEach(emoji => {
+                resultado = resultado.split(emoji).join('');
+            });
+            return resultado.replace(/\s+/g, ' ').trim();
+        }
+
         function gerarPDF(titulo, conteudo) {
             try {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
                 
+                const tituloLimpo = removerEmojis(titulo);
+                
                 doc.setFontSize(16);
-                doc.text(titulo, 20, 20);
+                doc.text(tituloLimpo, 20, 20);
                 
                 doc.setFontSize(10);
                 doc.text(`Gerado em: ${formatLocalDate(getCurrentDateTime())}`, 20, 30);
@@ -7206,7 +7407,7 @@ Estamos sempre à disposição! 🙏`;
                         const cells = row.querySelectorAll('th, td');
                         const rowData = [];
                         cells.forEach(cell => {
-                            rowData.push(cell.textContent.trim());
+                            rowData.push(removerEmojis(cell.textContent.trim()));
                         });
                         if (rowData.length > 0) {
                             tableData.push(rowData);
