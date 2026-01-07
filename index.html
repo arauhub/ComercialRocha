@@ -2183,6 +2183,9 @@ window.firebaseLoaded = true;
                             <button onclick="gerarRelatorioUltimaCompra()" class="btn-modern w-full bg-gradient-to-r from-orange-500 to-orange-600">
                                 📅 Última Compra de Galão
                             </button>
+                            <button onclick="gerarRelatorioListaClientes()" class="btn-modern w-full bg-gradient-to-r from-teal-500 to-teal-600">
+                                📒 Lista de Cadastro de Clientes
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -7318,6 +7321,91 @@ Estamos sempre à disposição! 🙏`;
             
             currentRelatorioData = relatorioHtml;
             currentRelatorioTitulo = 'Última Compra de Galão por Cliente';
+            
+            document.getElementById('conteudoRelatorio').innerHTML = relatorioHtml;
+            document.getElementById('resultadosRelatorio').classList.remove('hidden');
+        }
+
+        function gerarRelatorioListaClientes() {
+            const clientesOrdenados = [...clientes];
+            
+            // Ordenar: Alfabética, com inativos no final
+            clientesOrdenados.sort((a, b) => {
+                const aInativo = a.inativo || false;
+                const bInativo = b.inativo || false;
+                
+                if (aInativo !== bInativo) {
+                    return aInativo ? 1 : -1;
+                }
+                
+                return (a.nome || '').localeCompare(b.nome || '');
+            });
+            
+            if (clientesOrdenados.length === 0) {
+                alert('⚠️ Nenhum cliente encontrado!');
+                return;
+            }
+            
+            let relatorioHtml = `
+                <h3 class="text-xl font-bold mb-4">📒 Lista de Cadastro de Clientes</h3>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse border border-gray-300 dark:border-gray-600">
+                        <thead>
+                            <tr class="bg-gray-100 dark:bg-gray-700">
+                                <th class="border border-gray-300 dark:border-gray-600 p-2">#</th>
+                                <th class="border border-gray-300 dark:border-gray-600 p-2">Nome</th>
+                                <th class="border border-gray-300 dark:border-gray-600 p-2">Telefone</th>
+                                <th class="border border-gray-300 dark:border-gray-600 p-2">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            clientesOrdenados.forEach((cliente, index) => {
+                const inativo = cliente.inativo || false;
+                const statusClass = inativo ? 'bg-red-50 dark:bg-red-900' : '';
+                const statusText = inativo ? 'Inativo' : 'Ativo';
+                const statusColor = inativo ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400';
+                
+                relatorioHtml += `
+                    <tr class="${statusClass}">
+                        <td class="border border-gray-300 dark:border-gray-600 p-2 text-center">${index + 1}</td>
+                        <td class="border border-gray-300 dark:border-gray-600 p-2">${cliente.nome}</td>
+                        <td class="border border-gray-300 dark:border-gray-600 p-2 text-center">${cliente.telefone || '-'}</td>
+                        <td class="border border-gray-300 dark:border-gray-600 p-2 text-center font-bold ${statusColor}">${statusText}</td>
+                    </tr>
+                `;
+            });
+            
+            relatorioHtml += `
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                        <h4 class="font-bold text-gray-800 dark:text-gray-200 mb-2">📊 Total</h4>
+                        <p class="text-gray-700 dark:text-gray-300 text-2xl font-bold">${clientesOrdenados.length}</p>
+                        <p class="text-gray-600 dark:text-gray-400">Clientes cadastrados</p>
+                    </div>
+                    
+                    <div class="bg-green-50 dark:bg-green-900 p-4 rounded-lg">
+                        <h4 class="font-bold text-green-800 dark:text-green-200 mb-2">✅ Ativos</h4>
+                        <p class="text-green-700 dark:text-green-300 text-2xl font-bold">${clientesOrdenados.filter(c => !c.inativo).length}</p>
+                        <p class="text-green-600 dark:text-green-400">Clientes ativos</p>
+                    </div>
+                    
+                    <div class="bg-red-50 dark:bg-red-900 p-4 rounded-lg">
+                        <h4 class="font-bold text-red-800 dark:text-red-200 mb-2">🚫 Inativos</h4>
+                        <p class="text-red-700 dark:text-red-300 text-2xl font-bold">${clientesOrdenados.filter(c => c.inativo).length}</p>
+                        <p class="text-red-600 dark:text-red-400">Clientes inativos</p>
+                    </div>
+                </div>
+            `;
+            
+            currentRelatorioData = relatorioHtml;
+            currentRelatorioTitulo = 'Lista de Cadastro de Clientes';
             
             document.getElementById('conteudoRelatorio').innerHTML = relatorioHtml;
             document.getElementById('resultadosRelatorio').classList.remove('hidden');
