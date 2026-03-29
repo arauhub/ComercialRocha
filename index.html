@@ -21,6 +21,12 @@ block-all-mixed-content;
     <script defer="" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <!-- Firebase SDKs -->
     <script type="module">
+        // Promessa que resolve quando o Firebase terminar de carregar (ou falhar)
+        window._firebaseReadyResolve = null;
+        window.firebaseReady = new Promise(resolve => {
+            window._firebaseReadyResolve = resolve;
+        });
+
         // Try to load Firebase, but don't block the app if it fails
         try {
             const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js');
@@ -112,13 +118,18 @@ window.firebaseLoaded = true;
             window.authUtils = null;
             window.firebaseLoaded = false;
         }
-        
-        // Initialize app after a short delay
-        setTimeout(() => {
-            if (window.initializeApp) {
-                window.initializeApp();
-            }
-        }, 1000);
+
+        // Sinaliza que o Firebase terminou de carregar (sucesso ou falha)
+        window._firebaseReadyResolve();
+
+        // Inicializa o app assim que o DOM estiver pronto e o Firebase resolvido
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                if (window.initializeApp) window.initializeApp();
+            });
+        } else {
+            if (window.initializeApp) window.initializeApp();
+        }
     </script>
     <script>
         tailwind.config = {
@@ -1170,9 +1181,52 @@ window.firebaseLoaded = true;
                 min-width: 100%;
             }
         }
+
+        /* ===== TOAST NOTIFICATIONS ===== */
+        #toast-container {
+            position: fixed;
+            top: 60px;
+            right: 16px;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+            max-width: 340px;
+            width: calc(100% - 32px);
+        }
+        .toast {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.4;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            pointer-events: auto;
+            animation: toast-in 0.25s ease;
+            word-break: break-word;
+        }
+        .toast.hide { animation: toast-out 0.3s ease forwards; }
+        .toast-success { background:#dcfce7; color:#166534; border-left:4px solid #16a34a; }
+        .toast-error   { background:#fee2e2; color:#991b1b; border-left:4px solid #dc2626; }
+        .toast-warning { background:#fef9c3; color:#854d0e; border-left:4px solid #ca8a04; }
+        .toast-info    { background:#dbeafe; color:#1e3a8a; border-left:4px solid #2563eb; }
+        .dark .toast-success { background:#14532d; color:#bbf7d0; }
+        .dark .toast-error   { background:#7f1d1d; color:#fecaca; }
+        .dark .toast-warning { background:#713f12; color:#fef08a; }
+        .dark .toast-info    { background:#1e3a8a; color:#bfdbfe; }
+        .toast-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+        .toast-msg  { flex:1; white-space:pre-line; }
+        @keyframes toast-in  { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
+        @keyframes toast-out { from{opacity:1;transform:translateX(0)}    to{opacity:0;transform:translateX(40px)} }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <!-- Toast container -->
+    <div id="toast-container"></div>
     <!-- Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
@@ -1393,13 +1447,13 @@ window.firebaseLoaded = true;
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Mensagem de Confirmação do Pedido</label>
                             <textarea id="configMensagemPedido" rows="8" class="input-modern w-full text-sm" placeholder="Digite a mensagem..."></textarea>
-                            <p class="text-xs text-gray-500 mt-1">Variáveis disponíveis: {nome}, {tipo_pedido}, {galao_foi}, {data}</p>
+                            <p class="text-xs text-gray-500 mt-1">Variáveis disponíveis: {nome}, {tipo_pedido}, {galao_foi}, {data}, {fidelidade_info}<br><span class="text-orange-500">⚠️ Se sua mensagem tiver {mensagem_fidelidade}, ela também funciona (variável legada).</span></p>
                         </div>
                         
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Mensagem de Pedido Grátis</label>
                             <textarea id="configMensagemGratis" rows="6" class="input-modern w-full text-sm" placeholder="Digite a mensagem..."></textarea>
-                            <p class="text-xs text-gray-500 mt-1">Variáveis disponíveis: {nome}, {galao_foi}, {data}</p>
+                            <p class="text-xs text-gray-500 mt-1">Variáveis disponíveis: {nome}, {galao_foi}, {data}, {fidelidade_info}</p>
                         </div>
                         
                         <div>
@@ -2023,11 +2077,11 @@ window.firebaseLoaded = true;
                             <div class="filter-item">
                                 <label>Filtrar por:</label>
                                 <div class="filter-buttons">
-                                    <button type="button" class="filter-btn active" onclick="setFiltroData('hoje')">Hoje</button>
-                                    <button type="button" class="filter-btn" onclick="setFiltroData('customDay')">Dia</button>
-                                    <button type="button" class="filter-btn" onclick="setFiltroData('customMonth')">Mês</button>
-                                    <button type="button" class="filter-btn" onclick="setFiltroData('pendentes')">Pendentes</button>
-                                    <button type="button" class="filter-btn" onclick="setFiltroData('todos')">Todos</button>
+                                    <button type="button" class="filter-btn active" onclick="setFiltroData('hoje', event)">Hoje</button>
+                                    <button type="button" class="filter-btn" onclick="setFiltroData('customDay', event)">Dia</button>
+                                    <button type="button" class="filter-btn" onclick="setFiltroData('customMonth', event)">Mês</button>
+                                    <button type="button" class="filter-btn" onclick="setFiltroData('pendentes', event)">Pendentes</button>
+                                    <button type="button" class="filter-btn" onclick="setFiltroData('todos', event)">Todos</button>
                                 </div>
                             </div>
                             
@@ -2226,6 +2280,28 @@ window.firebaseLoaded = true;
         });
 
         // Global variables for data
+        // ================================
+        // TOAST NOTIFICATION SYSTEM
+        // ================================
+        function toast(msg, type = 'success', duration = 0) {
+            const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+            const durations = { success: 3000, error: 5000, warning: 4000, info: 3500 };
+            const ms = duration || durations[type] || 3000;
+
+            const container = document.getElementById('toast-container');
+            const el = document.createElement('div');
+            el.className = `toast toast-${type}`;
+            el.innerHTML = `<span class="toast-icon">${icons[type]}</span><span class="toast-msg">${msg}</span>`;
+            container.appendChild(el);
+
+            const remove = () => {
+                el.classList.add('hide');
+                setTimeout(() => el.remove(), 320);
+            };
+            const timer = setTimeout(remove, ms);
+            el.addEventListener('click', () => { clearTimeout(timer); remove(); });
+        }
+
         let clientes = [];
         let pedidos = [];
         let estoque = {};
@@ -2248,19 +2324,21 @@ window.firebaseLoaded = true;
         let mostrandoInativos = false;
         let filtroDataAtual = 'hoje'; // MODIFICADO: Por padrão filtrar por hoje
         let configuracoes = {
-            mensagemPedido: `🪣 *Comercial Rocha*
+            mensagemPedido: `💧 *Comercial Rocha*
 
-Olá {nome}! 😊
+Olá! 😊
 
 ✅ Sua entrega foi registrada:
 {tipo_pedido}
 📦 Galão entregue: {galao_foi}
 📅 Data: {data}
 
-Obrigado pela confiança! 🙏💧`,
-            mensagemGratis: `🪣 *Comercial Rocha*
+{fidelidade_info}
 
-Olá {nome}! 😊
+Obrigado pela confiança! 🙏💧`,
+            mensagemGratis: `💧 *Comercial Rocha*
+
+Olá! 😊
 
 🎉 *PARABÉNS!* 🎉
 Você ganhou um GALÃO GRÁTIS pelo nosso sistema de fidelidade!
@@ -2268,10 +2346,12 @@ Você ganhou um GALÃO GRÁTIS pelo nosso sistema de fidelidade!
 📦 Galão grátis entregue: {galao_foi}
 📅 Data: {data}
 
-Obrigado pela sua fidelidade! 🙏💧`,
-            mensagemNotificacao: `🪣 *Comercial Rocha*
+{fidelidade_info}
 
-Olá {nome}! 😊
+Obrigado pela sua fidelidade! 🙏💧`,
+            mensagemNotificacao: `💧 *Comercial Rocha*
+
+Olá! 😊
 
 Sentimos sua falta! 💙
 Já faz alguns dias que você não faz seu pedido de água.
@@ -2581,6 +2661,19 @@ Estamos sempre à disposição! 🙏`,
                 return;
             }
 
+            // Verificar se o usuário adiou/dispensou a notificação
+            const adiarAte = localStorage.getItem('backup_adiar_ate');
+            if (adiarAte) {
+                const dataAdiar = new Date(adiarAte);
+                if (new Date() < dataAdiar) {
+                    console.log('⏸️ Notificação de backup suprimida até', dataAdiar.toLocaleDateString('pt-BR'));
+                    return;
+                } else {
+                    // Prazo expirou — limpa o snooze
+                    localStorage.removeItem('backup_adiar_ate');
+                }
+            }
+
             const ultimoBackup = configuracoes.ultimoBackup;
             const frequencia = configuracoes.frequenciaBackup || 7;
             const agora = new Date();
@@ -2652,22 +2745,32 @@ Estamos sempre à disposição! 🙏`,
                 updateBackupStatus();
                 
                 document.getElementById('backupNotification').classList.add('hidden');
-                alert('✅ Backup automático realizado com sucesso!');
+                toast('✅ Backup automático realizado com sucesso!', 'success');
                 
             } catch (error) {
                 console.error('❌ Erro no backup automático:', error);
-                alert('❌ Erro ao fazer backup automático. Tente manualmente.');
+                toast('❌ Erro ao fazer backup automático. Tente manualmente.', 'error');
             }
         }
 
         function adiarBackup() {
+            // Salva a data de amanhã como "não notificar antes de"
+            const amanha = new Date();
+            amanha.setDate(amanha.getDate() + 1);
+            amanha.setHours(0, 0, 0, 0);
+            localStorage.setItem('backup_adiar_ate', amanha.toISOString());
             document.getElementById('backupNotification').classList.add('hidden');
-            // Lembrar amanhã (não implementado persistência por simplicidade)
+            console.log('⏰ Backup adiado para amanhã');
         }
 
         function dispensarBackup() {
+            // Silencia por 7 dias
+            const proxSemana = new Date();
+            proxSemana.setDate(proxSemana.getDate() + 7);
+            proxSemana.setHours(0, 0, 0, 0);
+            localStorage.setItem('backup_adiar_ate', proxSemana.toISOString());
             document.getElementById('backupNotification').classList.add('hidden');
-            // Não lembrar por uma semana (não implementado persistência por simplicidade)
+            console.log('🔕 Backup dispensado por 7 dias');
         }
 
         // ================================
@@ -2679,123 +2782,113 @@ Estamos sempre à disposição! 🙏`,
 
             const { collection, onSnapshot, orderBy, query, doc } = window.firebaseUtils;
 
-            // Clientes com cache inteligente de 15 minutos
-            const cachedClientes = getCachedData('clientes');
-            const clientesTimestamp = localStorage.getItem('clientes_timestamp');
-            const isClientesStale = !clientesTimestamp || (Date.now() - parseInt(clientesTimestamp)) > 15 * 60 * 1000;
-            
-            if (!cachedClientes || isClientesStale) {
-                const clientesRef = collection(window.db, 'clientes');
-                clientesListener = onSnapshot(clientesRef, (snapshot) => {
-                    // Usar sourceFromCache para evitar leituras desnecessárias
-                    if (snapshot.metadata.fromCache && cachedClientes) {
-                        return;
-                    }
-                    
-                    clientes = [];
-                    snapshot.forEach((doc) => {
-                        clientes.push({ id: doc.id, ...doc.data() });
-                    });
-                    setCachedData('clientes', clientes);
-                    localStorage.setItem('clientes_timestamp', Date.now().toString());
-                    
-                    // Atualizar UI de forma mais eficiente
-                    updateClientesUI();
-                    saveLocalData();
-                }, (error) => {
-                    console.error('❌ Erro ao escutar clientes:', error);
-                    updateConnectionStatus('❌ Erro', 'error');
-                });
-            } else {
-                clientes = cachedClientes;
-                updateClientesUI();
-            }
+            // Estratégia de leituras mínimas com UI instantânea:
+            // hasPendingWrites=true → escrita local ainda não confirmada pelo servidor.
+            //   Atualiza UI imediatamente (optimistic update — o usuário vê na hora).
+            // hasPendingWrites=false + fromCache=false → servidor confirmou. Atualiza novamente
+            //   para garantir consistência (outros aparelhos também passam por aqui).
+            // hasPendingWrites=false + fromCache=true → cache local sem mudança real. Ignora
+            //   para não renderizar desnecessariamente na abertura do app após a carga inicial.
 
-            // Pedidos with limited query to recent ones only
-            const cachedPedidos = getCachedData('pedidos');
-            if (!cachedPedidos) {
-                const pedidosRef = collection(window.db, 'pedidos');
-                const pedidosQuery = query(pedidosRef, orderBy('data', 'desc'));
-                pedidosListener = onSnapshot(pedidosQuery, (snapshot) => {
-                    // Only load the last 100 orders to reduce reads
-                    const newPedidos = [];
-                    let count = 0;
-                    snapshot.forEach((doc) => {
-                            newPedidos.push({ id: doc.id, ...doc.data() });
-                    });
-                    pedidos = newPedidos;
-                    setCachedData('pedidos', pedidos);
-                    updateListaPedidos();
-                    updateDashboard();
-                    saveLocalData();
-                }, (error) => {
-                    console.error('❌ Erro ao escutar pedidos:', error);
-                    updateConnectionStatus('❌ Erro', 'error');
-                });
-            } else {
-                pedidos = cachedPedidos;
+            let _clientesCarregados = false;
+            let _pedidosCarregados = false;
+            let _estoqueCarregado = false;
+            let _emprestimosCarregados = false;
+
+            // Clientes
+            const clientesRef = collection(window.db, 'clientes');
+            clientesListener = onSnapshot(clientesRef, (snapshot) => {
+                clientes = [];
+                snapshot.forEach((d) => { clientes.push({ id: d.id, ...d.data() }); });
+                saveLocalData();
+                // Ignora apenas cache sem mudança após a primeira carga
+                if (snapshot.metadata.fromCache && !snapshot.metadata.hasPendingWrites && _clientesCarregados) return;
+                _clientesCarregados = true;
+                updateClientesUI();
+            }, (error) => {
+                console.error('❌ Erro ao escutar clientes:', error);
+                updateConnectionStatus('❌ Erro', 'error');
+            });
+
+            // Pedidos
+            const pedidosQuery = query(collection(window.db, 'pedidos'), orderBy('data', 'desc'));
+            pedidosListener = onSnapshot(pedidosQuery, (snapshot) => {
+                pedidos = [];
+                snapshot.forEach((d) => { pedidos.push({ id: d.id, ...d.data() }); });
+                saveLocalData();
+                if (snapshot.metadata.fromCache && !snapshot.metadata.hasPendingWrites && _pedidosCarregados) return;
+                _pedidosCarregados = true;
                 updateListaPedidos();
                 updateDashboard();
-            }
+            }, (error) => {
+                console.error('❌ Erro ao escutar pedidos:', error);
+                updateConnectionStatus('❌ Erro', 'error');
+            });
 
             // Estoque
-            const cachedEstoque = getCachedData('estoque');
-            if (!cachedEstoque) {
-                const estoqueRef = collection(window.db, 'estoque');
-                estoqueListener = onSnapshot(estoqueRef, (snapshot) => {
-                    estoque = {};
-                    snapshot.forEach((doc) => {
-                        const id = doc.id.replace(/_/g, '-');
-                        estoque[id] = doc.data();
-                    });
-                    setCachedData('estoque', estoque);
-                    updateVisualizacaoEstoque();
-                    updateEstoqueDetalhado();
-                    updateDashboard();
-                    saveLocalData();
-                }, (error) => {
-                    console.error('❌ Erro ao escutar estoque:', error);
-                    updateConnectionStatus('❌ Erro', 'error');
+            const estoqueRef = collection(window.db, 'estoque');
+            estoqueListener = onSnapshot(estoqueRef, (snapshot) => {
+                estoque = {};
+                snapshot.forEach((d) => {
+                    estoque[d.id.replace(/_/g, '-')] = d.data();
                 });
-            } else {
-                estoque = cachedEstoque;
+                saveLocalData();
+                if (snapshot.metadata.fromCache && !snapshot.metadata.hasPendingWrites && _estoqueCarregado) return;
+                _estoqueCarregado = true;
                 updateVisualizacaoEstoque();
                 updateEstoqueDetalhado();
                 updateDashboard();
-            }
+            }, (error) => {
+                console.error('❌ Erro ao escutar estoque:', error);
+                updateConnectionStatus('❌ Erro', 'error');
+            });
 
             // Empréstimos
-            const cachedEmprestimos = getCachedData('emprestimos');
-            if (!cachedEmprestimos) {
-                const emprestimosRef = collection(window.db, 'emprestimos');
-                emprestimosListener = onSnapshot(emprestimosRef, (snapshot) => {
-                    emprestimos = [];
-                    snapshot.forEach((doc) => {
-                        emprestimos.push({ id: doc.id, ...doc.data() });
-                    });
-                    setCachedData('emprestimos', emprestimos);
-                    updateGaloesEmprestados();
-                    saveLocalData();
-                }, (error) => {
-                    console.error('❌ Erro ao escutar empréstimos:', error);
-                    updateConnectionStatus('❌ Erro', 'error');
-                });
-            } else {
-                emprestimos = cachedEmprestimos;
+            const emprestimosRef = collection(window.db, 'emprestimos');
+            emprestimosListener = onSnapshot(emprestimosRef, (snapshot) => {
+                emprestimos = [];
+                snapshot.forEach((d) => { emprestimos.push({ id: d.id, ...d.data() }); });
+                saveLocalData();
+                if (snapshot.metadata.fromCache && !snapshot.metadata.hasPendingWrites && _emprestimosCarregados) return;
+                _emprestimosCarregados = true;
                 updateGaloesEmprestados();
-            }
+            }, (error) => {
+                console.error('❌ Erro ao escutar empréstimos:', error);
+                updateConnectionStatus('❌ Erro', 'error');
+            });
 
-            // MODIFICADO: Configurações globais (para todas as contas, mas só admin pode editar)
+            // Configurações globais
             const configRef = doc(window.db, 'configuracoes', 'global');
             configuracoesListener = onSnapshot(configRef, (docSnapshot) => {
-                if (docSnapshot.exists()) {
+                if (docSnapshot.exists() && !docSnapshot.metadata.fromCache && !docSnapshot.metadata.hasPendingWrites) {
                     const configData = docSnapshot.data();
+
+                    // Migrações automáticas de templates salvos no Firebase
+                    const camposMensagem = ['mensagemPedido', 'mensagemGratis', 'mensagemNotificacao'];
+                    let precisaMigrar = false;
+                    camposMensagem.forEach(campo => {
+                        if (!configData[campo]) return;
+                        let original = configData[campo];
+
+                        // Migração 1: emoji 🪣 → 💧 (não suportado em Android antigo)
+                        configData[campo] = configData[campo].replaceAll('🪣', '💧');
+
+                        // Migração 2: "Olá {nome}!" → "Olá!" (remover nome do cumprimento)
+                        configData[campo] = configData[campo].replace(/Ol[aá][,!]?\s*\{nome\}\s*[!,]?/g, 'Olá!');
+
+                        if (configData[campo] !== original) precisaMigrar = true;
+                    });
+
                     configuracoes = { ...configuracoes, ...configData };
-                    setCachedData('configuracoes', configuracoes);
                     saveConfiguracoes();
                     console.log('✅ Configurações atualizadas do Firebase');
-                    
-                    // MELHORADO: Verificar backup automático apenas para admin
+
+                    // Se havia emoji antigo, salva a versão corrigida de volta no Firebase
+                    if (precisaMigrar && currentUser?.email === 'adm@comercialrocha.com') {
+                        console.log('🔄 Migrando emojis das mensagens no Firebase...');
+                        saveConfiguracoesFirebase();
+                    }
+
                     if (currentUser?.email === 'adm@comercialrocha.com') {
                         setTimeout(verificarBackupAutomatico, 3000);
                     }
@@ -2812,9 +2905,9 @@ Estamos sempre à disposição! 🙏`,
         // ================================
 
         // Novas funções de filtro de data
-        function setFiltroData(tipo) {
+        function setFiltroData(tipo, evt) {
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            if (evt && evt.target) evt.target.classList.add('active');
             
             document.getElementById('customDayFilter').classList.add('hidden');
             document.getElementById('customMonthFilter').classList.add('hidden');
@@ -2946,23 +3039,22 @@ Estamos sempre à disposição! 🙏`,
             
             checkInternetConnection();
             setInterval(checkInternetConnection, 180000); // 3 minutos
-            
-            setTimeout(() => {
-                if (window.firebaseLoaded && window.auth && window.firebaseUtils && window.authUtils) {
-                    console.log('🔥 Firebase disponível, configurando autenticação...');
-                    try {
-                        setupAuth();
-                        firebaseConnected = true;
-                        updateConnectionStatus('✅ Firebase Online', 'online');
-                    } catch (error) {
-                        console.error('❌ Erro ao conectar com Firebase:', error);
-                        setupOfflineMode();
-                    }
-                } else {
-                    console.log('📱 Firebase não disponível, configurando modo offline...');
+
+            // Firebase já está resolvido quando initializeApp é chamado (via firebaseReady Promise)
+            if (window.firebaseLoaded && window.auth && window.firebaseUtils && window.authUtils) {
+                console.log('🔥 Firebase disponível, configurando autenticação...');
+                try {
+                    setupAuth();
+                    firebaseConnected = true;
+                    updateConnectionStatus('✅ Firebase Online', 'online');
+                } catch (error) {
+                    console.error('❌ Erro ao conectar com Firebase:', error);
                     setupOfflineMode();
                 }
-            }, 2000);
+            } else {
+                console.log('📱 Firebase não disponível, configurando modo offline...');
+                setupOfflineMode();
+            }
         };
 
         function setupAuth() {
@@ -3199,12 +3291,12 @@ Estamos sempre à disposição! 🙏`,
                 saveLocalData();
                 updateSyncStatus(false);
                 
-                alert('✅ Dados sincronizados com sucesso!');
+                toast('✅ Dados sincronizados com sucesso!', 'success');
                 
             } catch (error) {
                 console.error('❌ Erro na sincronização:', error);
                 updateSyncStatus(false);
-                alert('❌ Erro na sincronização. Tentaremos novamente mais tarde.');
+                toast('❌ Erro na sincronização. Tentaremos novamente mais tarde.', 'error');
             }
         }
 
@@ -3374,7 +3466,7 @@ Estamos sempre à disposição! 🙏`,
                 if (typeof window.jspdf?.jsPDF !== 'undefined' && currentRelatorioData && currentRelatorioTitulo) {
                     gerarPDF(currentRelatorioTitulo, currentRelatorioData);
                 } else {
-                    alert('❌ Erro: Biblioteca PDF não está disponível ou dados não carregados.');
+                    toast('❌ Erro: Biblioteca PDF não está disponível ou dados não carregados.', 'error');
                 }
             });
             
@@ -3382,7 +3474,7 @@ Estamos sempre à disposição! 🙏`,
                 if (currentRelatorioData && currentRelatorioTitulo) {
                     exportarParaExcel(currentRelatorioTitulo);
                 } else {
-                    alert('❌ Erro: Nenhum relatório gerado para exportar.');
+                    toast('❌ Erro: Nenhum relatório gerado para exportar.', 'error');
                 }
             });
         }
@@ -3468,90 +3560,123 @@ Estamos sempre à disposição! 🙏`,
                 emprestimos = [];
                 clearCache();
                 
-                alert('✅ Logout realizado com sucesso!');
+                toast('✅ Logout realizado com sucesso!', 'success');
             } catch (error) {
                 console.error('❌ Erro no logout:', error);
-                alert('❌ Erro ao fazer logout.');
+                toast('❌ Erro ao fazer logout.', 'error');
             }
         }
 
-        // Sistema de Fidelidade
+        // ============================================================
+        // SISTEMA DE FIDELIDADE
+        // Regra: a cada 10 compras PAGAS, a 11ª é GRÁTIS.
+        // Após receber o grátis, a contagem reinicia do zero.
+        // Ciclo: paga 1..10 → 11ª é grátis → reinicia → paga 1..10 → ...
+        // ============================================================
+
+        // Total de galões pagos de todos os tempos
         function contarGaloesPagos(clienteId) {
-            return pedidos.filter(p => p.clienteId === clienteId && !p.isGratis)
-                          .reduce((total, pedido) => total + (pedido.galoesPagos || pedido.quantidade || 1), 0);
+            return pedidos
+                .filter(p => p.clienteId === clienteId && !p.isGratis)
+                .reduce((total, p) => total + (p.galoesPagos || p.quantidade || 1), 0);
         }
 
-        // Nova função para contar galões pagos no ciclo atual (reinicia após cada grátis)
-        function contarGaloesPagosCicloAtual(clienteId) {
-            const galoesPagosTotal = contarGaloesPagos(clienteId);
-            const galoesGratisRecebidos = contarGaloesGratisRecebidos(clienteId);
-            const galoesParaGratis = configuracoes.galoesParaGratis || 10;
-            
-            // Quantos ciclos completos já foram concluídos
-            const ciclosCompletos = galoesGratisRecebidos;
-            
-            // Galões pagos que já "usaram" para ganhar grátis
-            const galoesPagosUsados = ciclosCompletos * galoesParaGratis;
-            
-            // Galões pagos restantes no ciclo atual
-            return Math.max(0, galoesPagosTotal - galoesPagosUsados);
-        }
-
+        // Total de galões grátis já recebidos
         function contarGaloesGratisRecebidos(clienteId) {
-            return pedidos.filter(p => p.clienteId === clienteId && p.isGratis && p.pago)
-                          .reduce((total, pedido) => total + (pedido.quantidade || 1), 0);
+            return pedidos
+                .filter(p => p.clienteId === clienteId && p.isGratis && p.pago)
+                .reduce((total, p) => total + (p.quantidade || 1), 0);
         }
 
+        // Posição no ciclo atual: quantos galões pagos desde o último grátis (0 a N-1)
+        // Cada ciclo tem galoesParaGratis (10) pagamentos → ao completar, ganha grátis → reinicia
+        function contarGaloesPagosCicloAtual(clienteId) {
+            const totalPagos = contarGaloesPagos(clienteId);
+            const galoesParaGratis = configuracoes.galoesParaGratis || 10;
+            // Usa módulo para garantir que o ciclo nunca ultrapasse o limite
+            // Ex: 10 pagos, 0 grátis → 10 % 10 = 0 (início do novo ciclo, grátis já disponível)
+            return totalPagos % galoesParaGratis;
+        }
+
+        // Quantos galões pagos faltam para ganhar o próximo grátis
+        function proximaCompraGratis(clienteId) {
+            const cicloAtual = contarGaloesPagosCicloAtual(clienteId);
+            const galoesParaGratis = configuracoes.galoesParaGratis || 10;
+            return Math.max(0, galoesParaGratis - cicloAtual);
+        }
+
+        // Grátis disponíveis (ganhos mas ainda não usados)
         function verificarFidelidade(clienteId) {
-            const galoesPagos = contarGaloesPagos(clienteId);
-            const galoesGratis = contarGaloesGratisRecebidos(clienteId);
+            const totalPagos = contarGaloesPagos(clienteId);
+            const totalGratis = contarGaloesGratisRecebidos(clienteId);
             const galoesParaGratis = configuracoes.galoesParaGratis || 10;
-            
-            // Calculate how many free jugs the customer has earned
-            // Free jugs are earned at exactly 10 paid jugs and then every 10 after that
-            let galoesGratisMerecidos = 0;
-            if (galoesPagos >= galoesParaGratis) {
-                // How many complete sets of 10 they have
-                galoesGratisMerecidos = Math.floor(galoesPagos / galoesParaGratis);
-            }
-            
-            return Math.max(0, galoesGratisMerecidos - galoesGratis);
+            // A cada 10 pagamentos completos, 1 grátis é merecido
+            const gratisMerecidos = Math.floor(totalPagos / galoesParaGratis);
+            return Math.max(0, gratisMerecidos - totalGratis);
         }
 
+        // Quantos grátis serão ganhos dentro de um pedido de N galões
+        // Usa a mesma lógica de distribuirPedido para consistência
         function calcularGaloesGratisParaEstesPedido(clienteId, quantidadeNovaPedido) {
-            const galoesPagosAtuais = contarGaloesPagos(clienteId);
-            const galoesGratisRecebidos = contarGaloesGratisRecebidos(clienteId);
+            // Simula distribuirPedido sem grátis iniciais para saber só os ganhos agora
             const galoesParaGratis = configuracoes.galoesParaGratis || 10;
-            
-            // Calculate total paid jugs after this order
-            const totalPagosDepoisOrder = galoesPagosAtuais + quantidadeNovaPedido;
-            
-            // Free jugs are only earned when going BEYOND multiples of 10
-            // Examples:
-            // - 10 jugs total = 0 free (wait for next order)
-            // - 11 jugs total = 1 free (the 11th)
-            // - 20 jugs total = 1 free (wait for next order after 20th)
-            // - 21 jugs total = 2 free (11th and 21st)
-            
-            let galoesGratisNovosEarnados = 0;
-            
-            // Only give free jugs if we go beyond multiples of 10
-            if (totalPagosDepoisOrder > galoesParaGratis) {
-                // Count how many "extra" jugs beyond the last multiple of 10
-                const extraJugs = totalPagosDepoisOrder % galoesParaGratis;
-                
-                // Only give free jugs if we have extra jugs beyond a multiple of 10
-                // This means 11, 12, 13... get free jugs, but 10, 20, 30... don't
-                if (extraJugs > 0) {
-                    // Calculate how many complete cycles we've crossed
-                    const completeCycles = Math.floor(totalPagosDepoisOrder / galoesParaGratis);
-                    const previousCompleteCycles = Math.floor(galoesPagosAtuais / galoesParaGratis);
-                    
-                    // New free jugs = new complete cycles crossed
-                    galoesGratisNovosEarnados = completeCycles - previousCompleteCycles;
+            let ciclo = contarGaloesPagosCicloAtual(clienteId);
+            let gratisGanhos = 0;
+            let entregues = 0;
+            let pagos = 0;
+            while (entregues < quantidadeNovaPedido) {
+                pagos++;
+                ciclo++;
+                entregues++;
+                if (ciclo >= galoesParaGratis && entregues < quantidadeNovaPedido) {
+                    gratisGanhos++;
+                    ciclo = 0;
+                    entregues++;
+                } else if (ciclo >= galoesParaGratis) {
+                    ciclo = 0;
                 }
             }
-            return galoesGratisNovosEarnados;
+            return gratisGanhos;
+        }
+
+        // Distribui um pedido de N galões em: quantos pagos + quantos grátis
+        // Regra: a cada 10 pagos o próximo é grátis, ciclo reinicia.
+        // Também consome grátis já disponíveis de ciclos anteriores.
+        // Retorna { galoesPagos, galoesGratis }
+        function distribuirPedido(clienteId, quantidadeTotal) {
+            const galoesParaGratis = configuracoes.galoesParaGratis || 10;
+            const gratisJaDisponiveis = verificarFidelidade(clienteId);
+            let ciclo = contarGaloesPagosCicloAtual(clienteId);
+            let pagos = 0;
+            let gratis = 0;
+            let entregues = 0; // total de galões já "alocados" neste pedido
+
+            // 1) Usa grátis já disponíveis antes de começar a contar pagamentos
+            const gratisIniciais = Math.min(gratisJaDisponiveis, quantidadeTotal);
+            gratis += gratisIniciais;
+            entregues += gratisIniciais;
+
+            // 2) Percorre os galões restantes um a um: cada um é pago,
+            //    e ao completar o ciclo de 10, o PRÓXIMO galão do pedido é grátis
+            while (entregues < quantidadeTotal) {
+                // Este galão é pago
+                pagos++;
+                ciclo++;
+                entregues++;
+
+                // Completou o ciclo? O próximo galão (se houver) é grátis
+                if (ciclo >= galoesParaGratis && entregues < quantidadeTotal) {
+                    gratis++;
+                    ciclo = 0; // reinicia ciclo
+                    entregues++; // galão grátis entregue
+                } else if (ciclo >= galoesParaGratis) {
+                    // Completou o ciclo mas não há mais galões neste pedido
+                    // O grátis fica disponível para o próximo pedido (verificarFidelidade vai capturar)
+                    ciclo = 0;
+                }
+            }
+
+            return { galoesPagos: pagos, galoesGratis: gratis };
         }
 
         async function verificarECriarPedidosGratis(clienteId, quantidadePedida = 1) {
@@ -3567,7 +3692,11 @@ Estamos sempre à disposição! 🙏`,
                 }
                 
                 const cliente = clientes.find(c => c.id === clienteId);
-                alert(`🎉 GALÃO GRÁTIS!\n\nO cliente ${cliente?.nome} tinha ${galoesGratisDevidos} galão(s) grátis disponível(s)!\n\n${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`);
+                toast(`🎉 GALÃO GRÁTIS!
+
+O cliente ${cliente?.nome} tinha ${galoesGratisDevidos} galão(s) grátis disponível(s)!
+
+${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`, 'info');
             }
         }
 
@@ -3611,16 +3740,8 @@ Estamos sempre à disposição! 🙏`,
 
             } catch (error) {
                 console.error('❌ Erro ao criar pedido grátis:', error);
-                alert('❌ Erro ao criar pedido grátis. Tente novamente.');
+                toast('❌ Erro ao criar pedido grátis. Tente novamente.', 'error');
             }
-        }
-
-        function proximaCompraGratis(clienteId) {
-            const galoesPagosCicloAtual = contarGaloesPagosCicloAtual(clienteId);
-            const galoesParaGratis = configuracoes.galoesParaGratis || 10;
-            
-            // Galões faltantes para completar o ciclo atual e ganhar grátis
-            return Math.max(0, galoesParaGratis - galoesPagosCicloAtual);
         }
 
         function calcularValorTotal() {
@@ -3887,7 +4008,7 @@ Estamos sempre à disposição! 🙏`,
                     const cliente = clientes.find(c => c.nome === clienteNome);
                     
                     if (!cliente) {
-                        alert('⚠️ Cliente não encontrado!');
+                        toast('⚠️ Cliente não encontrado!', 'warning');
                         return;
                     }
                     
@@ -3920,11 +4041,11 @@ Estamos sempre à disposição! 🙏`,
                     form.reset();
                     currentEmprestimoData = null;
                     
-                    alert('✅ Galão emprestado com sucesso!');
+                    toast('✅ Galão emprestado com sucesso!', 'success');
                     
                 } catch (error) {
                     console.error('❌ Erro ao emprestar galão:', error);
-                    alert('❌ Erro ao emprestar galão. Tente novamente.');
+                    toast('❌ Erro ao emprestar galão. Tente novamente.', 'error');
                 }
             });
             
@@ -3940,7 +4061,7 @@ Estamos sempre à disposição! 🙏`,
             if (!stockData) return;
             
             if ((stockData.cheio || 0) === 0 && (stockData.vazio || 0) === 0) {
-                alert('⚠️ Não há galões disponíveis para emprestar nesta data!');
+                toast('⚠️ Não há galões disponíveis para emprestar nesta data!', 'warning');
                 return;
             }
             
@@ -3959,7 +4080,7 @@ Estamos sempre à disposição! 🙏`,
             const { dataGalao, status } = currentContextMenuData;
             
             if (status !== 'cheio' && status !== 'vazio') {
-                alert('⚠️ Só é possível emprestar galões cheios ou vazios!');
+                toast('⚠️ Só é possível emprestar galões cheios ou vazios!', 'warning');
                 return;
             }
             
@@ -3992,11 +4113,11 @@ Estamos sempre à disposição! 🙏`,
                 
                 await atualizarEstoque(emprestimo.dataGalao, updateData);
                 
-                alert('✅ Galão marcado como devolvido!');
+                toast('✅ Galão marcado como devolvido!', 'success');
                 
             } catch (error) {
                 console.error('❌ Erro ao marcar como devolvido:', error);
-                alert('❌ Erro ao marcar como devolvido. Tente novamente.');
+                toast('❌ Erro ao marcar como devolvido. Tente novamente.', 'error');
             }
         }
 
@@ -4005,7 +4126,7 @@ Estamos sempre à disposição! 🙏`,
             try {
                 const pedido = pedidos.find(p => p.id === pedidoId);
                 if (!pedido) {
-                    alert('❌ Pedido não encontrado!');
+                    toast('❌ Pedido não encontrado!', 'error');
                     return;
                 }
 
@@ -4044,11 +4165,11 @@ Estamos sempre à disposição! 🙏`,
                 updateVisualizacaoEstoque();
                 updateDashboard();
                 
-                alert('✅ Galão marcado como devolvido e devolvido ao estoque!');
+                toast('✅ Galão marcado como devolvido e devolvido ao estoque!', 'success');
                 
             } catch (error) {
                 console.error('❌ Erro ao marcar galão emprestado como devolvido:', error);
-                alert('❌ Erro ao marcar como devolvido. Tente novamente.');
+                toast('❌ Erro ao marcar como devolvido. Tente novamente.', 'error');
             }
         }
 
@@ -4323,7 +4444,7 @@ Estamos sempre à disposição! 🙏`,
         async function excluirPedido(pedidoId) {
             const pedido = pedidos.find(p => p.id === pedidoId);
             if (!pedido) {
-                alert('❌ Pedido não encontrado!');
+                toast('❌ Pedido não encontrado!', 'error');
                 return;
             }
 
@@ -4343,7 +4464,7 @@ Estamos sempre à disposição! 🙏`,
                 updateVisualizacaoEstoque();
                 updateGaloesEmprestados();
                 saveLocalData();
-                alert('✅ Pedido excluído com sucesso! Estoque atualizado automaticamente.');
+                toast('✅ Pedido excluído com sucesso! Estoque atualizado automaticamente.', 'success');
                 return;
             }
 
@@ -4371,11 +4492,11 @@ Estamos sempre à disposição! 🙏`,
                 updateVisualizacaoEstoque();
                 updateGaloesEmprestados();
                 
-                alert('✅ Pedido excluído com sucesso! Estoque atualizado automaticamente.');
+                toast('✅ Pedido excluído com sucesso! Estoque atualizado automaticamente.', 'success');
                 
             } catch (error) {
                 console.error('❌ Erro ao excluir pedido:', error);
-                alert('❌ Erro ao excluir pedido. Tente novamente.');
+                toast('❌ Erro ao excluir pedido. Tente novamente.', 'error');
                 throw error;
             }
         }
@@ -4497,27 +4618,12 @@ Estamos sempre à disposição! 🙏`,
             }
 
             try {
-                console.log('🔄 Atualizando estoque:', { dataGalao, dadosEstoque });
-                
-                const { doc, setDoc, getDoc } = window.firebaseUtils;
+                const { doc, setDoc } = window.firebaseUtils;
                 const estoqueDocRef = doc(window.db, 'estoque', dataGalao.replace(/[-\/]/g, '_'));
                 
-                let dadosExistentes = { cheio: 0, vazio: 0, cliente: 0, emprestado: 0 };
-                
-                try {
-                    const docSnapshot = await getDoc(estoqueDocRef);
-                    if (docSnapshot.exists()) {
-                        dadosExistentes = docSnapshot.data();
-                        console.log('📊 Dados existentes encontrados:', dadosExistentes);
-                    } else {
-                        console.log('📄 Documento não existe, criando novo');
-                    }
-                } catch (getError) {
-                    console.warn('⚠️ Erro ao buscar documento existente, usando dados locais:', getError);
-                    if (estoque[dataGalao]) {
-                        dadosExistentes = estoque[dataGalao];
-                    }
-                }
+                // Usa os dados já em memória (mantidos em tempo real pelo onSnapshot)
+                // Elimina o getDoc avulso que cobrava 1 leitura extra a cada atualização de estoque
+                const dadosExistentes = estoque[dataGalao] || { cheio: 0, vazio: 0, cliente: 0, emprestado: 0 };
                 
                 const dadosCompletos = {
                     cheio: 0,
@@ -4529,8 +4635,6 @@ Estamos sempre à disposição! 🙏`,
                     userId: currentUser.uid,
                     updatedAt: getCurrentDateTime()
                 };
-                
-                console.log('💾 Salvando dados completos:', dadosCompletos);
                 
                 await setDoc(estoqueDocRef, dadosCompletos);
                 
@@ -4726,11 +4830,11 @@ Estamos sempre à disposição! 🙏`,
                     modal.classList.add('hidden');
                     form.reset();
                     document.getElementById('addTelefoneCliente').value = '(33) ';
-                    alert('✅ Cliente adicionado com sucesso!');
+                    toast('✅ Cliente adicionado com sucesso!', 'success');
                     
                 } catch (error) {
                     console.error('❌ Erro ao adicionar cliente:', error);
-                    alert('❌ Erro ao adicionar cliente. Tente novamente.');
+                    toast('❌ Erro ao adicionar cliente. Tente novamente.', 'error');
                 }
             });
             
@@ -4771,11 +4875,11 @@ Estamos sempre à disposição! 🙏`,
                     await atualizarCliente(currentEditingCliente, dadosAtualizacao);
                     modal.classList.add('hidden');
                     currentEditingCliente = null;
-                    alert('✅ Cliente atualizado com sucesso!');
+                    toast('✅ Cliente atualizado com sucesso!', 'success');
                     
                 } catch (error) {
                     console.error('❌ Erro ao atualizar cliente:', error);
-                    alert('❌ Erro ao atualizar cliente. Tente novamente.');
+                    toast('❌ Erro ao atualizar cliente. Tente novamente.', 'error');
                 }
             });
             
@@ -4787,7 +4891,7 @@ Estamos sempre à disposição! 🙏`,
                 if (telefoneAtual && telefoneAtual !== '(33) ') {
                     abrirWhatsApp(telefoneAtual);
                 } else {
-                    alert('⚠️ Cliente não possui telefone cadastrado!');
+                    toast('⚠️ Cliente não possui telefone cadastrado!', 'warning');
                 }
             });
             
@@ -4966,10 +5070,10 @@ Estamos sempre à disposição! 🙏`,
             if (confirm(`⚠️ Tem certeza que deseja excluir o cliente "${cliente.nome}"?\n\nEsta ação não pode ser desfeita.`)) {
                 try {
                     await excluirCliente(clienteId);
-                    alert('✅ Cliente excluído com sucesso!');
+                    toast('✅ Cliente excluído com sucesso!', 'success');
                 } catch (error) {
                     console.error('❌ Erro ao excluir cliente:', error);
-                    alert('❌ Erro ao excluir cliente. Tente novamente.');
+                    toast('❌ Erro ao excluir cliente. Tente novamente.', 'error');
                 }
             }
         }
@@ -5021,7 +5125,7 @@ Estamos sempre à disposição! 🙏`,
                 await saveConfiguracoesFirebase();
                 
                 modal.classList.add('hidden');
-                alert('✅ Configurações salvas com sucesso!');
+                toast('✅ Configurações salvas com sucesso!', 'success');
                 
                 calcularValorTotal();
             });
@@ -5029,19 +5133,21 @@ Estamos sempre à disposição! 🙏`,
             restaurarBtn.addEventListener('click', async () => {
                 if (confirm('⚠️ Tem certeza que deseja restaurar as configurações padrão?')) {
                     configuracoes = {
-                        mensagemPedido: `🪣 *Comercial Rocha*
+                        mensagemPedido: `💧 *Comercial Rocha*
 
-Olá {nome}! 😊
+Olá! 😊
 
 ✅ Sua entrega foi registrada:
 {tipo_pedido}
 📦 Galão entregue: {galao_foi}
 📅 Data: {data}
 
-Obrigado pela confiança! 🙏💧`,
-                        mensagemGratis: `🪣 *Comercial Rocha*
+{fidelidade_info}
 
-Olá {nome}! 😊
+Obrigado pela confiança! 🙏💧`,
+                        mensagemGratis: `💧 *Comercial Rocha*
+
+Olá! 😊
 
 🎉 *PARABÉNS!* 🎉
 Você ganhou um GALÃO GRÁTIS pelo nosso sistema de fidelidade!
@@ -5049,10 +5155,12 @@ Você ganhou um GALÃO GRÁTIS pelo nosso sistema de fidelidade!
 📦 Galão grátis entregue: {galao_foi}
 📅 Data: {data}
 
-Obrigado pela sua fidelidade! 🙏💧`,
-                        mensagemNotificacao: `🪣 *Comercial Rocha*
+{fidelidade_info}
 
-Olá {nome}! 😊
+Obrigado pela sua fidelidade! 🙏💧`,
+                        mensagemNotificacao: `💧 *Comercial Rocha*
+
+Olá! 😊
 
 Sentimos sua falta! 💙
 Já faz alguns dias que você não faz seu pedido de água.
@@ -5081,7 +5189,7 @@ Estamos sempre à disposição! 🙏`,
                     updateBackupStatus();
                     
                     await saveConfiguracoesFirebase();
-                    alert('✅ Configurações restauradas para o padrão!');
+                    toast('✅ Configurações restauradas para o padrão!', 'success');
                 }
             });
             
@@ -5113,14 +5221,14 @@ Estamos sempre à disposição! 🙏`,
                         const dirHandle = await window.showDirectoryPicker();
                         configuracoes.caminhoBackup = dirHandle.name; // Simplificado para demo
                         document.getElementById('configCaminhoBackup').value = configuracoes.caminhoBackup;
-                        alert('✅ Caminho de backup selecionado!');
+                        toast('✅ Caminho de backup selecionado!', 'success');
                     } else {
-                        alert('⚠️ Seleção de pasta não suportada neste navegador. Os backups serão feitos via download.');
+                        toast('⚠️ Seleção de pasta não suportada neste navegador. Os backups serão feitos via download.', 'warning');
                     }
                 } catch (error) {
                     if (error.name !== 'AbortError') {
                         console.error('❌ Erro ao selecionar pasta:', error);
-                        alert('❌ Erro ao selecionar pasta.');
+                        toast('❌ Erro ao selecionar pasta.', 'error');
                     }
                 }
             });
@@ -5128,7 +5236,7 @@ Estamos sempre à disposição! 🙏`,
             limparCaminhoBtn.addEventListener('click', () => {
                 configuracoes.caminhoBackup = '';
                 document.getElementById('configCaminhoBackup').value = '';
-                alert('✅ Caminho de backup limpo!');
+                toast('✅ Caminho de backup limpo!', 'success');
             });
 
             fazerBackupManualBtn.addEventListener('click', async () => {
@@ -5161,7 +5269,7 @@ Estamos sempre à disposição! 🙏`,
             link.click();
             URL.revokeObjectURL(url);
             
-            alert('✅ Dados exportados com sucesso!');
+            toast('✅ Dados exportados com sucesso!', 'success');
         }
 
         function importarDados() {
@@ -5169,7 +5277,7 @@ Estamos sempre à disposição! 🙏`,
             const file = fileInput.files[0];
             
             if (!file) {
-                alert('⚠️ Selecione um arquivo para importar!');
+                toast('⚠️ Selecione um arquivo para importar!', 'warning');
                 return;
             }
             
@@ -5203,11 +5311,11 @@ Estamos sempre à disposição! 🙏`,
                     loadClienteOptionsEmprestimo();
                     
                     document.getElementById('configModal').classList.add('hidden');
-                    alert('✅ Dados importados com sucesso!');
+                    toast('✅ Dados importados com sucesso!', 'success');
                     
                 } catch (error) {
                     console.error('❌ Erro ao importar dados:', error);
-                    alert('❌ Erro ao importar dados. Verifique se o arquivo está correto.');
+                    toast('❌ Erro ao importar dados. Verifique se o arquivo está correto.', 'error');
                 }
             };
             reader.readAsText(file);
@@ -5246,11 +5354,11 @@ Estamos sempre à disposição! 🙏`,
                     await atualizarEstoque(currentEditingEstoque, dadosAtualizacao);
                     modal.classList.add('hidden');
                     currentEditingEstoque = null;
-                    alert('✅ Estoque atualizado com sucesso!');
+                    toast('✅ Estoque atualizado com sucesso!', 'success');
                     
                 } catch (error) {
                     console.error('❌ Erro ao atualizar estoque:', error);
-                    alert('❌ Erro ao atualizar estoque. Tente novamente.');
+                    toast('❌ Erro ao atualizar estoque. Tente novamente.', 'error');
                 }
             });
 
@@ -5262,10 +5370,10 @@ Estamos sempre à disposição! 🙏`,
                         await excluirEstoque(currentEditingEstoque);
                         modal.classList.add('hidden');
                         currentEditingEstoque = null;
-                        alert('✅ Estoque excluído com sucesso!');
+                        toast('✅ Estoque excluído com sucesso!', 'success');
                     } catch (error) {
                         console.error('❌ Erro ao excluir estoque:', error);
-                        alert('❌ Erro ao excluir estoque. Tente novamente.');
+                        toast('❌ Erro ao excluir estoque. Tente novamente.', 'error');
                     }
                 }
             });
@@ -5338,7 +5446,7 @@ Estamos sempre à disposição! 🙏`,
                 });
                 
                 if (selectedGaloes.length === 0) {
-                    alert('⚠️ Selecione pelo menos um galão do estoque!');
+                    toast('⚠️ Selecione pelo menos um galão do estoque!', 'warning');
                     return;
                 }
                 
@@ -5371,11 +5479,11 @@ Estamos sempre à disposição! 🙏`,
                     updateGaloesEmprestados();
                     updateDashboard();
                     
-                    alert('✅ Envio confirmado com sucesso!');
+                    toast('✅ Envio confirmado com sucesso!', 'success');
                     
                 } catch (error) {
                     console.error('❌ Erro ao confirmar envio:', error);
-                    alert('❌ Erro ao confirmar envio. Tente novamente.');
+                    toast('❌ Erro ao confirmar envio. Tente novamente.', 'error');
                 }
             });
             
@@ -5445,11 +5553,11 @@ Estamos sempre à disposição! 🙏`,
                     
                     modal.classList.add('hidden');
                     currentPedidoForReceive = null;
-                    alert('✅ Galões recebidos com sucesso!');
+                    toast('✅ Galões recebidos com sucesso!', 'success');
                     
                 } catch (error) {
                     console.error('❌ Erro ao receber galões:', error);
-                    alert('❌ Erro ao receber galões. Tente novamente.');
+                    toast('❌ Erro ao receber galões. Tente novamente.', 'error');
                 }
             });
             
@@ -5516,11 +5624,11 @@ Estamos sempre à disposição! 🙏`,
                     
                     modal.classList.add('hidden');
                     currentEditingPedido = null;
-                    alert('✅ Pedido atualizado com sucesso!');
+                    toast('✅ Pedido atualizado com sucesso!', 'success');
                     
                 } catch (error) {
                     console.error('❌ Erro ao atualizar pedido:', error);
-                    alert('❌ Erro ao atualizar pedido. Tente novamente.');
+                    toast('❌ Erro ao atualizar pedido. Tente novamente.', 'error');
                 }
             });
             
@@ -5545,10 +5653,10 @@ Estamos sempre à disposição! 🙏`,
                         await excluirPedido(currentEditingPedido);
                         modal.classList.add('hidden');
                         currentEditingPedido = null;
-                        alert('✅ Pedido excluído com sucesso!');
+                        toast('✅ Pedido excluído com sucesso!', 'success');
                     } catch (error) {
                         console.error('❌ Erro ao excluir pedido:', error);
-                        alert('❌ Erro ao excluir pedido. Tente novamente.');
+                        toast('❌ Erro ao excluir pedido. Tente novamente.', 'error');
                     }
                 }
             });
@@ -5632,7 +5740,6 @@ Estamos sempre à disposição! 🙏`,
                     try {
                         const formaPagamento = selectedOption.getAttribute('data-payment');
                         
-                        // NOVO: Se for fidelidade, marcar como grátis
                         let updateData = {
                             pago: true,
                             formaPagamento: formaPagamento,
@@ -5644,9 +5751,12 @@ Estamos sempre à disposição! 🙏`,
                             updateData.valorTotal = 0;
                         }
                         
-                        await atualizarPedido(currentPedidoForPayment.id, updateData);
+                        // Guardar referência antes de limpar o estado
+                        const pedidoConfirmado = currentPedidoForPayment;
                         
-                        const cliente = clientes.find(c => c.id == currentPedidoForPayment.clienteId);
+                        await atualizarPedido(pedidoConfirmado.id, updateData);
+                        
+                        const cliente = clientes.find(c => c.id == pedidoConfirmado.clienteId);
                         if (cliente) {
                             await atualizarCliente(cliente.id, {
                                 ultimaCompra: getCurrentDateTime()
@@ -5658,10 +5768,18 @@ Estamos sempre à disposição! 🙏`,
                         document.getElementById('fidelidadeInfo').classList.add('hidden');
                         currentPedidoForPayment = null;
                         
-                        alert('✅ Pagamento registrado com sucesso!');
+                        // Oferecer envio de WhatsApp se o cliente tiver telefone
+                        if (cliente && cliente.telefone) {
+                            if (confirm('✅ Pagamento registrado!\n\nDeseja enviar a mensagem de confirmação pelo WhatsApp?')) {
+                                enviarMensagemPedido(pedidoConfirmado.clienteId, pedidoConfirmado.id);
+                            }
+                        } else {
+                            toast('✅ Pagamento registrado com sucesso!', 'success');
+                        }
+                        
                     } catch (error) {
                         console.error('❌ Erro ao registrar pagamento:', error);
-                        alert('❌ Erro ao registrar pagamento. Tente novamente.');
+                        toast('❌ Erro ao registrar pagamento. Tente novamente.', 'error');
                     }
                 }
             });
@@ -5824,7 +5942,21 @@ Estamos sempre à disposição! 🙏`,
 
         function abrirWhatsApp(telefone, mensagem = '') {
             const numeroLimpo = telefone.replace(/\D/g, '');
-            const url = `https://wa.me/55${numeroLimpo}${mensagem ? `?text=${encodeURIComponent(mensagem)}` : ''}`;
+            const texto = mensagem ? encodeURIComponent(mensagem) : '';
+
+            // wa.me no PC redireciona para o WhatsApp Web e re-encoda a URL,
+            // corrompendo emojis. Usando web.whatsapp.com diretamente evita o redirecionamento.
+            const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+            
+            let url;
+            if (isMobileDevice) {
+                // No celular: wa.me abre o app diretamente sem problema
+                url = `https://wa.me/55${numeroLimpo}${texto ? `?text=${texto}` : ''}`;
+            } else {
+                // No PC: web.whatsapp.com não faz redirecionamento, emojis chegam corretos
+                url = `https://web.whatsapp.com/send?phone=55${numeroLimpo}${texto ? `&text=${texto}` : ''}`;
+            }
+
             window.open(url, '_blank');
         }
 
@@ -5842,20 +5974,11 @@ Estamos sempre à disposição! 🙏`,
                 const quantidadeVazios = parseInt(document.getElementById('quantidadeGaloesVazios').value) || 0;
                 const valorUnitario = configuracoes.precoGalao || 15.00;
                 
-                // Calculate the correct distribution of paid vs free jugs
-                const galoesPagosAtuais = contarGaloesPagos(clienteId);
-                const galoesGratisDisponiveis = verificarFidelidade(clienteId);
-                const galoesGratisParaEstesPedido = calcularGaloesGratisParaEstesPedido(clienteId, quantidade);
-                
-                // First use available free jugs, then apply newly earned ones
-                let galoesGratisParaUsar = Math.min(galoesGratisDisponiveis, quantidade);
-                
-                // Then see how many new free jugs can be applied in this order
-                const galoesRestantesParaPagar = quantidade - galoesGratisParaUsar;
-                const novosGaloesGratisParaUsar = Math.min(galoesGratisParaEstesPedido, galoesRestantesParaPagar);
-                galoesGratisParaUsar += novosGaloesGratisParaUsar;
-                
-                const galoesPagos = quantidade - galoesGratisParaUsar;
+                // Distribuição correta: usa grátis disponíveis + calcula grátis ganhos neste pedido
+                const dist = distribuirPedido(clienteId, quantidade);
+                const galoesPagos = dist.galoesPagos;
+                const galoesGratisParaUsar = dist.galoesGratis;
+                const galoesGratisParaEstesPedido = galoesGratisParaUsar; // para exibição no alert
                 
                 // Calculate the correct total value (only charge for paid jugs)
                 const valorTotal = galoesPagos * valorUnitario;
@@ -5883,7 +6006,11 @@ Estamos sempre à disposição! 🙏`,
                     
                     const pedidoId = await salvarPedido(pedidoGratisUnico);
                     
-                    alert(`🎉 GALÃO GRÁTIS!\n\nO cliente ${cliente?.nome} usou 1 galão grátis!\n\nNenhum valor a pagar.`);
+                    toast(`🎉 GALÃO GRÁTIS!
+
+O cliente ${cliente?.nome} usou 1 galão grátis!
+
+Nenhum valor a pagar.`, 'info');
                 } else {
                     // Lógica original para múltiplos galões ou quando há galões pagos
                     const pedido = {
@@ -5929,7 +6056,7 @@ Estamos sempre à disposição! 🙏`,
                         
                         alertMessage += `\n\nTotal a pagar: R$ ${valorTotal.toFixed(2)}`;
                         
-                        alert(alertMessage);
+                        toast(alertMessage, 'info', 6000);
                     }
                 }
                 
@@ -5941,11 +6068,11 @@ Estamos sempre à disposição! 🙏`,
                 document.getElementById('quantidadeGaloesVazios').value = '0';
                 calcularValorTotal();
                 
-                alert('✅ Pedido registrado com sucesso!');
+                toast('✅ Pedido registrado com sucesso!', 'success');
                 
             } catch (error) {
                 console.error('❌ Erro ao registrar pedido:', error);
-                alert('❌ Erro ao registrar pedido. Tente novamente.');
+                toast('❌ Erro ao registrar pedido. Tente novamente.', 'error');
             } finally {
                         loadingEl.classList.add('hidden');
             }
@@ -6359,12 +6486,12 @@ Estamos sempre à disposição! 🙏`,
                 const quantidade = parseInt(document.getElementById('novaQuantidadeGaloes').value);
                 
                 if (!dataGalao || !isValidDataFormat(dataGalao)) {
-                    alert('⚠️ Por favor, insira uma data válida no formato MM-AAAA (ex: 03-2024)!');
+                    toast('⚠️ Por favor, insira uma data válida no formato MM-AAAA (ex: 03-2024)!', 'warning');
                     return;
                 }
                 
                 if (!quantidade || quantidade < 1) {
-                    alert('⚠️ Por favor, insira uma quantidade válida!');
+                    toast('⚠️ Por favor, insira uma quantidade válida!', 'warning');
                     return;
                 }
                 
@@ -6377,11 +6504,11 @@ Estamos sempre à disposição! 🙏`,
                 document.getElementById('novaDataGalao').value = '';
                 document.getElementById('novaQuantidadeGaloes').value = '1';
                 
-                alert('✅ Galões adicionados ao estoque com sucesso!');
+                toast('✅ Galões adicionados ao estoque com sucesso!', 'success');
                 
             } catch (error) {
                 console.error('❌ Erro ao adicionar galões:', error);
-                alert('❌ Erro ao adicionar galões ao estoque. Tente novamente.');
+                toast('❌ Erro ao adicionar galões ao estoque. Tente novamente.', 'error');
             } finally {
                 loadingEl.classList.add('hidden');
             }
@@ -6563,7 +6690,6 @@ Estamos sempre à disposição! 🙏`,
             let clientesHtml = '';
             clientesList.forEach(cliente => {
                 const ultimaCompra = cliente.ultimaCompra ? formatLocalDate(cliente.ultimaCompra) : 'Nunca';
-                const mensagemWhatsApp = gerarMensagemNotificacao(cliente.nome);
                 
                 clientesHtml += `
                     <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg mb-2">
@@ -6573,7 +6699,7 @@ Estamos sempre à disposição! 🙏`,
                             ${cliente.telefone ? `<p class="text-sm text-gray-500 dark:text-gray-500">${cliente.telefone}</p>` : ''}
                         </div>
                         ${cliente.telefone ? `
-                            <button onclick="abrirWhatsApp('${cliente.telefone}', '${encodeURIComponent(mensagemWhatsApp)}')" 
+                            <button onclick="enviarNotificacaoWhatsApp('${cliente.id}')"
                                 class="btn-modern bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-sm">
                                 📱 WhatsApp
                             </button>
@@ -6601,9 +6727,9 @@ Estamos sempre à disposição! 🙏`,
         }
 
         function gerarMensagemNotificacao(nomeCliente) {
-            let mensagem = configuracoes.mensagemNotificacao || `🪣 *Comercial Rocha*
+            let mensagem = configuracoes.mensagemNotificacao || `💧 *Comercial Rocha*
 
-Olá {nome}! 😊
+Olá! 😊
 
 Sentimos sua falta! 💙
 Já faz alguns dias que você não faz seu pedido de água.
@@ -6612,8 +6738,107 @@ Já faz alguns dias que você não faz seu pedido de água.
 📞 Entre em contato conosco para agendar sua próxima entrega!
 
 Estamos sempre à disposição! 🙏`;
+
+            // Sanitiza emojis incompatíveis com Android antigo independente do Firebase
+            mensagem = mensagem.replaceAll('🪣', '💧');
+            // Normaliza cumprimento: "Olá {nome}!" → "Olá!"
+            mensagem = mensagem.replace(/Ol[aá][,!]?\s*\{nome\}\s*[!,]?/g, 'Olá!');
             
             return mensagem.replace(/{nome}/g, nomeCliente);
+        }
+
+        function enviarNotificacaoWhatsApp(clienteId) {
+            const cliente = clientes.find(c => c.id == clienteId);
+            if (!cliente || !cliente.telefone) return;
+            // Monta a mensagem na hora do clique — sem encode prévio, sem duplo encode
+            const mensagem = gerarMensagemNotificacao(cliente.nome);
+            abrirWhatsApp(cliente.telefone, mensagem);
+        }
+
+        function enviarMensagemPedido(clienteId, pedidoId) {
+            const pedido = pedidos.find(p => p.id === pedidoId);
+            const cliente = clientes.find(c => c.id == clienteId);
+            if (!pedido || !cliente) {
+                toast('❌ Pedido ou cliente não encontrado.', 'error');
+                return;
+            }
+            if (!cliente.telefone) {
+                toast('⚠️ Este cliente não possui telefone cadastrado.', 'warning');
+                return;
+            }
+
+            const isGratis = pedido.isGratis;
+            const galoesParaGratis = configuracoes.galoesParaGratis || 10;
+
+            // Posição atual no ciclo (já inclui este pedido, pois foi salvo)
+            const progressoCicloAtual = contarGaloesPagosCicloAtual(clienteId);
+
+            // Quantos grátis foram ganhos/usados neste pedido
+            const galoesGratisNestePedido = isGratis ? 1 : (pedido.galoesGratis || 0);
+            const ganhouGratisAgora = galoesGratisNestePedido > 0;
+
+            // Grátis pendentes disponíveis (para próxima compra)
+            const gratisDisponivelProxima = verificarFidelidade(clienteId) > 0;
+
+            // Galões faltando para o próximo grátis
+            const faltamParaGratis = proximaCompraGratis(clienteId);
+
+            // Montar texto de fidelidade
+            let fidelidadeInfo = '';
+            if (ganhouGratisAgora) {
+                const plural = galoesGratisNestePedido > 1 ? `${galoesGratisNestePedido} GALÕES GRÁTIS` : `um GALÃO GRÁTIS`;
+                fidelidadeInfo = `🎉 *Você ganhou ${plural} nesta compra!*\n🏆 Obrigado pela sua fidelidade!\n💧 Faltam *${faltamParaGratis}* compra(s) para o próximo grátis.`;
+            } else if (gratisDisponivelProxima) {
+                fidelidadeInfo = `🎉 *Parabéns! Você completou ${galoesParaGratis} compras!*\n🎁 Seu próximo galão é *GRÁTIS*! Aproveite!`;
+            } else {
+                if (faltamParaGratis === 1) {
+                    fidelidadeInfo = `🎯 *Fidelidade:* ${progressoCicloAtual}/${galoesParaGratis} compras\n⭐ Falta apenas *1 compra* para ganhar o seu GALÃO GRÁTIS! 🎉`;
+                } else if (faltamParaGratis <= 3) {
+                    fidelidadeInfo = `🎯 *Fidelidade:* ${progressoCicloAtual}/${galoesParaGratis} compras\n🔥 Faltam apenas *${faltamParaGratis} compras* para ganhar o seu GALÃO GRÁTIS!`;
+                } else {
+                    fidelidadeInfo = `🎯 *Fidelidade:* ${progressoCicloAtual}/${galoesParaGratis} compras\n💧 Faltam *${faltamParaGratis} compras* para ganhar o próximo galão grátis.`;
+                }
+            }
+
+            // Galão entregue
+            const galaoFoi = pedido.galoesEntregues && pedido.galoesEntregues.length > 0
+                ? pedido.galoesEntregues.join(', ')
+                : 'A confirmar';
+
+            // Tipo do pedido
+            const tipoPedido = isGratis
+                ? `🎁 *Galão GRÁTIS* (Fidelidade)`
+                : `💧 *${pedido.quantidade || 1} galão(es)* - R$ ${(pedido.valorTotal || 0).toFixed(2)}`;
+
+            // Data formatada
+            const dataFormatada = pedido.dataIda ? formatLocalDate(pedido.dataIda) : formatLocalDate(getCurrentDateLocal());
+
+            // Escolher template base e sanitizar emojis incompatíveis com Android antigo
+            let templateBase = isGratis
+                ? (configuracoes.mensagemGratis || '')
+                : (configuracoes.mensagemPedido || '');
+
+            // Garante que emojis novos (Unicode 13+) não apareçam como caracteres estranhos
+            // independente do que estiver salvo no Firebase
+            templateBase = templateBase.replaceAll('🪣', '💧');
+            // Normaliza cumprimento: "Olá {nome}!" → "Olá!"
+            templateBase = templateBase.replace(/Ol[aá][,!]?\s*\{nome\}\s*[!,]?/g, 'Olá!');
+
+            // Substituir todas as variáveis, incluindo variável legada {mensagem_fidelidade}
+            let mensagem = templateBase
+                .replace(/{nome}/g, cliente.nome)
+                .replace(/{tipo_pedido}/g, tipoPedido)
+                .replace(/{galao_foi}/g, galaoFoi)
+                .replace(/{data}/g, dataFormatada)
+                .replace(/{fidelidade_info}/g, fidelidadeInfo)
+                .replace(/{mensagem_fidelidade}/g, fidelidadeInfo); // compatibilidade com template antigo
+
+            // Se o template não tiver nenhuma variável de fidelidade, adicionar ao final
+            if (!templateBase.includes('{fidelidade_info}') && !templateBase.includes('{mensagem_fidelidade}')) {
+                mensagem += `\n\n${fidelidadeInfo}`;
+            }
+
+            abrirWhatsApp(cliente.telefone, mensagem);
         }
 
         // Relatórios
@@ -6634,14 +6859,14 @@ Estamos sempre à disposição! 🙏`;
         function gerarRelatorioDiario() {
             const data = document.getElementById('dataDiario').value;
             if (!data) {
-                alert('⚠️ Selecione uma data!');
+                toast('⚠️ Selecione uma data!', 'warning');
                 return;
             }
             
             const pedidosDia = pedidos.filter(p => p.pago && isSameDate(p.dataIda, data));
             
             if (pedidosDia.length === 0) {
-                alert('⚠️ Nenhuma venda encontrada para esta data!');
+                toast('⚠️ Nenhuma venda encontrada para esta data!', 'warning');
                 return;
             }
             
@@ -6735,14 +6960,14 @@ Estamos sempre à disposição! 🙏`;
         function gerarRelatorioMensal() {
             const mesAno = document.getElementById('mesMensal').value;
             if (!mesAno) {
-                alert('⚠️ Selecione um mês!');
+                toast('⚠️ Selecione um mês!', 'warning');
                 return;
             }
             
             const pedidosMes = pedidos.filter(p => p.pago && isSameMonth(p.dataIda, mesAno));
             
             if (pedidosMes.length === 0) {
-                alert('⚠️ Nenhuma venda encontrada para este mês!');
+                toast('⚠️ Nenhuma venda encontrada para este mês!', 'warning');
                 return;
             }
             
@@ -6851,7 +7076,7 @@ Estamos sempre à disposição! 🙏`;
             });
             
             if (pedidosAno.length === 0) {
-                alert(`⚠️ Nenhuma venda encontrada para o ano ${anoAtual}!`);
+                toast(`⚠️ Nenhuma venda encontrada para o ano ${anoAtual}!`, 'warning');
                 return;
             }
             
@@ -6958,20 +7183,20 @@ Estamos sempre à disposição! 🙏`;
         function gerarRelatorioCliente() {
             const clienteId = document.getElementById('clienteRelatorio').value;
             if (!clienteId) {
-                alert('⚠️ Selecione um cliente!');
+                toast('⚠️ Selecione um cliente!', 'warning');
                 return;
             }
             
             const cliente = clientes.find(c => c.id == clienteId);
             if (!cliente) {
-                alert('⚠️ Cliente não encontrado!');
+                toast('⚠️ Cliente não encontrado!', 'warning');
                 return;
             }
             
             const pedidosCliente = pedidos.filter(p => p.clienteId == clienteId && p.pago);
             
             if (pedidosCliente.length === 0) {
-                alert('⚠️ Nenhuma compra encontrada para este cliente!');
+                toast('⚠️ Nenhuma compra encontrada para este cliente!', 'warning');
                 return;
             }
             
@@ -7118,7 +7343,7 @@ Estamos sempre à disposição! 🙏`;
             const rankingArray = Object.values(rankingData).sort((a, b) => b.totalGaloes - a.totalGaloes);
             
             if (rankingArray.length === 0) {
-                alert('⚠️ Nenhuma venda encontrada!');
+                toast('⚠️ Nenhuma venda encontrada!', 'warning');
                 return;
             }
             
@@ -7232,7 +7457,7 @@ Estamos sempre à disposição! 🙏`;
             });
             
             if (clientesData.length === 0) {
-                alert('⚠️ Nenhum cliente encontrado!');
+                toast('⚠️ Nenhum cliente encontrado!', 'warning');
                 return;
             }
             
@@ -7342,7 +7567,7 @@ Estamos sempre à disposição! 🙏`;
             });
             
             if (clientesOrdenados.length === 0) {
-                alert('⚠️ Nenhum cliente encontrado!');
+                toast('⚠️ Nenhum cliente encontrado!', 'warning');
                 return;
             }
             
@@ -7419,7 +7644,7 @@ Estamos sempre à disposição! 🙏`;
                 const tables = tempDiv.querySelectorAll('table');
                 
                 if (tables.length === 0) {
-                    alert('⚠️ Não há tabela para exportar neste relatório.');
+                    toast('⚠️ Não há tabela para exportar neste relatório.', 'warning');
                     return;
                 }
                 
@@ -7454,7 +7679,7 @@ Estamos sempre à disposição! 🙏`;
                 
             } catch (error) {
                 console.error('❌ Erro ao exportar Excel:', error);
-                alert('❌ Erro ao exportar. Tente novamente.');
+                toast('❌ Erro ao exportar. Tente novamente.', 'error');
             }
         }
 
@@ -7537,7 +7762,7 @@ Estamos sempre à disposição! 🙏`;
                 
             } catch (error) {
                 console.error('❌ Erro ao gerar PDF:', error);
-                alert('❌ Erro ao gerar PDF. Verifique se a biblioteca está carregada.');
+                toast('❌ Erro ao gerar PDF. Verifique se a biblioteca está carregada.', 'error');
             }
         }
     </script>
