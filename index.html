@@ -1479,6 +1479,20 @@ window.firebaseLoaded = true;
                         <button id="clearCache" class="btn-modern w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700">
                             🗑️ Limpar Cache do App
                         </button>
+                        <div class="admin-only" id="migracaoFidelidadeSection">
+                            <hr class="border-gray-300 dark:border-gray-600 my-2">
+                            <p class="text-xs text-gray-500 mb-2">⚡ <strong>Passo 1:</strong> Migra os totais de fidelidade para os clientes, reduzindo leituras em ~80%. Rode <strong>uma única vez</strong>.</p>
+                            <button id="btnMigrarFidelidade" class="btn-modern w-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700">
+                                ⚡ Migrar Fidelidade (Admin)
+                            </button>
+                            <p id="migracaoStatus" class="text-xs text-center mt-2 hidden"></p>
+                            <hr class="border-gray-300 dark:border-gray-600 my-2 mt-3">
+                            <p class="text-xs text-gray-500 mb-2">🪣 <strong>Passo 2:</strong> Migra galões emprestados dos pedidos para a coleção de empréstimos — ficam permanentes e não somem com o filtro de 90 dias. Rode <strong>uma única vez</strong>.</p>
+                            <button id="btnMigrarEmprestimos" class="btn-modern w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700">
+                                🪣 Migrar Empréstimos (Admin)
+                            </button>
+                            <p id="migracaoEmprestimosStatus" class="text-xs text-center mt-2 hidden"></p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2780,7 +2794,7 @@ Estamos sempre à disposição! 🙏`,
         function setupOptimizedFirebaseListeners() {
             if (!window.db || !window.firebaseUtils || !currentUser || isOfflineMode) return;
 
-            const { collection, onSnapshot, orderBy, query, doc } = window.firebaseUtils;
+            const { collection, onSnapshot, orderBy, query, where, doc } = window.firebaseUtils;
 
             // Estratégia de leituras mínimas com UI instantânea:
             // hasPendingWrites=true → escrita local ainda não confirmada pelo servidor.
@@ -2810,8 +2824,24 @@ Estamos sempre à disposição! 🙏`,
                 updateConnectionStatus('❌ Erro', 'error');
             });
 
-            // Pedidos
-            const pedidosQuery = query(collection(window.db, 'pedidos'), orderBy('data', 'desc'));
+            // Pedidos — se a migração de fidelidade já foi feita, filtra os últimos 90 dias
+            // (reduz leituras em ~80%). Antes da migração, carrega tudo para garantir fidelidade correta.
+            let pedidosQuery;
+            const fidelidadeMigrada = localStorage.getItem('fidelidadeMigrada') === 'true';
+            if (fidelidadeMigrada) {
+                const _90diasAtras = new Date();
+                _90diasAtras.setDate(_90diasAtras.getDate() - 90);
+                const _90diasStr = _90diasAtras.toISOString().split('T')[0];
+                pedidosQuery = query(
+                    collection(window.db, 'pedidos'),
+                    where('data', '>=', _90diasStr),
+                    orderBy('data', 'desc')
+                );
+                console.log('⚡ Filtro de 90 dias ativo (fidelidade migrada)');
+            } else {
+                pedidosQuery = query(collection(window.db, 'pedidos'), orderBy('data', 'desc'));
+                console.log('📋 Carregando todos os pedidos (migração pendente)');
+            }
             pedidosListener = onSnapshot(pedidosQuery, (snapshot) => {
                 pedidos = [];
                 snapshot.forEach((d) => { pedidos.push({ id: d.id, ...d.data() }); });
@@ -3574,15 +3604,29 @@ Estamos sempre à disposição! 🙏`,
         // Ciclo: paga 1..10 → 11ª é grátis → reinicia → paga 1..10 → ...
         // ============================================================
 
+        // ─── FIDELIDADE: lê campos acumulados do cliente (galoesPagosTotais / galoesGratisTotais).
+        // Se os campos ainda não existirem (antes da migração), recalcula do array pedidos como fallback.
+
         // Total de galões pagos de todos os tempos
         function contarGaloesPagos(clienteId) {
+            const cliente = clientes.find(c => c.id === clienteId);
+            if (cliente && typeof cliente.galoesPagosTotais === 'number') {
+                return cliente.galoesPagosTotais;
+            }
+            // fallback: recalcula do array (antes da migração ou offline)
+            // Filtra pago:true para não contar pedidos ainda pendentes de pagamento
             return pedidos
-                .filter(p => p.clienteId === clienteId && !p.isGratis)
+                .filter(p => p.clienteId === clienteId && !p.isGratis && p.pago === true)
                 .reduce((total, p) => total + (p.galoesPagos || p.quantidade || 1), 0);
         }
 
         // Total de galões grátis já recebidos
         function contarGaloesGratisRecebidos(clienteId) {
+            const cliente = clientes.find(c => c.id === clienteId);
+            if (cliente && typeof cliente.galoesGratisTotais === 'number') {
+                return cliente.galoesGratisTotais;
+            }
+            // fallback: recalcula do array (antes da migração ou offline)
             return pedidos
                 .filter(p => p.clienteId === clienteId && p.isGratis && p.pago)
                 .reduce((total, p) => total + (p.quantidade || 1), 0);
@@ -4121,52 +4165,51 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
             }
         }
 
-        // Nova função para marcar galões emprestados de pedidos como devolvidos
+        // Nova função para marcar galões emprestados de pedidos como devolvidos.
+        // Atualiza o pedido, marca o documento de empréstimo na coleção e atualiza o estoque.
         async function marcarDevolvidoPedido(pedidoId, dataGalao) {
             try {
+                // Marca o documento de empréstimo na coleção (origem única de verdade)
+                const emprestimo = emprestimos.find(e =>
+                    e.pedidoId === pedidoId && e.dataGalao === dataGalao && !e.devolvido
+                );
+                if (emprestimo) {
+                    await atualizarEmprestimo(emprestimo.id, {
+                        devolvido: true,
+                        dataDevolucao: getCurrentDateTime()
+                    });
+                }
+
+                // Mantém o pedido atualizado também (compatibilidade)
                 const pedido = pedidos.find(p => p.id === pedidoId);
-                if (!pedido) {
-                    toast('❌ Pedido não encontrado!', 'error');
-                    return;
-                }
-
-                // Remove o galão da lista de emprestados do pedido
-                if (pedido.galoesEmprestados) {
-                    pedido.galoesEmprestados = pedido.galoesEmprestados.filter(g => g !== dataGalao);
-                }
-
-                // Atualiza o pedido no banco de dados
-                if (isOfflineMode) {
-                    const pedidoIndex = pedidos.findIndex(p => p.id === pedidoId);
-                    if (pedidoIndex !== -1) {
-                        pedidos[pedidoIndex] = pedido;
-                        addToPendingSync('update_pedido', 'pedidos', pedido);
-                        saveLocalData();
+                if (pedido && pedido.galoesEmprestados) {
+                    const novosEmprestados = pedido.galoesEmprestados.filter(g => g !== dataGalao);
+                    if (isOfflineMode) {
+                        const idx = pedidos.findIndex(p => p.id === pedidoId);
+                        if (idx !== -1) {
+                            pedidos[idx].galoesEmprestados = novosEmprestados;
+                            addToPendingSync('update_pedido', 'pedidos', pedidos[idx]);
+                            saveLocalData();
+                        }
+                    } else {
+                        await atualizarPedido(pedidoId, { galoesEmprestados: novosEmprestados });
                     }
-                } else {
-                    await atualizarPedido(pedidoId, { galoesEmprestados: pedido.galoesEmprestados });
                 }
 
                 // Atualiza o estoque - devolve o galão
                 const estoqueAtual = estoque[dataGalao] || { cheio: 0, vazio: 0, cliente: 0, emprestado: 0 };
-                const currentEmprestado = estoqueAtual.emprestado || 0;
-                const currentCheio = estoqueAtual.cheio || 0;
-                
-                const updateData = {
-                    cheio: currentCheio + 1, // Galão devolvido vira cheio
-                    emprestado: Math.max(0, currentEmprestado - 1)
-                };
-                
-                await atualizarEstoque(dataGalao, updateData);
-                
-                // Atualiza as listas
+                await atualizarEstoque(dataGalao, {
+                    cheio: (estoqueAtual.cheio || 0) + 1,
+                    emprestado: Math.max(0, (estoqueAtual.emprestado || 0) - 1)
+                });
+
                 updateGaloesEmprestados();
                 updateListaPedidos();
                 updateVisualizacaoEstoque();
                 updateDashboard();
-                
+
                 toast('✅ Galão marcado como devolvido e devolvido ao estoque!', 'success');
-                
+
             } catch (error) {
                 console.error('❌ Erro ao marcar galão emprestado como devolvido:', error);
                 toast('❌ Erro ao marcar como devolvido. Tente novamente.', 'error');
@@ -4181,18 +4224,25 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
             // Empréstimos diretos do estoque
             const emprestimosAtivos = emprestimos.filter(e => !e.devolvido);
             
-            // CORRIGIDO: Galões emprestados de pedidos - pegando de galoesEmprestados ao invés de galoesEntregues
+            // Galões emprestados de pedidos — só incluídos se NÃO tiverem doc na coleção.
+            // Após a migração de empréstimos, todos terão doc na coleção e esta lista ficará vazia,
+            // evitando exibição duplicada.
             const galoesEmprestadosPedidos = [];
             pedidos.forEach(pedido => {
                 if (pedido.galoesEmprestados && pedido.galoesEmprestados.length > 0 && pedido.detalhesConfirmados) {
                     const cliente = clientes.find(c => c.id === pedido.clienteId);
                     pedido.galoesEmprestados.forEach(galao => {
+                        // Pula se já existe na coleção (evita duplicata pós-migração)
+                        const jaNaColecao = emprestimos.some(e =>
+                            e.pedidoId === pedido.id && e.dataGalao === galao && !e.devolvido
+                        );
+                        if (jaNaColecao) return;
                         galoesEmprestadosPedidos.push({
                             id: `pedido_${pedido.id}_${galao}`,
                             clienteNome: cliente?.nome || 'Cliente não encontrado',
                             dataGalao: galao,
-                            tipo: 'cheio', // Galões emprestados em pedidos são sempre cheios
-                            dataEmprestimo: pedido.dataIda || pedido.data, // CORREÇÃO 3: Usar sempre dataIda (data do envio)
+                            tipo: 'cheio',
+                            dataEmprestimo: pedido.dataIda || pedido.data,
                             observacoes: `Emprestado no pedido de ${formatLocalDate(pedido.dataIda || pedido.data)}`,
                             isPedido: true,
                             pedidoId: pedido.id
@@ -4365,10 +4415,63 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
                     userId: currentUser.uid,
                     data: getCurrentDateTime()
                 });
+
+                // ── Atualiza acumulados de fidelidade no cliente ──
+                // Só incrementa se o pedido já nasce pago (ex: grátis por fidelidade).
+                // Pedidos normais (pago: false) são contados quando o pagamento é confirmado.
+                if (pedidoData.pago === true) {
+                    await _atualizarAcumuladoCliente(pedidoData.clienteId, pedidoData, +1);
+                }
+
                 return docRef.id;
             } catch (error) {
                 console.error('❌ Erro ao salvar pedido:', error);
                 throw error;
+            }
+        }
+
+        // Atualiza os acumulados de fidelidade no cliente usando DELTA (+1 ao criar, -1 ao excluir).
+        // NÃO recalcula do array pedidos — assim funciona corretamente mesmo após o filtro de 90 dias,
+        // quando pedidos antigos não estão mais no array em memória.
+        //
+        // pedidoData: objeto do pedido criado/excluído
+        // delta: +1 ao criar, -1 ao excluir
+        async function _atualizarAcumuladoCliente(clienteId, pedidoData, delta) {
+            if (!clienteId || !pedidoData || !delta || isOfflineMode || !firebaseConnected || !currentUser) return;
+            try {
+                const idx = clientes.findIndex(c => c.id === clienteId);
+                if (idx === -1) return;
+
+                const cliente = clientes[idx];
+
+                // Só atualiza se os campos já existem (pós-migração).
+                // Antes da migração, contarGaloesPagos usa o fallback do array — sem risco.
+                if (typeof cliente.galoesPagosTotais !== 'number') return;
+
+                const galoesDoPedido = pedidoData.galoesPagos || pedidoData.quantidade || 1;
+                const ehGratis = pedidoData.isGratis === true;
+                const ehPago = pedidoData.pago === true;
+
+                let novosPagos = cliente.galoesPagosTotais;
+                let novosGratis = cliente.galoesGratisTotais || 0;
+
+                if (!ehGratis) {
+                    novosPagos = Math.max(0, novosPagos + (delta * galoesDoPedido));
+                } else if (ehPago) {
+                    novosGratis = Math.max(0, novosGratis + (delta * (pedidoData.quantidade || 1)));
+                }
+
+                // Atualiza array local imediatamente
+                clientes[idx].galoesPagosTotais = novosPagos;
+                clientes[idx].galoesGratisTotais = novosGratis;
+
+                // Persiste no Firestore
+                await atualizarCliente(clienteId, {
+                    galoesPagosTotais: novosPagos,
+                    galoesGratisTotais: novosGratis
+                });
+            } catch (err) {
+                console.warn('⚠️ Não foi possível atualizar acumulado de fidelidade:', err);
             }
         }
 
@@ -4485,6 +4588,12 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
 
                 // Update local arrays
                 pedidos = pedidos.filter(p => p.id !== pedidoId);
+
+                // Atualiza acumulados de fidelidade após exclusão (delta -1).
+                // Só decrementa se o pedido estava pago (apenas pedidos pagos foram contados).
+                if (pedido.pago === true) {
+                    await _atualizarAcumuladoCliente(pedido.clienteId, pedido, -1);
+                }
                 
                 // CORREÇÃO 1: Update all displays IMMEDIATELY
                 updateListaPedidos();
@@ -4915,7 +5024,9 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
                 const cliente = clientes.find(c => c.id === currentEditingCliente);
                 if (cliente) {
                     if (confirm(`⚠️ Tem certeza que deseja excluir o cliente "${cliente.nome}"?\n\nEsta ação não pode ser desfeita!`)) {
-                        excluirCliente(currentEditingCliente);
+                        excluirCliente(currentEditingCliente).catch(err => {
+                            console.error('❌ Erro ao excluir cliente:', err);
+                        });
                         modal.classList.add('hidden');
                         currentEditingCliente = null;
                     }
@@ -5247,6 +5358,39 @@ Estamos sempre à disposição! 🙏`,
             testarBackupAutoBtn.addEventListener('click', () => {
                 mostrarNotificacaoBackup(configuracoes.ultimoBackup ? formatLocalDate(configuracoes.ultimoBackup) : 'Nunca');
             });
+
+            // Botões de migração (admin only)
+            const btnMigrar = document.getElementById('btnMigrarFidelidade');
+            if (btnMigrar) {
+                btnMigrar.addEventListener('click', () => migrarFidelidade());
+            }
+            const btnMigrarEmp = document.getElementById('btnMigrarEmprestimos');
+            if (btnMigrarEmp) {
+                btnMigrarEmp.addEventListener('click', () => migrarEmprestimos());
+            }
+
+            // Mostra seção de migração só para admin
+            const migracaoSection = document.getElementById('migracaoFidelidadeSection');
+            if (migracaoSection && currentUser?.email === 'adm@comercialrocha.com') {
+                migracaoSection.classList.add('admin-active');
+                // Mostra status das migrações já realizadas
+                if (localStorage.getItem('fidelidadeMigrada') === 'true') {
+                    const statusEl = document.getElementById('migracaoStatus');
+                    if (statusEl) {
+                        statusEl.classList.remove('hidden');
+                        statusEl.className = 'text-xs text-center mt-2 text-green-600 font-bold';
+                        statusEl.textContent = '✅ Já realizada neste dispositivo.';
+                    }
+                }
+                if (localStorage.getItem('emprestimosMigrados') === 'true') {
+                    const statusEl = document.getElementById('migracaoEmprestimosStatus');
+                    if (statusEl) {
+                        statusEl.classList.remove('hidden');
+                        statusEl.className = 'text-xs text-center mt-2 text-green-600 font-bold';
+                        statusEl.textContent = '✅ Já realizada neste dispositivo.';
+                    }
+                }
+            }
         }
 
         function exportarDados() {
@@ -5519,7 +5663,8 @@ Estamos sempre à disposição! 🙏`,
                 });
                 
                 try {
-                    await atualizarPedido(currentPedidoForReceive.id, {
+                    const pedidoParaReceber = currentPedidoForReceive;
+                    await atualizarPedido(pedidoParaReceber.id, {
                         galoesVindos: galoesVindos,
                         galoesEmprestados: galoesVindosEmprestados, // Salvar quais foram emprestados
                         galoesRecebidos: true
@@ -5538,12 +5683,35 @@ Estamos sempre à disposição! 🙏`,
                     }
                     
                     // Processar galões emprestados para o estoque
-                    galoesVindosEmprestados.forEach(dataGalao => {
+                    for (const dataGalao of galoesVindosEmprestados) {
                         const currentEmprestado = estoque[dataGalao]?.emprestado || 0;
-                        atualizarEstoque(dataGalao, {
+                        await atualizarEstoque(dataGalao, {
                             emprestado: currentEmprestado + 1
                         });
-                    });
+                    }
+
+                    // Cria documentos na coleção emprestimos para cada galão emprestado
+                    // Assim ficam independentes do pedido e não somem com o filtro de 90 dias
+                    const clienteEmprestimo = clientes.find(c => c.id === pedidoParaReceber.clienteId);
+                    for (const dataGalao of galoesVindosEmprestados) {
+                        // Evita duplicata: só cria se não existir ainda
+                        const jaExiste = emprestimos.some(e =>
+                            e.pedidoId === pedidoParaReceber.id && e.dataGalao === dataGalao && !e.devolvido
+                        );
+                        if (!jaExiste) {
+                            await salvarEmprestimo({
+                                clienteId: pedidoParaReceber.clienteId,
+                                clienteNome: clienteEmprestimo?.nome || '',
+                                dataGalao: dataGalao,
+                                tipo: 'cheio',
+                                observacoes: `Emprestado no pedido de ${formatLocalDate(pedidoParaReceber.dataIda || pedidoParaReceber.data)}`,
+                                devolvido: false,
+                                dataEmprestimo: pedidoParaReceber.dataIda || getCurrentDateLocal(),
+                                dataDevolucao: null,
+                                pedidoId: pedidoParaReceber.id  // referência ao pedido de origem
+                            });
+                        }
+                    }
                     
                     // CORREÇÃO 2: Atualizar interface IMEDIATAMENTE após marcar galões como emprestados
                     updateGaloesEmprestados();
@@ -5615,8 +5783,47 @@ Estamos sempre à disposição! 🙏`,
                         observacoes: document.getElementById('editPedidoObservacoes').value
                     };
                     
+                    const pedidoEditado = pedidos.find(p => p.id === currentEditingPedido);
                     await atualizarPedido(currentEditingPedido, dadosAtualizacao);
-                    
+
+                    // Sincroniza galões emprestados com a coleção emprestimos
+                    if (pedidoEditado) {
+                        const clienteEdit = clientes.find(c => c.id === pedidoEditado.clienteId);
+                        for (const dataGalao of galoesEmprestados) {
+                            const jaExiste = emprestimos.some(e =>
+                                e.pedidoId === currentEditingPedido && e.dataGalao === dataGalao && !e.devolvido
+                            );
+                            if (!jaExiste) {
+                                await salvarEmprestimo({
+                                    clienteId: pedidoEditado.clienteId,
+                                    clienteNome: clienteEdit?.nome || '',
+                                    dataGalao: dataGalao,
+                                    tipo: 'cheio',
+                                    observacoes: `Emprestado no pedido de ${formatLocalDate(pedidoEditado.dataIda || pedidoEditado.data)}`,
+                                    devolvido: false,
+                                    dataEmprestimo: pedidoEditado.dataIda || getCurrentDateLocal(),
+                                    dataDevolucao: null,
+                                    pedidoId: currentEditingPedido
+                                });
+                            }
+                        }
+                        // Marca como devolvido galões que foram removidos da lista
+                        const anteriores = pedidoEditado.galoesEmprestados || [];
+                        for (const dataGalao of anteriores) {
+                            if (!galoesEmprestados.includes(dataGalao)) {
+                                const emp = emprestimos.find(e =>
+                                    e.pedidoId === currentEditingPedido && e.dataGalao === dataGalao && !e.devolvido
+                                );
+                                if (emp) {
+                                    await atualizarEmprestimo(emp.id, {
+                                        devolvido: true,
+                                        dataDevolucao: getCurrentDateTime()
+                                    });
+                                }
+                            }
+                        }
+                    }
+
                     // MELHORIA 4: Atualizar interface imediatamente
                     updateGaloesEmprestados();
                     updateDashboard();
@@ -5762,6 +5969,11 @@ Estamos sempre à disposição! 🙏`,
                                 ultimaCompra: getCurrentDateTime()
                             });
                         }
+
+                        // Atualiza acumulados de fidelidade ao confirmar pagamento
+                        // O pedido acabou de ser pago: aplica delta +1 com os dados finais
+                        const pedidoFinalizado = { ...pedidoConfirmado, ...updateData };
+                        await _atualizarAcumuladoCliente(pedidoConfirmado.clienteId, pedidoFinalizado, +1);
                         
                         modal.classList.add('hidden');
                         paymentOptions.forEach(opt => opt.classList.remove('selected'));
@@ -5926,18 +6138,21 @@ Estamos sempre à disposição! 🙏`,
             const cliente = clientes.find(c => c.id == clienteId);
             if (!cliente) return false;
             
-            // Check direct loans from stock
-            const emprestimosAtivos = emprestimos.filter(e => !e.devolvido && e.clienteNome === cliente.nome);
-            
-            // Check borrowed jugs from orders
-            const galoesEmprestadosPedidos = pedidos.filter(pedido => 
+            // Verifica na coleção de empréstimos (fonte principal após migração)
+            const emprestimosAtivos = emprestimos.filter(e => !e.devolvido && e.clienteId == clienteId);
+            if (emprestimosAtivos.length > 0) return true;
+
+            // Fallback: verifica no array de pedidos (antes da migração de empréstimos)
+            return pedidos.some(pedido => 
                 pedido.clienteId == clienteId && 
                 pedido.galoesEmprestados && 
                 pedido.galoesEmprestados.length > 0 && 
-                pedido.detalhesConfirmados
+                pedido.detalhesConfirmados &&
+                // Só considera se não tem doc na coleção (evita falso positivo pós-migração)
+                !pedido.galoesEmprestados.every(g =>
+                    emprestimos.some(e => e.pedidoId === pedido.id && e.dataGalao === g)
+                )
             );
-            
-            return emprestimosAtivos.length > 0 || galoesEmprestadosPedidos.length > 0;
         }
 
         function abrirWhatsApp(telefone, mensagem = '') {
@@ -6842,16 +7057,130 @@ Estamos sempre à disposição! 🙏`;
         }
 
         // Relatórios
-        function gerarRelatorio(tipo) {
+
+        // ================================================================
+        // BUSCA HISTÓRICA — usada pelos relatórios quando o filtro de 90 dias
+        // está ativo e o período solicitado pode estar fora do array em memória.
+        // Faz getDocs pontual apenas quando necessário (não é listener).
+        // ================================================================
+
+        // Retorna pedidos para um mês específico (formato 'YYYY-MM').
+        // Se o mês estiver dentro dos 90 dias em memória, usa o array.
+        // Caso contrário, busca no Firestore via getDocs.
+        async function _getPedidosMes(mesAno) {
+            const fidelidadeMigrada = localStorage.getItem('fidelidadeMigrada') === 'true';
+            if (!fidelidadeMigrada) return pedidos; // antes da migração: usa array completo
+
+            const [ano, mes] = mesAno.split('-').map(Number);
+            const inicioMes = new Date(ano, mes - 1, 1);
+            const _90diasAtras = new Date();
+            _90diasAtras.setDate(_90diasAtras.getDate() - 90);
+
+            // Mês dentro do intervalo em memória → usa array
+            if (inicioMes >= _90diasAtras) return pedidos;
+
+            // Mês fora do intervalo → getDocs pontual
+            if (!window.db || !window.firebaseUtils || isOfflineMode) return pedidos;
+
+            try {
+                const { collection, query, where, orderBy, getDocs } = window.firebaseUtils;
+                const inicio = `${ano}-${String(mes).padStart(2,'0')}-01`;
+                const fimMes = new Date(ano, mes, 0); // último dia do mês
+                const fim = `${ano}-${String(mes).padStart(2,'0')}-${String(fimMes.getDate()).padStart(2,'0')}`;
+                const q = query(
+                    collection(window.db, 'pedidos'),
+                    where('data', '>=', inicio),
+                    where('data', '<=', fim + 'T23:59:59.999Z'),
+                    orderBy('data', 'desc')
+                );
+                const snap = await getDocs(q);
+                const resultado = [];
+                snap.forEach(d => resultado.push({ id: d.id, ...d.data() }));
+                console.log(`📋 Buscou ${resultado.length} pedidos históricos para ${mesAno}`);
+                return resultado;
+            } catch (err) {
+                console.warn('⚠️ Erro ao buscar pedidos históricos, usando array:', err);
+                return pedidos;
+            }
+        }
+
+        // Retorna pedidos para um ano específico.
+        // Se o ano for o atual e já tiver 90 dias cobertos, usa getDocs do início do ano.
+        async function _getPedidosAno(ano) {
+            const fidelidadeMigrada = localStorage.getItem('fidelidadeMigrada') === 'true';
+            if (!fidelidadeMigrada) return pedidos;
+
+            const inicioAno = new Date(ano, 0, 1);
+            const _90diasAtras = new Date();
+            _90diasAtras.setDate(_90diasAtras.getDate() - 90);
+
+            // Se início do ano está dentro dos 90 dias, array já tem tudo
+            if (inicioAno >= _90diasAtras) return pedidos;
+
+            if (!window.db || !window.firebaseUtils || isOfflineMode) return pedidos;
+
+            try {
+                const { collection, query, where, orderBy, getDocs } = window.firebaseUtils;
+                const q = query(
+                    collection(window.db, 'pedidos'),
+                    where('data', '>=', `${ano}-01-01`),
+                    where('data', '<=', `${ano}-12-31T23:59:59.999Z`),
+                    orderBy('data', 'desc')
+                );
+                const snap = await getDocs(q);
+                const resultado = [];
+                snap.forEach(d => resultado.push({ id: d.id, ...d.data() }));
+                console.log(`📋 Buscou ${resultado.length} pedidos históricos para ${ano}`);
+                return resultado;
+            } catch (err) {
+                console.warn('⚠️ Erro ao buscar pedidos históricos anuais, usando array:', err);
+                return pedidos;
+            }
+        }
+
+        // Retorna todos os pedidos de um cliente (histórico completo).
+        async function _getPedidosCliente(clienteId) {
+            const fidelidadeMigrada = localStorage.getItem('fidelidadeMigrada') === 'true';
+            if (!fidelidadeMigrada) return pedidos.filter(p => p.clienteId == clienteId);
+
+            if (!window.db || !window.firebaseUtils || isOfflineMode) {
+                return pedidos.filter(p => p.clienteId == clienteId);
+            }
+
+            try {
+                const { collection, query, where, orderBy, getDocs } = window.firebaseUtils;
+                const q = query(
+                    collection(window.db, 'pedidos'),
+                    where('clienteId', '==', clienteId),
+                    orderBy('data', 'desc')
+                );
+                const snap = await getDocs(q);
+                const resultado = [];
+                snap.forEach(d => resultado.push({ id: d.id, ...d.data() }));
+                console.log(`📋 Buscou ${resultado.length} pedidos históricos do cliente ${clienteId}`);
+                return resultado;
+            } catch (err) {
+                // Se o erro for de índice faltando, orienta o usuário
+                if (err.code === 'failed-precondition' || (err.message && err.message.includes('index'))) {
+                    console.warn('⚠️ Índice composto necessário. Verifique o console do Firebase para criar: pedidos(clienteId ASC, data DESC)');
+                    toast('⚠️ Para relatório completo do cliente, crie o índice no Firebase Console (link no console do navegador).', 'warning', 6000);
+                } else {
+                    console.warn('⚠️ Erro ao buscar pedidos do cliente, usando array:', err);
+                }
+                return pedidos.filter(p => p.clienteId == clienteId);
+            }
+        }
+
+        async function gerarRelatorio(tipo) {
             switch (tipo) {
                 case 'diario':
                     gerarRelatorioDiario();
                     break;
                 case 'mensal':
-                    gerarRelatorioMensal();
+                    await gerarRelatorioMensal();
                     break;
                 case 'anual':
-                    gerarRelatorioAnual();
+                    await gerarRelatorioAnual();
                     break;
             }
         }
@@ -6957,17 +7286,22 @@ Estamos sempre à disposição! 🙏`;
             document.getElementById('resultadosRelatorio').classList.remove('hidden');
         }
 
-        function gerarRelatorioMensal() {
+        async function gerarRelatorioMensal() {
             const mesAno = document.getElementById('mesMensal').value;
             if (!mesAno) {
                 toast('⚠️ Selecione um mês!', 'warning');
                 return;
             }
-            
-            const pedidosMes = pedidos.filter(p => p.pago && isSameMonth(p.dataIda, mesAno));
+
+            document.getElementById('conteudoRelatorio').innerHTML = '<p class="text-center text-gray-500 py-8">⏳ Carregando dados...</p>';
+            document.getElementById('resultadosRelatorio').classList.remove('hidden');
+
+            const todosOsPedidos = await _getPedidosMes(mesAno);
+            const pedidosMes = todosOsPedidos.filter(p => p.pago && isSameMonth(p.dataIda, mesAno));
             
             if (pedidosMes.length === 0) {
                 toast('⚠️ Nenhuma venda encontrada para este mês!', 'warning');
+                document.getElementById('resultadosRelatorio').classList.add('hidden');
                 return;
             }
             
@@ -7067,9 +7401,14 @@ Estamos sempre à disposição! 🙏`;
             document.getElementById('resultadosRelatorio').classList.remove('hidden');
         }
 
-        function gerarRelatorioAnual() {
+        async function gerarRelatorioAnual() {
             const anoAtual = new Date().getFullYear();
-            const pedidosAno = pedidos.filter(p => {
+
+            document.getElementById('conteudoRelatorio').innerHTML = '<p class="text-center text-gray-500 py-8">⏳ Carregando dados...</p>';
+            document.getElementById('resultadosRelatorio').classList.remove('hidden');
+
+            const todosOsPedidos = await _getPedidosAno(anoAtual);
+            const pedidosAno = todosOsPedidos.filter(p => {
                 if (!p.pago) return false;
                 const dataVenda = createLocalDate(p.dataIda);
                 return dataVenda.getFullYear() === anoAtual;
@@ -7077,6 +7416,7 @@ Estamos sempre à disposição! 🙏`;
             
             if (pedidosAno.length === 0) {
                 toast(`⚠️ Nenhuma venda encontrada para o ano ${anoAtual}!`, 'warning');
+                document.getElementById('resultadosRelatorio').classList.add('hidden');
                 return;
             }
             
@@ -7180,7 +7520,7 @@ Estamos sempre à disposição! 🙏`;
             document.getElementById('resultadosRelatorio').classList.remove('hidden');
         }
 
-        function gerarRelatorioCliente() {
+        async function gerarRelatorioCliente() {
             const clienteId = document.getElementById('clienteRelatorio').value;
             if (!clienteId) {
                 toast('⚠️ Selecione um cliente!', 'warning');
@@ -7192,11 +7532,16 @@ Estamos sempre à disposição! 🙏`;
                 toast('⚠️ Cliente não encontrado!', 'warning');
                 return;
             }
-            
-            const pedidosCliente = pedidos.filter(p => p.clienteId == clienteId && p.pago);
+
+            document.getElementById('conteudoRelatorio').innerHTML = '<p class="text-center text-gray-500 py-8">⏳ Carregando dados...</p>';
+            document.getElementById('resultadosRelatorio').classList.remove('hidden');
+
+            const todosPedidosCliente = await _getPedidosCliente(clienteId);
+            const pedidosCliente = todosPedidosCliente.filter(p => p.pago);
             
             if (pedidosCliente.length === 0) {
                 toast('⚠️ Nenhuma compra encontrada para este cliente!', 'warning');
+                document.getElementById('resultadosRelatorio').classList.add('hidden');
                 return;
             }
             
@@ -7311,6 +7656,7 @@ Estamos sempre à disposição! 🙏`;
 
         function gerarRelatorioRanking() {
             const rankingData = {};
+            const fidelidadeMigrada = localStorage.getItem('fidelidadeMigrada') === 'true';
             
             clientes.forEach(cliente => {
                 const pedidosCliente = pedidos.filter(p => p.clienteId == cliente.id && p.pago);
@@ -7349,6 +7695,7 @@ Estamos sempre à disposição! 🙏`;
             
             let relatorioHtml = `
                 <h3 class="text-xl font-bold mb-4">🥇 Ranking de Galões por Cliente</h3>
+                ${fidelidadeMigrada ? '<p class="text-xs text-orange-500 mb-3">⚠️ Ranking baseado nos últimos 90 dias (após otimização de leituras).</p>' : ''}
                 
                 <div class="overflow-x-auto">
                     <table class="w-full border-collapse border border-gray-300 dark:border-gray-600">
@@ -7428,19 +7775,23 @@ Estamos sempre à disposição! 🙏`;
         function gerarRelatorioUltimaCompra() {
             const clientesData = [];
             
+            // Usa cliente.ultimaCompra — campo sempre atualizado a cada pedido,
+            // independente do filtro de 90 dias no listener de pedidos.
             clientes.forEach(cliente => {
-                const pedidosCliente = pedidos.filter(p => p.clienteId == cliente.id && p.pago);
-                let ultimaCompraData = null;
-                
-                if (pedidosCliente.length > 0) {
-                    const pedidosOrdenados = pedidosCliente.sort((a, b) => {
-                        const dataA = new Date(a.data);
-                        const dataB = new Date(b.data);
-                        return dataB - dataA;
-                    });
-                    ultimaCompraData = pedidosOrdenados[0].data;
+                // Prioridade 1: campo ultimaCompra no documento do cliente (sempre atual)
+                // Prioridade 2: pedidos em memória (fallback para clientes sem o campo)
+                let ultimaCompraData = cliente.ultimaCompra || null;
+
+                if (!ultimaCompraData) {
+                    const pedidosCliente = pedidos.filter(p => p.clienteId == cliente.id && p.pago);
+                    if (pedidosCliente.length > 0) {
+                        const pedidosOrdenados = pedidosCliente.sort((a, b) =>
+                            new Date(b.data) - new Date(a.data)
+                        );
+                        ultimaCompraData = pedidosOrdenados[0].data;
+                    }
                 }
-                
+
                 clientesData.push({
                     nome: cliente.nome,
                     telefone: cliente.telefone || '',
@@ -7634,6 +7985,202 @@ Estamos sempre à disposição! 🙏`;
             
             document.getElementById('conteudoRelatorio').innerHTML = relatorioHtml;
             document.getElementById('resultadosRelatorio').classList.remove('hidden');
+        }
+
+
+
+        // ================================================================
+        // MIGRAÇÃO DE EMPRÉSTIMOS — roda uma única vez pelo admin
+        // Lê todos os pedidos que têm galoesEmprestados não vazios
+        // e cria documentos na coleção emprestimos para cada um,
+        // evitando duplicatas (checa se já existe).
+        // ================================================================
+        async function migrarEmprestimos() {
+            if (isOfflineMode || !firebaseConnected || !currentUser) {
+                toast('⚠️ Conecte-se ao Firebase antes de migrar.', 'warning');
+                return;
+            }
+            if (currentUser.email !== 'adm@comercialrocha.com') {
+                toast('⚠️ Apenas o admin pode executar a migração.', 'warning');
+                return;
+            }
+
+            const statusEl = document.getElementById('migracaoEmprestimosStatus');
+            const btnEl = document.getElementById('btnMigrarEmprestimos');
+
+            if (!confirm('🪣 Isso vai buscar todos os pedidos com galões emprestados e criar documentos na coleção de empréstimos.\n\nNada será apagado — apenas novos documentos serão criados onde necessário.\n\nContinuar?')) return;
+
+            btnEl.disabled = true;
+            btnEl.textContent = '⏳ Migrando...';
+            statusEl.classList.remove('hidden');
+            statusEl.className = 'text-xs text-center mt-2 text-blue-600';
+            statusEl.textContent = 'Buscando pedidos com galões emprestados...';
+
+            // Busca TODOS os pedidos diretamente do Firestore
+            let todosPedidos = [];
+            try {
+                const { collection, query, orderBy, getDocs } = window.firebaseUtils;
+                const q = query(collection(window.db, 'pedidos'), orderBy('data', 'desc'));
+                const snap = await getDocs(q);
+                snap.forEach(d => todosPedidos.push({ id: d.id, ...d.data() }));
+            } catch (err) {
+                statusEl.className = 'text-xs text-center mt-2 text-red-600 font-bold';
+                statusEl.textContent = '❌ Erro ao buscar pedidos. Tente novamente.';
+                btnEl.disabled = false;
+                btnEl.textContent = '🪣 Migrar Empréstimos (Admin)';
+                return;
+            }
+
+            // Filtra pedidos que têm galoesEmprestados não vazios
+            const pedidosComEmprestimo = todosPedidos.filter(p =>
+                p.galoesEmprestados && p.galoesEmprestados.length > 0
+            );
+
+            statusEl.textContent = `${pedidosComEmprestimo.length} pedidos com empréstimos encontrados. Criando documentos...`;
+
+            let criados = 0, ignorados = 0, erros = 0;
+
+            for (const pedido of pedidosComEmprestimo) {
+                const cliente = clientes.find(c => c.id === pedido.clienteId);
+                for (const dataGalao of pedido.galoesEmprestados) {
+                    try {
+                        // Verifica se já existe na coleção (evita duplicata)
+                        const jaExiste = emprestimos.some(e =>
+                            e.pedidoId === pedido.id && e.dataGalao === dataGalao
+                        );
+                        if (jaExiste) {
+                            ignorados++;
+                            continue;
+                        }
+                        await salvarEmprestimo({
+                            clienteId: pedido.clienteId,
+                            clienteNome: cliente?.nome || 'Desconhecido',
+                            dataGalao: dataGalao,
+                            tipo: 'cheio',
+                            observacoes: `Emprestado no pedido de ${formatLocalDate(pedido.dataIda || pedido.data)}`,
+                            devolvido: false,
+                            dataEmprestimo: pedido.dataIda || pedido.data || getCurrentDateLocal(),
+                            dataDevolucao: null,
+                            pedidoId: pedido.id
+                        });
+                        criados++;
+                    } catch (err) {
+                        console.error('❌ Erro ao migrar empréstimo:', pedido.id, dataGalao, err);
+                        erros++;
+                    }
+                }
+                statusEl.textContent = `Criados: ${criados} | Já existiam: ${ignorados} | Erros: ${erros}`;
+            }
+
+            if (erros === 0) {
+                statusEl.className = 'text-xs text-center mt-2 text-green-600 font-bold';
+                statusEl.textContent = `✅ Concluído! ${criados} criados, ${ignorados} já existiam.`;
+                btnEl.textContent = '✅ Migração concluída';
+                localStorage.setItem('emprestimosMigrados', 'true');
+                toast(`✅ Empréstimos migrados! ${criados} novos documentos criados.`, 'success', 6000);
+            } else {
+                statusEl.className = 'text-xs text-center mt-2 text-orange-600 font-bold';
+                statusEl.textContent = `⚠️ ${criados} ok, ${erros} com erro. Verifique o console.`;
+                btnEl.disabled = false;
+                btnEl.textContent = '🪣 Migrar Empréstimos (Admin)';
+            }
+        }
+
+        // ================================================================
+        // MIGRAÇÃO DE FIDELIDADE — roda uma única vez pelo admin
+        // Calcula galoesPagosTotais e galoesGratisTotais para cada cliente
+        // usando TODOS os pedidos históricos (carregados no array pedidos).
+        // Após migrar todos os clientes, ativa o filtro de 90 dias no listener.
+        // ================================================================
+        async function migrarFidelidade() {
+            if (isOfflineMode || !firebaseConnected || !currentUser) {
+                toast('⚠️ Conecte-se ao Firebase antes de migrar.', 'warning');
+                return;
+            }
+            if (currentUser.email !== 'adm@comercialrocha.com') {
+                toast('⚠️ Apenas o admin pode executar a migração.', 'warning');
+                return;
+            }
+
+            const statusEl = document.getElementById('migracaoStatus');
+            const btnEl = document.getElementById('btnMigrarFidelidade');
+
+            if (!confirm('⚡ Isso vai recalcular os totais de fidelidade de todos os clientes buscando TODOS os pedidos históricos diretamente do Firebase.\n\nOs dados atuais NÃO serão apagados — apenas dois campos novos serão adicionados.\n\nContinuar?')) return;
+
+            btnEl.disabled = true;
+            btnEl.textContent = '⏳ Migrando...';
+            statusEl.classList.remove('hidden');
+            statusEl.className = 'text-xs text-center mt-2 text-blue-600';
+            statusEl.textContent = 'Buscando TODOS os pedidos históricos do Firebase...';
+
+            // Busca TODOS os pedidos diretamente do Firestore via getDocs
+            // Não depende do array em memória — garante histórico completo independente do filtro
+            let todosPedidosHistoricos = [];
+            try {
+                const { collection, query, orderBy, getDocs } = window.firebaseUtils;
+                const q = query(collection(window.db, 'pedidos'), orderBy('data', 'desc'));
+                const snap = await getDocs(q);
+                snap.forEach(d => todosPedidosHistoricos.push({ id: d.id, ...d.data() }));
+                statusEl.textContent = `${todosPedidosHistoricos.length} pedidos carregados. Calculando fidelidade...`;
+            } catch (err) {
+                console.error('❌ Erro ao buscar pedidos históricos:', err);
+                statusEl.className = 'text-xs text-center mt-2 text-red-600 font-bold';
+                statusEl.textContent = '❌ Erro ao buscar pedidos. Tente novamente.';
+                btnEl.disabled = false;
+                btnEl.textContent = '⚡ Migrar Fidelidade (Admin)';
+                return;
+            }
+
+            let ok = 0, erros = 0;
+            const total = clientes.length;
+
+            for (const cliente of clientes) {
+                try {
+                    // Usa TODOS os pedidos históricos buscados acima — não o array em memória
+                    // Conta apenas pedidos PAGOS e NÃO grátis para galoesPagosTotais
+                    const galoesPagosTotais = todosPedidosHistoricos
+                        .filter(p => p.clienteId === cliente.id && !p.isGratis && p.pago === true)
+                        .reduce((t, p) => t + (p.galoesPagos || p.quantidade || 1), 0);
+
+                    // Conta pedidos grátis pagos para galoesGratisTotais
+                    const galoesGratisTotais = todosPedidosHistoricos
+                        .filter(p => p.clienteId === cliente.id && p.isGratis === true && p.pago === true)
+                        .reduce((t, p) => t + (p.quantidade || 1), 0);
+
+                    // Atualiza array local
+                    const idx = clientes.findIndex(c => c.id === cliente.id);
+                    if (idx !== -1) {
+                        clientes[idx].galoesPagosTotais = galoesPagosTotais;
+                        clientes[idx].galoesGratisTotais = galoesGratisTotais;
+                    }
+
+                    // Persiste no Firestore
+                    await atualizarCliente(cliente.id, { galoesPagosTotais, galoesGratisTotais });
+                    ok++;
+                    statusEl.textContent = `Migrando ${ok}/${total} clientes...`;
+                } catch (err) {
+                    console.error('❌ Erro ao migrar cliente:', cliente.id, err);
+                    erros++;
+                }
+            }
+
+            if (erros === 0) {
+                statusEl.className = 'text-xs text-center mt-2 text-green-600 font-bold';
+                statusEl.textContent = `✅ Migração concluída! ${ok} clientes atualizados.`;
+                btnEl.textContent = '✅ Migração concluída';
+
+                // Salva flag no localStorage para ativar filtro de 90 dias
+                localStorage.setItem('fidelidadeMigrada', 'true');
+
+                toast(`✅ Migração concluída! ${ok} clientes atualizados.
+
+O app agora usa acumulados de fidelidade. Recarregue a página para ativar o filtro de 90 dias nos pedidos.`, 'success', 8000);
+            } else {
+                statusEl.className = 'text-xs text-center mt-2 text-orange-600 font-bold';
+                statusEl.textContent = `⚠️ ${ok} ok, ${erros} com erro. Verifique o console.`;
+                btnEl.disabled = false;
+                btnEl.textContent = '⚡ Migrar Fidelidade (Admin)';
+            }
         }
 
         function exportarParaExcel(titulo) {
