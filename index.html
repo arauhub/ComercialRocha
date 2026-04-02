@@ -2320,6 +2320,9 @@ window.firebaseLoaded = true;
         let pedidos = [];
         let estoque = {};
         let emprestimos = [];
+        // Cache em memória para _getPedidosCliente — evita leituras repetidas no Firebase.
+        // Invalidado sempre que um pedido do cliente é criado, atualizado ou excluído.
+        const _cachePedidosCliente = {};
         let currentPedidoForPayment = null;
         let currentPedidoForDetails = null;
         let currentPedidoForReceive = null;
@@ -2824,20 +2827,21 @@ Estamos sempre à disposição! 🙏`,
                 updateConnectionStatus('❌ Erro', 'error');
             });
 
-            // Pedidos — se a migração de fidelidade já foi feita, filtra os últimos 90 dias
-            // (reduz leituras em ~80%). Antes da migração, carrega tudo para garantir fidelidade correta.
+            // Pedidos — se a migração de fidelidade já foi feita, filtra os últimos 30 dias
+            // (reduz leituras em ~67% vs 90 dias). Antes da migração, carrega tudo para garantir fidelidade correta.
+            // Pedidos mais antigos continuam acessíveis via relatórios (getDocs pontual).
             let pedidosQuery;
             const fidelidadeMigrada = localStorage.getItem('fidelidadeMigrada') === 'true';
             if (fidelidadeMigrada) {
-                const _90diasAtras = new Date();
-                _90diasAtras.setDate(_90diasAtras.getDate() - 90);
-                const _90diasStr = _90diasAtras.toISOString().split('T')[0];
+                const _30diasAtras = new Date();
+                _30diasAtras.setDate(_30diasAtras.getDate() - 30);
+                const _30diasStr = _30diasAtras.toISOString().split('T')[0];
                 pedidosQuery = query(
                     collection(window.db, 'pedidos'),
-                    where('data', '>=', _90diasStr),
+                    where('data', '>=', _30diasStr),
                     orderBy('data', 'desc')
                 );
-                console.log('⚡ Filtro de 90 dias ativo (fidelidade migrada)');
+                console.log('⚡ Filtro de 30 dias ativo (fidelidade migrada)');
             } else {
                 pedidosQuery = query(collection(window.db, 'pedidos'), orderBy('data', 'desc'));
                 console.log('📋 Carregando todos os pedidos (migração pendente)');
@@ -4416,6 +4420,9 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
                     data: getCurrentDateTime()
                 });
 
+                // ✅ CACHE: invalida cache do cliente para refletir o novo pedido
+                delete _cachePedidosCliente[pedidoData.clienteId];
+
                 // ── Atualiza acumulados de fidelidade no cliente ──
                 // Só incrementa se o pedido já nasce pago (ex: grátis por fidelidade).
                 // Pedidos normais (pago: false) são contados quando o pagamento é confirmado.
@@ -4480,6 +4487,8 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
                 const pedidoIndex = pedidos.findIndex(p => p.id === pedidoId);
                 if (pedidoIndex !== -1) {
                     const dataOriginal = pedidos[pedidoIndex].dataIda;
+                    // ✅ CACHE: invalida cache do cliente antes de modificar (offline)
+                    delete _cachePedidosCliente[pedidos[pedidoIndex].clienteId];
                     pedidos[pedidoIndex] = { ...pedidos[pedidoIndex], ...dadosAtualizacao };
                     
                     if (!dadosAtualizacao.hasOwnProperty('dataIda')) {
@@ -4526,6 +4535,9 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
                     if (!dadosAtualizacao.hasOwnProperty('dataIda')) {
                         pedidos[pedidoIndex].dataIda = dataOriginal;
                     }
+
+                    // ✅ CACHE: invalida cache do cliente para refletir a atualização
+                    delete _cachePedidosCliente[pedidos[pedidoIndex].clienteId];
                 }
                 
                 if (dadosAtualizacao.pago) {
@@ -4557,6 +4569,9 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
                 
                 // Remove from last purchase if needed
                 await updateCustomerLastPurchase(pedido);
+
+                // ✅ CACHE: invalida cache do cliente antes de remover (offline)
+                delete _cachePedidosCliente[pedido.clienteId];
                 
                 pedidos = pedidos.filter(p => p.id !== pedidoId);
                 addToPendingSync('delete_pedido', 'pedidos', { id: pedidoId });
@@ -4588,6 +4603,9 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
 
                 // Update local arrays
                 pedidos = pedidos.filter(p => p.id !== pedidoId);
+
+                // ✅ CACHE: invalida cache do cliente para refletir a exclusão
+                delete _cachePedidosCliente[pedido.clienteId];
 
                 // Atualiza acumulados de fidelidade após exclusão (delta -1).
                 // Só decrementa se o pedido estava pago (apenas pedidos pagos foram contados).
@@ -7059,13 +7077,13 @@ Estamos sempre à disposição! 🙏`;
         // Relatórios
 
         // ================================================================
-        // BUSCA HISTÓRICA — usada pelos relatórios quando o filtro de 90 dias
+        // BUSCA HISTÓRICA — usada pelos relatórios quando o filtro de 30 dias
         // está ativo e o período solicitado pode estar fora do array em memória.
         // Faz getDocs pontual apenas quando necessário (não é listener).
         // ================================================================
 
         // Retorna pedidos para um mês específico (formato 'YYYY-MM').
-        // Se o mês estiver dentro dos 90 dias em memória, usa o array.
+        // Se o mês estiver dentro dos 30 dias em memória, usa o array.
         // Caso contrário, busca no Firestore via getDocs.
         async function _getPedidosMes(mesAno) {
             const fidelidadeMigrada = localStorage.getItem('fidelidadeMigrada') === 'true';
@@ -7073,11 +7091,11 @@ Estamos sempre à disposição! 🙏`;
 
             const [ano, mes] = mesAno.split('-').map(Number);
             const inicioMes = new Date(ano, mes - 1, 1);
-            const _90diasAtras = new Date();
-            _90diasAtras.setDate(_90diasAtras.getDate() - 90);
+            const _30diasAtras = new Date();
+            _30diasAtras.setDate(_30diasAtras.getDate() - 30);
 
             // Mês dentro do intervalo em memória → usa array
-            if (inicioMes >= _90diasAtras) return pedidos;
+            if (inicioMes >= _30diasAtras) return pedidos;
 
             // Mês fora do intervalo → getDocs pontual
             if (!window.db || !window.firebaseUtils || isOfflineMode) return pedidos;
@@ -7105,17 +7123,17 @@ Estamos sempre à disposição! 🙏`;
         }
 
         // Retorna pedidos para um ano específico.
-        // Se o ano for o atual e já tiver 90 dias cobertos, usa getDocs do início do ano.
+        // Se o ano for o atual e já tiver 30 dias cobertos, usa getDocs do início do ano.
         async function _getPedidosAno(ano) {
             const fidelidadeMigrada = localStorage.getItem('fidelidadeMigrada') === 'true';
             if (!fidelidadeMigrada) return pedidos;
 
             const inicioAno = new Date(ano, 0, 1);
-            const _90diasAtras = new Date();
-            _90diasAtras.setDate(_90diasAtras.getDate() - 90);
+            const _30diasAtras = new Date();
+            _30diasAtras.setDate(_30diasAtras.getDate() - 30);
 
-            // Se início do ano está dentro dos 90 dias, array já tem tudo
-            if (inicioAno >= _90diasAtras) return pedidos;
+            // Se início do ano está dentro dos 30 dias, array já tem tudo
+            if (inicioAno >= _30diasAtras) return pedidos;
 
             if (!window.db || !window.firebaseUtils || isOfflineMode) return pedidos;
 
@@ -7139,12 +7157,20 @@ Estamos sempre à disposição! 🙏`;
         }
 
         // Retorna todos os pedidos de um cliente (histórico completo).
+        // Usa cache em memória (_cachePedidosCliente) para evitar leituras repetidas no Firebase
+        // durante a mesma sessão. O cache é invalidado ao criar, atualizar ou excluir pedidos.
         async function _getPedidosCliente(clienteId) {
             const fidelidadeMigrada = localStorage.getItem('fidelidadeMigrada') === 'true';
             if (!fidelidadeMigrada) return pedidos.filter(p => p.clienteId == clienteId);
 
             if (!window.db || !window.firebaseUtils || isOfflineMode) {
                 return pedidos.filter(p => p.clienteId == clienteId);
+            }
+
+            // ✅ CACHE: reutiliza resultado já buscado nesta sessão
+            if (_cachePedidosCliente[clienteId]) {
+                console.log(`⚡ Cache hit: ${_cachePedidosCliente[clienteId].length} pedidos do cliente ${clienteId} (sem leitura Firebase)`);
+                return _cachePedidosCliente[clienteId];
             }
 
             try {
@@ -7157,7 +7183,9 @@ Estamos sempre à disposição! 🙏`;
                 const snap = await getDocs(q);
                 const resultado = [];
                 snap.forEach(d => resultado.push({ id: d.id, ...d.data() }));
-                console.log(`📋 Buscou ${resultado.length} pedidos históricos do cliente ${clienteId}`);
+                console.log(`📋 Buscou ${resultado.length} pedidos históricos do cliente ${clienteId} (salvo em cache)`);
+                // ✅ CACHE: salva resultado para reutilização
+                _cachePedidosCliente[clienteId] = resultado;
                 return resultado;
             } catch (err) {
                 // Se o erro for de índice faltando, orienta o usuário
@@ -7695,7 +7723,7 @@ Estamos sempre à disposição! 🙏`;
             
             let relatorioHtml = `
                 <h3 class="text-xl font-bold mb-4">🥇 Ranking de Galões por Cliente</h3>
-                ${fidelidadeMigrada ? '<p class="text-xs text-orange-500 mb-3">⚠️ Ranking baseado nos últimos 90 dias (após otimização de leituras).</p>' : ''}
+                ${fidelidadeMigrada ? '<p class="text-xs text-orange-500 mb-3">⚠️ Ranking baseado nos últimos 30 dias (após otimização de leituras).</p>' : ''}
                 
                 <div class="overflow-x-auto">
                     <table class="w-full border-collapse border border-gray-300 dark:border-gray-600">
@@ -8174,7 +8202,7 @@ Estamos sempre à disposição! 🙏`;
 
                 toast(`✅ Migração concluída! ${ok} clientes atualizados.
 
-O app agora usa acumulados de fidelidade. Recarregue a página para ativar o filtro de 90 dias nos pedidos.`, 'success', 8000);
+O app agora usa acumulados de fidelidade. Recarregue a página para ativar o filtro de 30 dias nos pedidos.`, 'success', 8000);
             } else {
                 statusEl.className = 'text-xs text-center mt-2 text-orange-600 font-bold';
                 statusEl.textContent = `⚠️ ${ok} ok, ${erros} com erro. Verifique o console.`;
