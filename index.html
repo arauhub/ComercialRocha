@@ -3737,22 +3737,22 @@ Estamos sempre à disposição! 🙏`,
         // Quantos grátis serão ganhos dentro de um pedido de N galões
         // Usa a mesma lógica de distribuirPedido para consistência
         function calcularGaloesGratisParaEstesPedido(clienteId, quantidadeNovaPedido) {
-            // Simula distribuirPedido sem grátis iniciais para saber só os ganhos agora
+            // Conta quantos ciclos de fidelidade fecham dentro deste pedido.
+            // Um ciclo fecha sempre que o cliente paga o N-ésimo galão — mesmo que seja
+            // o último galão do pedido (o grátis fica disponível para o próximo pedido).
             const galoesParaGratis = configuracoes.galoesParaGratis || 10;
             let ciclo = contarGaloesPagosCicloAtual(clienteId);
             let gratisGanhos = 0;
             let entregues = 0;
-            let pagos = 0;
             while (entregues < quantidadeNovaPedido) {
-                pagos++;
                 ciclo++;
                 entregues++;
-                if (ciclo >= galoesParaGratis && entregues < quantidadeNovaPedido) {
-                    gratisGanhos++;
+                if (ciclo >= galoesParaGratis) {
+                    gratisGanhos++;  // ciclo fechou — grátis ganho (mesmo sem galão para entregar agora)
                     ciclo = 0;
-                    entregues++;
-                } else if (ciclo >= galoesParaGratis) {
-                    ciclo = 0;
+                    if (entregues < quantidadeNovaPedido) {
+                        entregues++;  // consome um galão do pedido para entregar o grátis
+                    }
                 }
             }
             return gratisGanhos;
@@ -3903,19 +3903,52 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
             
             document.getElementById('valorTotal').value = valorTotal.toFixed(2);
             
-            // Show free jugs info if applicable
+            // ── Monta o display de fidelidade abaixo do valor total ──
             const totalDisplayEl = document.getElementById('totalDisplay');
-            if (galoesGratisParaUsar > 0) {
-                let infoText = `<span class="text-green-600">Galões grátis: ${galoesGratisParaUsar}</span><br>`;
-                
-                if (galoesGratisParaEstesPedido > 0) {
-                    infoText += `<span class="text-blue-600">Galões grátis conquistados agora: ${galoesGratisParaEstesPedido}</span><br>`;
+            const galoesParaGratis = configuracoes.galoesParaGratis || 10;
+
+            // Posição do ciclo APÓS este pedido (para mostrar ao usuário onde vai ficar)
+            const pagosTotaisAposEste = contarGaloesPagos(clienteId) + (galoesPagos - 0);
+            const cicloApos = pagosTotaisAposEste % galoesParaGratis;
+            const faltamApos = cicloApos === 0 ? galoesParaGratis : (galoesParaGratis - cicloApos);
+
+            // Grátis que ficam disponíveis APÓS este pedido (já existentes + ganhos agora)
+            const totalGratisApos = Math.floor(pagosTotaisAposEste / galoesParaGratis)
+                                  - contarGaloesGratisRecebidos(clienteId)
+                                  - galoesGratisParaEstesPedido; // os ganhos agora serão "usados" se entregues
+
+            if (clienteId) {
+                let linhas = [];
+
+                // Grátis entregues dentro deste pedido vs grátis que ficam pendentes
+                const gratisEntreguesNoPedido = galoesGratisParaUsar - galoesGratisDisponiveis;
+                const gratisPendentesAposPedido = galoesGratisParaEstesPedido - Math.max(0, gratisEntreguesNoPedido);
+
+                // Linha 1: grátis do ciclo anterior já incluídos no pedido
+                if (galoesGratisDisponiveis > 0) {
+                    linhas.push(`<span class="text-green-600 font-semibold">🎁 ${galoesGratisDisponiveis} galão(ns) grátis disponível(is) já incluído(s) neste pedido</span>`);
                 }
-                
-                infoText += `<span>Galões pagos: ${contarGaloesPagosCicloAtual(clienteId)}/${configuracoes.galoesParaGratis || 10}</span><br>`;
-                infoText += `<span class="font-bold">Total a pagar: R$ ${valorTotal.toFixed(2)}</span>`;
-                
-                totalDisplayEl.innerHTML = infoText;
+
+                // Linha 2: grátis conquistados neste pedido
+                if (galoesGratisParaEstesPedido > 0) {
+                    if (gratisEntreguesNoPedido > 0) {
+                        // grátis ganho E entregue dentro do pedido
+                        linhas.push(`<span class="text-blue-600 font-semibold">🎉 Parabéns! ${galoesGratisParaEstesPedido} galão(ns) grátis conquistado(s) e incluído(s) neste pedido</span>`);
+                    } else {
+                        // grátis ganho mas fica pendente (ciclo fechou no último galão)
+                        linhas.push(`<span class="text-blue-600 font-semibold">🎉 Parabéns! Ao confirmar este pedido ganha ${galoesGratisParaEstesPedido} galão(ns) grátis no próximo</span>`);
+                    }
+                }
+
+                // Linha 3: progresso do ciclo após este pedido
+                linhas.push(`<span class="text-gray-600">Fidelidade após pedido: ${cicloApos}/${galoesParaGratis} — faltam ${faltamApos} compra(s) para o próximo grátis</span>`);
+
+                // Linha 4: total a pagar
+                if (galoesGratisParaUsar > 0 || galoesGratisParaEstesPedido > 0) {
+                    linhas.push(`<span class="font-bold">Total a pagar: R$ ${valorTotal.toFixed(2)}</span>`);
+                }
+
+                totalDisplayEl.innerHTML = linhas.join('<br>');
             } else {
                 totalDisplayEl.innerHTML = '';
             }
