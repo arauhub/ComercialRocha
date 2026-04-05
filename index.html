@@ -47,7 +47,8 @@ const {
   setDoc,
   getDoc,
   enableNetwork,
-  disableNetwork
+  disableNetwork,
+  writeBatch
 } = await import('https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js');
 const {
   getAuth,
@@ -98,7 +99,8 @@ window.firebaseUtils = {
   setDoc,
   getDoc,
   enableNetwork,
-  disableNetwork
+  disableNetwork,
+  writeBatch
 };
 window.authUtils = {
   signInWithEmailAndPassword,
@@ -1848,6 +1850,58 @@ window.firebaseLoaded = true;
         </div>
     </div>
 
+    <!-- Modal Envio em Lote WhatsApp -->
+    <div id="loteModal" class="payment-modal hidden">
+        <div class="payment-modal-content" style="max-width:640px">
+            <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white text-center">📱 Envio em Lote — WhatsApp</h3>
+            <p id="loteSubtitulo" class="text-sm text-gray-500 dark:text-gray-400 text-center mb-5"></p>
+
+            <!-- Filtros rápidos -->
+            <div class="flex flex-wrap gap-2 mb-4">
+                <span class="text-sm font-semibold text-gray-700 dark:text-gray-300 self-center">Incluir:</span>
+                <label class="flex items-center gap-1 text-sm cursor-pointer">
+                    <input type="checkbox" id="loteIncluirPagos" checked class="accent-gray-600"> Pagos
+                </label>
+                <label class="flex items-center gap-1 text-sm cursor-pointer">
+                    <input type="checkbox" id="loteIncluirPendentes" checked class="accent-gray-600"> Pendentes
+                </label>
+                <label class="flex items-center gap-1 text-sm cursor-pointer">
+                    <input type="checkbox" id="loteIncluirGratis" checked class="accent-gray-600"> Grátis
+                </label>
+                <button onclick="loteAtualizarLista()" class="ml-auto text-xs px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-300 transition-all">🔄 Atualizar</button>
+            </div>
+
+            <!-- Lista de pedidos a enviar -->
+            <div id="loteLista" class="space-y-2 max-h-72 overflow-y-auto mb-4 pr-1"></div>
+
+            <!-- Rodapé com contagem -->
+            <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-5">
+                <span id="loteContagem">0 mensagens a enviar</span>
+                <span class="text-xs">Intervalo: 1,5s entre cada abertura</span>
+            </div>
+
+            <!-- Barra de progresso (visível só durante envio) -->
+            <div id="loteProgressoContainer" class="hidden mb-4">
+                <div class="flex justify-between text-xs text-gray-500 mb-1">
+                    <span id="loteProgressoLabel">Enviando...</span>
+                    <span id="loteProgressoPct">0%</span>
+                </div>
+                <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                    <div id="loteProgressoBar" class="bg-green-500 h-2 rounded-full transition-all duration-300" style="width:0%"></div>
+                </div>
+            </div>
+
+            <div class="flex space-x-3">
+                <button id="loteEnviarBtn" onclick="loteIniciarEnvio()" class="btn-modern flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
+                    📤 Enviar Tudo
+                </button>
+                <button id="loteCancelarBtn" onclick="loteFechar()" class="btn-modern flex-1 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700">
+                    ❌ Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Main App -->
     <div id="mainApp" class="hidden min-h-screen">
         <!-- Offline indicator -->
@@ -2112,6 +2166,12 @@ window.firebaseLoaded = true;
                             <div class="search-container flex-1">
                                 <input type="text" id="buscaPedido" placeholder="Buscar por nome do cliente..." class="input-modern w-full" autocomplete="off">
                             </div>
+
+                            <div class="filter-item">
+                                <button onclick="loteAbrirModal()" class="btn-modern bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-sm whitespace-nowrap">
+                                    📱 WhatsApp em Lote
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div id="listaPedidos" class="space-y-4">
@@ -2323,6 +2383,11 @@ window.firebaseLoaded = true;
         // Cache em memória para _getPedidosCliente — evita leituras repetidas no Firebase.
         // Invalidado sempre que um pedido do cliente é criado, atualizado ou excluído.
         const _cachePedidosCliente = {};
+        // Timers de debounce para atualização de UI nos listeners de tempo real.
+        // Separados por coleção: evita que o listener de estoque cancele o de pedidos
+        // quando os dois chegam juntos (situação normal ao salvar um pedido com estoque).
+        let _pedidosUpdateTimer = null;
+        let _estoqueUpdateTimer = null;
         let currentPedidoForPayment = null;
         let currentPedidoForDetails = null;
         let currentPedidoForReceive = null;
@@ -2852,8 +2917,10 @@ Estamos sempre à disposição! 🙏`,
                 saveLocalData();
                 if (snapshot.metadata.fromCache && !snapshot.metadata.hasPendingWrites && _pedidosCarregados) return;
                 _pedidosCarregados = true;
-                updateListaPedidos();
-                updateDashboard();
+                // Debounce: evita re-renders em cascata com 3 aparelhos simultâneos.
+                // Chamadas diretas de ação do usuário (excluir, confirmar, etc.) não passam aqui.
+                clearTimeout(_pedidosUpdateTimer);
+                _pedidosUpdateTimer = setTimeout(() => { updateListaPedidos(); updateDashboard(); }, 120);
             }, (error) => {
                 console.error('❌ Erro ao escutar pedidos:', error);
                 updateConnectionStatus('❌ Erro', 'error');
@@ -2869,9 +2936,11 @@ Estamos sempre à disposição! 🙏`,
                 saveLocalData();
                 if (snapshot.metadata.fromCache && !snapshot.metadata.hasPendingWrites && _estoqueCarregado) return;
                 _estoqueCarregado = true;
-                updateVisualizacaoEstoque();
-                updateEstoqueDetalhado();
-                updateDashboard();
+                // Debounce: evita re-renders em cascata com 3 aparelhos simultâneos.
+                clearTimeout(_estoqueUpdateTimer);
+                _estoqueUpdateTimer = setTimeout(() => {
+                    updateVisualizacaoEstoque(); updateEstoqueDetalhado(); updateDashboard();
+                }, 120);
             }, (error) => {
                 console.error('❌ Erro ao escutar estoque:', error);
                 updateConnectionStatus('❌ Erro', 'error');
@@ -3592,6 +3661,8 @@ Estamos sempre à disposição! 🙏`,
                 pedidos = [];
                 estoque = {};
                 emprestimos = [];
+                clearTimeout(_pedidosUpdateTimer);
+                clearTimeout(_estoqueUpdateTimer);
                 clearCache();
                 
                 toast('✅ Logout realizado com sucesso!', 'success');
@@ -3778,9 +3849,16 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
 
                 const pedidoId = await salvarPedido(pedidoGratis);
                 
-                await atualizarCliente(clienteId, {
-                    ultimaCompra: getCurrentDateTime()
-                });
+                // Atualiza ultimaCompra só quando offline ou pré-migração
+                // (pós-migração online, o batch de salvarPedidoFirebase já incluiu ultimaCompra)
+                const clienteIdx = clientes.findIndex(c => c.id === clienteId);
+                const jaAtualizadoPeloBatch = !isOfflineMode && firebaseConnected &&
+                    clienteIdx !== -1 && typeof clientes[clienteIdx].galoesPagosTotais === 'number';
+                if (!jaAtualizadoPeloBatch) {
+                    await atualizarCliente(clienteId, {
+                        ultimaCompra: getCurrentDateTime()
+                    });
+                }
 
                 console.log('🎉 Pedido grátis criado para o cliente:', cliente.nome);
                 
@@ -4413,24 +4491,56 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
             }
 
             try {
-                const { addDoc, collection } = window.firebaseUtils;
-                const docRef = await addDoc(collection(window.db, 'pedidos'), {
+                const { collection, doc, writeBatch } = window.firebaseUtils;
+                const batch = writeBatch(window.db);
+
+                // Pedido novo — doc() gera ID sem fazer leitura
+                const pedidoRef = doc(collection(window.db, 'pedidos'));
+                batch.set(pedidoRef, {
                     ...pedidoData,
                     userId: currentUser.uid,
                     data: getCurrentDateTime()
                 });
 
-                // ✅ CACHE: invalida cache do cliente para refletir o novo pedido
-                delete _cachePedidosCliente[pedidoData.clienteId];
-
-                // ── Atualiza acumulados de fidelidade no cliente ──
-                // Só incrementa se o pedido já nasce pago (ex: grátis por fidelidade).
-                // Pedidos normais (pago: false) são contados quando o pagamento é confirmado.
+                // Atualiza fidelidade + ultimaCompra no mesmo commit (evita escrita separada
+                // que dispararia o listener de clientes e causaria cascata de leituras).
+                // Só quando o pedido já nasce pago (ex: grátis por fidelidade).
                 if (pedidoData.pago === true) {
-                    await _atualizarAcumuladoCliente(pedidoData.clienteId, pedidoData, +1);
+                    const clienteIdx = clientes.findIndex(c => c.id === pedidoData.clienteId);
+                    if (clienteIdx !== -1 && typeof clientes[clienteIdx].galoesPagosTotais === 'number') {
+                        const cliente = clientes[clienteIdx];
+                        const galoesDoPedido = pedidoData.galoesPagos || pedidoData.quantidade || 1;
+                        const ehGratis = pedidoData.isGratis === true;
+
+                        const novosPagos = ehGratis
+                            ? cliente.galoesPagosTotais
+                            : cliente.galoesPagosTotais + galoesDoPedido;
+                        const novosGratis = ehGratis
+                            ? (cliente.galoesGratisTotais || 0) + (pedidoData.quantidade || 1)
+                            : (cliente.galoesGratisTotais || 0);
+
+                        // Atualiza array local imediatamente (optimistic update)
+                        clientes[clienteIdx].galoesPagosTotais = novosPagos;
+                        clientes[clienteIdx].galoesGratisTotais = novosGratis;
+                        clientes[clienteIdx].ultimaCompra = getCurrentDateTime();
+
+                        const clienteRef = doc(window.db, 'clientes', pedidoData.clienteId);
+                        batch.update(clienteRef, {
+                            galoesPagosTotais: novosPagos,
+                            galoesGratisTotais: novosGratis,
+                            ultimaCompra: getCurrentDateTime(),
+                            updatedAt: getCurrentDateTime()
+                        });
+                    }
                 }
 
-                return docRef.id;
+                await batch.commit();
+
+                // Invalida cache do cliente para refletir o novo pedido
+                delete _cachePedidosCliente[pedidoData.clienteId];
+
+                return pedidoRef.id;
+
             } catch (error) {
                 console.error('❌ Erro ao salvar pedido:', error);
                 throw error;
@@ -5964,42 +6074,91 @@ Estamos sempre à disposição! 🙏`,
                 if (selectedOption && currentPedidoForPayment) {
                     try {
                         const formaPagamento = selectedOption.getAttribute('data-payment');
-                        
-                        let updateData = {
+                        const pedidoConfirmado = currentPedidoForPayment;
+                        const isGratisAgora = formaPagamento === 'Fidelidade';
+
+                        const updateData = {
                             pago: true,
                             formaPagamento: formaPagamento,
-                            dataPagamento: getCurrentDateTime()
+                            dataPagamento: getCurrentDateTime(),
+                            ...(isGratisAgora ? { isGratis: true, valorTotal: 0 } : {})
                         };
-                        
-                        if (formaPagamento === 'Fidelidade') {
-                            updateData.isGratis = true;
-                            updateData.valorTotal = 0;
-                        }
-                        
-                        // Guardar referência antes de limpar o estado
-                        const pedidoConfirmado = currentPedidoForPayment;
-                        
-                        await atualizarPedido(pedidoConfirmado.id, updateData);
-                        
-                        const cliente = clientes.find(c => c.id == pedidoConfirmado.clienteId);
-                        if (cliente) {
-                            await atualizarCliente(cliente.id, {
-                                ultimaCompra: getCurrentDateTime()
-                            });
+
+                        if (!isOfflineMode && firebaseConnected && window.firebaseUtils?.writeBatch) {
+                            // Caminho online: batch agrupa pedido + cliente em 1 commit,
+                            // eliminando a cascata de listeners que gerava 1.100+ leituras.
+                            const { doc, writeBatch } = window.firebaseUtils;
+                            const batch = writeBatch(window.db);
+
+                            // 1) Atualiza o pedido
+                            const pedidoRef = doc(window.db, 'pedidos', pedidoConfirmado.id);
+                            batch.update(pedidoRef, { ...updateData, updatedAt: getCurrentDateTime() });
+
+                            // Atualiza array local do pedido imediatamente (optimistic update)
+                            const pedIdx = pedidos.findIndex(p => p.id === pedidoConfirmado.id);
+                            if (pedIdx !== -1) pedidos[pedIdx] = { ...pedidos[pedIdx], ...updateData };
+
+                            // 2) Atualiza cliente: ultimaCompra + galaoAtual + fidelidade
+                            const clienteIdx = clientes.findIndex(c => c.id === pedidoConfirmado.clienteId);
+                            if (clienteIdx !== -1) {
+                                const cliente = clientes[clienteIdx];
+                                const clienteRef = doc(window.db, 'clientes', pedidoConfirmado.clienteId);
+
+                                const clienteUpdate = {
+                                    ultimaCompra: getCurrentDateTime(),
+                                    // galaoAtual: preserva o campo atualizado junto ao pagamento
+                                    galaoAtual: pedidoConfirmado.galoesEntregues?.[0] || null,
+                                    updatedAt: getCurrentDateTime()
+                                };
+
+                                // Fidelidade — só incrementa se campos já existem (pós-migração)
+                                if (typeof cliente.galoesPagosTotais === 'number') {
+                                    const galoesDoPedido = pedidoConfirmado.galoesPagos || pedidoConfirmado.quantidade || 1;
+                                    if (!isGratisAgora) {
+                                        clienteUpdate.galoesPagosTotais = cliente.galoesPagosTotais + galoesDoPedido;
+                                        clientes[clienteIdx].galoesPagosTotais = clienteUpdate.galoesPagosTotais;
+                                    } else {
+                                        clienteUpdate.galoesGratisTotais = (cliente.galoesGratisTotais || 0) + (pedidoConfirmado.quantidade || 1);
+                                        clientes[clienteIdx].galoesGratisTotais = clienteUpdate.galoesGratisTotais;
+                                    }
+                                }
+
+                                batch.update(clienteRef, clienteUpdate);
+                                // Atualiza array local do cliente imediatamente
+                                clientes[clienteIdx].ultimaCompra = getCurrentDateTime();
+                                clientes[clienteIdx].galaoAtual = clienteUpdate.galaoAtual;
+                            }
+
+                            await batch.commit();
+                            delete _cachePedidosCliente[pedidoConfirmado.clienteId];
+
+                        } else {
+                            // Modo offline ou writeBatch indisponível — caminho original intacto
+                            await atualizarPedido(pedidoConfirmado.id, updateData);
+
+                            const clienteOffline = clientes.find(c => c.id === pedidoConfirmado.clienteId);
+                            if (clienteOffline) {
+                                await atualizarCliente(clienteOffline.id, {
+                                    ultimaCompra: getCurrentDateTime(),
+                                    galaoAtual: pedidoConfirmado.galoesEntregues?.[0] || null
+                                });
+                            }
+
+                            const pedidoFinalizado = { ...pedidoConfirmado, ...updateData };
+                            await _atualizarAcumuladoCliente(pedidoConfirmado.clienteId, pedidoFinalizado, +1);
                         }
 
-                        // Atualiza acumulados de fidelidade ao confirmar pagamento
-                        // O pedido acabou de ser pago: aplica delta +1 com os dados finais
-                        const pedidoFinalizado = { ...pedidoConfirmado, ...updateData };
-                        await _atualizarAcumuladoCliente(pedidoConfirmado.clienteId, pedidoFinalizado, +1);
-                        
                         modal.classList.add('hidden');
                         paymentOptions.forEach(opt => opt.classList.remove('selected'));
                         document.getElementById('fidelidadeInfo').classList.add('hidden');
                         currentPedidoForPayment = null;
-                        
+
+                        updateListaPedidos();
+                        updateDashboard();
+
                         // Oferecer envio de WhatsApp se o cliente tiver telefone
-                        if (cliente && cliente.telefone) {
+                        const clienteFinal = clientes.find(c => c.id === pedidoConfirmado.clienteId);
+                        if (clienteFinal && clienteFinal.telefone) {
                             if (confirm('✅ Pagamento registrado!\n\nDeseja enviar a mensagem de confirmação pelo WhatsApp?')) {
                                 enviarMensagemPedido(pedidoConfirmado.clienteId, pedidoConfirmado.id);
                             }
@@ -6173,7 +6332,7 @@ Estamos sempre à disposição! 🙏`,
             );
         }
 
-        function abrirWhatsApp(telefone, mensagem = '') {
+        function abrirWhatsApp(telefone, mensagem = '', autoEnviar = false) {
             const numeroLimpo = telefone.replace(/\D/g, '');
             const texto = mensagem ? encodeURIComponent(mensagem) : '';
 
@@ -6186,8 +6345,12 @@ Estamos sempre à disposição! 🙏`,
                 // No celular: wa.me abre o app diretamente sem problema
                 url = `https://wa.me/55${numeroLimpo}${texto ? `?text=${texto}` : ''}`;
             } else {
-                // No PC: web.whatsapp.com não faz redirecionamento, emojis chegam corretos
-                url = `https://web.whatsapp.com/send?phone=55${numeroLimpo}${texto ? `&text=${texto}` : ''}`;
+                // No PC: web.whatsapp.com não faz redirecionamento, emojis chegam corretos.
+                // &send=true tenta disparar o envio automaticamente no Chrome —
+                // não é oficial mas funciona na maioria dos casos. Se não funcionar,
+                // a mensagem já está preenchida e basta apertar Enter.
+                const sendParam = autoEnviar ? '&send=true' : '';
+                url = `https://web.whatsapp.com/send?phone=55${numeroLimpo}${texto ? `&text=${texto}` : ''}${sendParam}`;
             }
 
             window.open(url, '_blank');
@@ -8340,6 +8503,250 @@ O app agora usa acumulados de fidelidade. Recarregue a página para ativar o fil
                 toast('❌ Erro ao gerar PDF. Verifique se a biblioteca está carregada.', 'error');
             }
         }
+
+        // ================================
+        // ENVIO EM LOTE — WhatsApp
+        // ================================
+
+        // Estado do lote
+        let _loteEnviando = false;
+        let _loteCancelado = false;
+
+        // Retorna os pedidos do filtro atual + checkboxes do modal
+        function loteGetPedidosFiltrados() {
+            // Pega os pedidos já filtrados pela data/filtro ativo na tela
+            let base = [...pedidos];
+            base = filtrarPedidosPorData(base);
+
+            // Aplica checkboxes do modal
+            const incPagos     = document.getElementById('loteIncluirPagos')?.checked ?? true;
+            const incPendentes = document.getElementById('loteIncluirPendentes')?.checked ?? true;
+            const incGratis    = document.getElementById('loteIncluirGratis')?.checked ?? true;
+
+            return base.filter(p => {
+                const cliente = clientes.find(c => c.id == p.clienteId);
+                if (!cliente?.telefone) return false; // sem telefone = não envia
+                if (p.isGratis)  return incGratis;
+                if (p.pago)      return incPagos;
+                return incPendentes; // pago:false, não grátis = pendente
+            });
+        }
+
+        // Monta a mensagem para um pedido usando a mesma lógica de enviarMensagemPedido
+        function loteGerarMensagem(pedido) {
+            const cliente = clientes.find(c => c.id == pedido.clienteId);
+            if (!cliente) return null;
+
+            const isGratis = pedido.isGratis;
+            const galoesParaGratis = configuracoes.galoesParaGratis || 10;
+            const progressoCicloAtual = contarGaloesPagosCicloAtual(pedido.clienteId);
+            const galoesGratisNestePedido = isGratis ? 1 : (pedido.galoesGratis || 0);
+            const ganhouGratisAgora = galoesGratisNestePedido > 0;
+            const gratisDisponivelProxima = verificarFidelidade(pedido.clienteId) > 0;
+            const faltamParaGratis = proximaCompraGratis(pedido.clienteId);
+
+            let fidelidadeInfo = '';
+            if (ganhouGratisAgora) {
+                const plural = galoesGratisNestePedido > 1 ? `${galoesGratisNestePedido} GALÕES GRÁTIS` : `um GALÃO GRÁTIS`;
+                fidelidadeInfo = `🎉 *Você ganhou ${plural} nesta compra!*\n🏆 Obrigado pela sua fidelidade!\n💧 Faltam *${faltamParaGratis}* compra(s) para o próximo grátis.`;
+            } else if (gratisDisponivelProxima) {
+                fidelidadeInfo = `🎉 *Parabéns! Você completou ${galoesParaGratis} compras!*\n🎁 Seu próximo galão é *GRÁTIS*! Aproveite!`;
+            } else if (faltamParaGratis === 1) {
+                fidelidadeInfo = `🎯 *Fidelidade:* ${progressoCicloAtual}/${galoesParaGratis} compras\n⭐ Falta apenas *1 compra* para ganhar o seu GALÃO GRÁTIS! 🎉`;
+            } else if (faltamParaGratis <= 3) {
+                fidelidadeInfo = `🎯 *Fidelidade:* ${progressoCicloAtual}/${galoesParaGratis} compras\n🔥 Faltam apenas *${faltamParaGratis} compras* para ganhar o seu GALÃO GRÁTIS!`;
+            } else {
+                fidelidadeInfo = `🎯 *Fidelidade:* ${progressoCicloAtual}/${galoesParaGratis} compras\n💧 Faltam *${faltamParaGratis} compras* para ganhar o próximo galão grátis.`;
+            }
+
+            const galaoFoi = pedido.galoesEntregues?.length > 0
+                ? pedido.galoesEntregues.join(', ')
+                : 'A confirmar';
+            const tipoPedido = isGratis
+                ? `🎁 *Galão GRÁTIS* (Fidelidade)`
+                : `💧 *${pedido.quantidade || 1} galão(es)* - R$ ${(pedido.valorTotal || 0).toFixed(2)}`;
+            const dataFormatada = pedido.dataIda ? formatLocalDate(pedido.dataIda) : formatLocalDate(getCurrentDateLocal());
+
+            let templateBase = isGratis
+                ? (configuracoes.mensagemGratis || '')
+                : (configuracoes.mensagemPedido || '');
+            templateBase = templateBase.replaceAll('🪣', '💧');
+            templateBase = templateBase.replace(/Ol[aá][,!]?\s*\{nome\}\s*[!,]?/g, 'Olá!');
+
+            let mensagem = templateBase
+                .replace(/{nome}/g, cliente.nome)
+                .replace(/{tipo_pedido}/g, tipoPedido)
+                .replace(/{galao_foi}/g, galaoFoi)
+                .replace(/{data}/g, dataFormatada)
+                .replace(/{fidelidade_info}/g, fidelidadeInfo)
+                .replace(/{mensagem_fidelidade}/g, fidelidadeInfo);
+
+            if (!templateBase.includes('{fidelidade_info}') && !templateBase.includes('{mensagem_fidelidade}')) {
+                mensagem += `\n\n${fidelidadeInfo}`;
+            }
+
+            return mensagem;
+        }
+
+        // Abre o modal e renderiza a lista
+        function loteAbrirModal() {
+            _loteEnviando = false;
+            _loteCancelado = false;
+            document.getElementById('loteProgressoContainer').classList.add('hidden');
+            document.getElementById('loteEnviarBtn').disabled = false;
+            document.getElementById('loteEnviarBtn').textContent = '📤 Enviar Tudo';
+            document.getElementById('loteCancelarBtn').textContent = '❌ Fechar';
+
+            // Subtítulo mostra qual filtro está ativo
+            const filtroLabel = {
+                hoje: 'Pedidos de hoje',
+                customDay: 'Pedidos do dia selecionado',
+                customMonth: 'Pedidos do mês selecionado',
+                pendentes: 'Pedidos pendentes',
+                todos: 'Todos os pedidos'
+            };
+            document.getElementById('loteSubtitulo').textContent =
+                filtroLabel[filtroDataAtual] || 'Pedidos do filtro atual';
+
+            loteAtualizarLista();
+            document.getElementById('loteModal').classList.remove('hidden');
+        }
+
+        // Atualiza a lista no modal conforme checkboxes
+        function loteAtualizarLista() {
+            const pedidosFiltrados = loteGetPedidosFiltrados();
+            const lista = document.getElementById('loteLista');
+            lista.innerHTML = '';
+
+            if (pedidosFiltrados.length === 0) {
+                lista.innerHTML = '<p class="text-center text-gray-500 py-4 text-sm">Nenhum pedido com telefone cadastrado no filtro atual.</p>';
+                document.getElementById('loteContagem').textContent = '0 mensagens a enviar';
+                document.getElementById('loteEnviarBtn').disabled = true;
+                return;
+            }
+
+            document.getElementById('loteEnviarBtn').disabled = false;
+            document.getElementById('loteContagem').textContent =
+                `${pedidosFiltrados.length} mensagem(ns) a enviar`;
+
+            pedidosFiltrados.forEach((pedido, idx) => {
+                const cliente = clientes.find(c => c.id == pedido.clienteId);
+                const statusEmoji = pedido.isGratis ? '🎁' : (pedido.pago ? '✅' : '⏳');
+                const statusLabel = pedido.isGratis ? 'Grátis' : (pedido.pago ? 'Pago' : 'Pendente');
+                const qtd = pedido.quantidade || 1;
+                const valor = pedido.isGratis ? 'Grátis' : `R$ ${(pedido.valorTotal || 0).toFixed(2)}`;
+
+                const div = document.createElement('div');
+                div.id = `lote-item-${idx}`;
+                div.className = 'flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-600 text-sm';
+                div.innerHTML = `
+                    <div class="flex items-center gap-2 flex-1 min-w-0">
+                        <span class="text-base flex-shrink-0">${statusEmoji}</span>
+                        <div class="min-w-0">
+                            <p class="font-semibold text-gray-900 dark:text-white truncate">${cliente?.nome || '—'}</p>
+                            <p class="text-gray-500 dark:text-gray-400 text-xs">${qtd} galão(ns) · ${valor} · ${statusLabel}</p>
+                        </div>
+                    </div>
+                    <div id="lote-status-${idx}" class="text-xs ml-2 flex-shrink-0 text-gray-400">aguardando</div>
+                `;
+                lista.appendChild(div);
+            });
+        }
+
+        // Inicia o envio sequencial com intervalo
+        async function loteIniciarEnvio() {
+            if (_loteEnviando) return;
+
+            const pedidosFiltrados = loteGetPedidosFiltrados();
+            if (pedidosFiltrados.length === 0) return;
+
+            _loteEnviando = true;
+            _loteCancelado = false;
+
+            const btnEnviar = document.getElementById('loteEnviarBtn');
+            const btnCancelar = document.getElementById('loteCancelarBtn');
+            const progressoContainer = document.getElementById('loteProgressoContainer');
+            const progressoBar = document.getElementById('loteProgressoBar');
+            const progressoLabel = document.getElementById('loteProgressoLabel');
+            const progressoPct = document.getElementById('loteProgressoPct');
+
+            btnEnviar.disabled = true;
+            btnEnviar.textContent = '⏳ Enviando...';
+            btnCancelar.textContent = '⏹ Parar';
+            progressoContainer.classList.remove('hidden');
+
+            let enviados = 0;
+            const total = pedidosFiltrados.length;
+
+            for (let i = 0; i < pedidosFiltrados.length; i++) {
+                if (_loteCancelado) break;
+
+                const pedido = pedidosFiltrados[i];
+                const cliente = clientes.find(c => c.id == pedido.clienteId);
+                const statusEl = document.getElementById(`lote-status-${i}`);
+                const itemEl = document.getElementById(`lote-item-${i}`);
+
+                // Marca como "enviando"
+                if (statusEl) statusEl.textContent = '📤 abrindo...';
+                if (itemEl) itemEl.classList.add('bg-blue-50', 'dark:bg-blue-900', 'border-blue-300');
+
+                try {
+                    const mensagem = loteGerarMensagem(pedido);
+                    if (mensagem && cliente?.telefone) {
+                        abrirWhatsApp(cliente.telefone, mensagem, true);
+                        enviados++;
+                        if (statusEl) statusEl.textContent = '✅ aberto';
+                        if (itemEl) {
+                            itemEl.classList.remove('bg-blue-50', 'dark:bg-blue-900', 'border-blue-300');
+                            itemEl.classList.add('bg-green-50', 'dark:bg-green-900', 'border-green-300');
+                        }
+                    } else {
+                        if (statusEl) statusEl.textContent = '⚠️ sem tel.';
+                    }
+                } catch (err) {
+                    if (statusEl) statusEl.textContent = '❌ erro';
+                    console.error('Erro ao enviar lote item', i, err);
+                }
+
+                // Atualiza barra de progresso
+                const pct = Math.round(((i + 1) / total) * 100);
+                progressoBar.style.width = `${pct}%`;
+                progressoPct.textContent = `${pct}%`;
+                progressoLabel.textContent = `${i + 1} de ${total} abertos`;
+
+                // Aguarda 1,5s antes do próximo (evita bloqueio de popup pelo navegador)
+                if (i < pedidosFiltrados.length - 1 && !_loteCancelado) {
+                    await new Promise(r => setTimeout(r, 1500));
+                }
+            }
+
+            _loteEnviando = false;
+            const foiCancelado = _loteCancelado;
+            _loteCancelado = false;
+
+            btnEnviar.disabled = false;
+            btnEnviar.textContent = '🔄 Enviar Novamente';
+            btnCancelar.textContent = '❌ Fechar';
+
+            if (foiCancelado) {
+                toast(`⏹ Envio interrompido. ${enviados} de ${total} mensagens abertas.`, 'warning');
+            } else {
+                toast(`✅ Lote concluído! ${enviados} mensagens abertas no WhatsApp.`, 'success');
+                progressoLabel.textContent = `✅ Concluído — ${enviados} de ${total} enviados`;
+            }
+        }
+
+        // Fecha o modal ou cancela o envio em andamento
+        function loteFechar() {
+            if (_loteEnviando) {
+                _loteCancelado = true;
+                return; // o loop vai detectar e parar; o botão muda para "Fechar"
+            }
+            document.getElementById('loteModal').classList.add('hidden');
+            _loteEnviando = false;
+            _loteCancelado = false;
+        }
+
     </script>
 </body>
 </html>
