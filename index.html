@@ -27,7 +27,7 @@ block-all-mixed-content;
             window._firebaseReadyResolve = resolve;
         });
 
-        // Try to load Firebase, but don't block the app if it fails-
+        // Try to load Firebase, but don't block the app if it fails
         try {
             const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js');
 const {
@@ -1494,6 +1494,12 @@ window.firebaseLoaded = true;
                                 🪣 Migrar Empréstimos (Admin)
                             </button>
                             <p id="migracaoEmprestimosStatus" class="text-xs text-center mt-2 hidden"></p>
+                            <hr class="border-gray-300 dark:border-gray-600 my-2 mt-3">
+                            <p class="text-xs text-gray-500 mb-2">🚀 <strong>Passo 3:</strong> Migra contadores de pedidos para os clientes — elimina o listener de pedidos e reduz leituras em ~90%. Rode <strong>uma única vez</strong> após os Passos 1 e 2.</p>
+                            <button id="btnMigrarRefatoracao" class="btn-modern w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
+                                🚀 Migrar Contadores (Admin)
+                            </button>
+                            <p id="migracaoRefatoracaoStatus" class="text-xs text-center mt-2 hidden"></p>
                         </div>
                     </div>
                 </div>
@@ -1897,6 +1903,37 @@ window.firebaseLoaded = true;
                 </button>
                 <button id="loteCancelarBtn" onclick="loteFechar()" class="btn-modern flex-1 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700">
                     ❌ Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Grátis Pendente -->
+    <div id="gratisModal" class="payment-modal hidden">
+        <div class="payment-modal-content" style="max-width:480px">
+            <div class="text-center mb-6">
+                <div class="text-5xl mb-3">🎉</div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Galão Grátis Disponível!</h3>
+                <p id="gratisModalSubtitulo" class="text-gray-600 dark:text-gray-400 mt-2 text-sm"></p>
+            </div>
+
+            <div class="bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded-xl p-4 mb-6">
+                <p class="text-green-800 dark:text-green-200 font-semibold text-center">
+                    O cliente completou <span id="gratisModalN" class="font-bold">10</span> pagamentos<br>e ganhou 1 galão grátis!
+                </p>
+                <p class="text-green-700 dark:text-green-300 text-sm text-center mt-1">
+                    O galão grátis <strong>não é cobrado</strong> e não conta para o próximo ciclo.
+                </p>
+            </div>
+
+            <p class="text-gray-700 dark:text-gray-300 text-center font-medium mb-5">Deseja incluir o galão grátis neste pedido?</p>
+
+            <div class="flex space-x-3">
+                <button id="gratisSim" class="btn-modern flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
+                    ✅ Sim, incluir agora
+                </button>
+                <button id="gratisNao" class="btn-modern flex-1 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700">
+                    ⏭ Não, deixar para o próximo
                 </button>
             </div>
         </div>
@@ -2892,39 +2929,62 @@ Estamos sempre à disposição! 🙏`,
                 updateConnectionStatus('❌ Erro', 'error');
             });
 
-            // Pedidos — se a migração de fidelidade já foi feita, filtra os últimos 30 dias
-            // (reduz leituras em ~67% vs 90 dias). Antes da migração, carrega tudo para garantir fidelidade correta.
-            // Pedidos mais antigos continuam acessíveis via relatórios (getDocs pontual).
-            let pedidosQuery;
+            // Pedidos — se a refatoração já foi feita (flag no Firestore via configuracoes/global),
+            // carrega apenas os pedidos de hoje via getDocs pontual.
+            // Pedidos de outros dias são buscados sob demanda (relatórios, histórico, lote).
+            // Antes da migração, mantém o comportamento anterior com filtro de 30 dias.
             const fidelidadeMigrada = localStorage.getItem('fidelidadeMigrada') === 'true';
-            if (fidelidadeMigrada) {
-                const _30diasAtras = new Date();
-                _30diasAtras.setDate(_30diasAtras.getDate() - 30);
-                const _30diasStr = _30diasAtras.toISOString().split('T')[0];
-                pedidosQuery = query(
+            const refatoracaoMigrada = configuracoes.refatoracaoMigrada === true || window._refatoracaoMigrada === true;
+
+            if (refatoracaoMigrada) {
+                // Modo otimizado: busca só pedidos de hoje uma vez
+                const hoje = getCurrentDateLocal();
+                const { collection, query, where, orderBy, getDocs } = window.firebaseUtils;
+                const pedidosHojeQuery = query(
                     collection(window.db, 'pedidos'),
-                    where('data', '>=', _30diasStr),
+                    where('data', '>=', hoje + 'T00:00:00.000Z'),
                     orderBy('data', 'desc')
                 );
-                console.log('⚡ Filtro de 30 dias ativo (fidelidade migrada)');
+                getDocs(pedidosHojeQuery).then(snapshot => {
+                    pedidos = [];
+                    snapshot.forEach(d => pedidos.push({ id: d.id, ...d.data() }));
+                    saveLocalData();
+                    updateListaPedidos();
+                    updateDashboard();
+                    console.log(`⚡ Modo otimizado: ${pedidos.length} pedidos de hoje carregados (sem listener)`);
+                }).catch(err => {
+                    console.error('❌ Erro ao buscar pedidos de hoje:', err);
+                });
             } else {
-                pedidosQuery = query(collection(window.db, 'pedidos'), orderBy('data', 'desc'));
-                console.log('📋 Carregando todos os pedidos (migração pendente)');
+                // Modo legado: listener com filtro de 30 dias (ou tudo se fidelidade não migrada)
+                let pedidosQuery;
+                if (fidelidadeMigrada) {
+                    const _30diasAtras = new Date();
+                    _30diasAtras.setDate(_30diasAtras.getDate() - 30);
+                    const _30diasStr = _30diasAtras.toISOString().split('T')[0];
+                    pedidosQuery = query(
+                        collection(window.db, 'pedidos'),
+                        where('data', '>=', _30diasStr),
+                        orderBy('data', 'desc')
+                    );
+                    console.log('⚡ Filtro de 30 dias ativo (fidelidade migrada)');
+                } else {
+                    pedidosQuery = query(collection(window.db, 'pedidos'), orderBy('data', 'desc'));
+                    console.log('📋 Carregando todos os pedidos (migração pendente)');
+                }
+                pedidosListener = onSnapshot(pedidosQuery, (snapshot) => {
+                    pedidos = [];
+                    snapshot.forEach((d) => { pedidos.push({ id: d.id, ...d.data() }); });
+                    saveLocalData();
+                    if (snapshot.metadata.fromCache && !snapshot.metadata.hasPendingWrites && _pedidosCarregados) return;
+                    _pedidosCarregados = true;
+                    clearTimeout(_pedidosUpdateTimer);
+                    _pedidosUpdateTimer = setTimeout(() => { updateListaPedidos(); updateDashboard(); }, 120);
+                }, (error) => {
+                    console.error('❌ Erro ao escutar pedidos:', error);
+                    updateConnectionStatus('❌ Erro', 'error');
+                });
             }
-            pedidosListener = onSnapshot(pedidosQuery, (snapshot) => {
-                pedidos = [];
-                snapshot.forEach((d) => { pedidos.push({ id: d.id, ...d.data() }); });
-                saveLocalData();
-                if (snapshot.metadata.fromCache && !snapshot.metadata.hasPendingWrites && _pedidosCarregados) return;
-                _pedidosCarregados = true;
-                // Debounce: evita re-renders em cascata com 3 aparelhos simultâneos.
-                // Chamadas diretas de ação do usuário (excluir, confirmar, etc.) não passam aqui.
-                clearTimeout(_pedidosUpdateTimer);
-                _pedidosUpdateTimer = setTimeout(() => { updateListaPedidos(); updateDashboard(); }, 120);
-            }, (error) => {
-                console.error('❌ Erro ao escutar pedidos:', error);
-                updateConnectionStatus('❌ Erro', 'error');
-            });
 
             // Estoque
             const estoqueRef = collection(window.db, 'estoque');
@@ -2986,6 +3046,12 @@ Estamos sempre à disposição! 🙏`,
                     saveConfiguracoes();
                     console.log('✅ Configurações atualizadas do Firebase');
 
+                    // Sincroniza flag de refatoração para todos os aparelhos via Firestore
+                    if (configData.refatoracaoMigrada === true && !window._refatoracaoMigrada) {
+                        window._refatoracaoMigrada = true;
+                        console.log('⚡ Refatoração migrada detectada via Firestore — ativando modo otimizado');
+                    }
+
                     // Se havia emoji antigo, salva a versão corrigida de volta no Firebase
                     if (precisaMigrar && currentUser?.email === 'adm@comercialrocha.com') {
                         console.log('🔄 Migrando emojis das mensagens no Firebase...');
@@ -3031,7 +3097,69 @@ Estamos sempre à disposição! 🙏`,
         }
 
         function aplicarFiltroData() {
+            const refatoracaoMigrada = configuracoes.refatoracaoMigrada === true || window._refatoracaoMigrada === true;
+            if (!refatoracaoMigrada) {
+                updateListaPedidos();
+                return;
+            }
+            // Modo otimizado: busca pedidos do filtro ativo sob demanda
+            const hoje = getCurrentDateLocal();
+            if (filtroDataAtual === 'hoje') {
+                updateListaPedidos();
+                return;
+            }
+            if (filtroDataAtual === 'pendentes' || filtroDataAtual === 'todos') {
+                _buscarPedidosFiltroAtivo().then(() => updateListaPedidos());
+                return;
+            }
+            if (filtroDataAtual === 'customDay') {
+                const data = document.getElementById('filtroDataEspecifica').value;
+                if (data) _buscarPedidosDia(data).then(() => updateListaPedidos());
+                return;
+            }
+            if (filtroDataAtual === 'customMonth') {
+                const mes = document.getElementById('filtroMesEspecifico').value;
+                if (mes) _getPedidosMes(mes).then(resultado => { pedidos = resultado; updateListaPedidos(); });
+                return;
+            }
             updateListaPedidos();
+        }
+
+        async function _buscarPedidosFiltroAtivo() {
+            if (!window.db || !window.firebaseUtils || isOfflineMode) return;
+            try {
+                const { collection, query, orderBy, getDocs, where } = window.firebaseUtils;
+                const hoje = getCurrentDateLocal();
+                const _30diasAtras = new Date();
+                _30diasAtras.setDate(_30diasAtras.getDate() - 30);
+                const _30diasStr = _30diasAtras.toISOString().split('T')[0];
+                const q = query(collection(window.db, 'pedidos'), where('data', '>=', _30diasStr), orderBy('data', 'desc'));
+                const snap = await getDocs(q);
+                pedidos = [];
+                snap.forEach(d => pedidos.push({ id: d.id, ...d.data() }));
+                saveLocalData();
+            } catch (err) {
+                console.warn('⚠️ Erro ao buscar pedidos do filtro:', err);
+            }
+        }
+
+        async function _buscarPedidosDia(data) {
+            if (!window.db || !window.firebaseUtils || isOfflineMode) return;
+            try {
+                const { collection, query, where, orderBy, getDocs } = window.firebaseUtils;
+                const q = query(
+                    collection(window.db, 'pedidos'),
+                    where('data', '>=', data + 'T00:00:00.000Z'),
+                    where('data', '<=', data + 'T23:59:59.999Z'),
+                    orderBy('data', 'desc')
+                );
+                const snap = await getDocs(q);
+                pedidos = [];
+                snap.forEach(d => pedidos.push({ id: d.id, ...d.data() }));
+                saveLocalData();
+            } catch (err) {
+                console.warn('⚠️ Erro ao buscar pedidos do dia:', err);
+            }
         }
 
         function filtrarPedidosPorData(pedidosList) {
@@ -3142,6 +3270,37 @@ Estamos sempre à disposição! 🙏`,
             
             checkInternetConnection();
             setInterval(checkInternetConnection, 180000); // 3 minutos
+
+            // Reset de pedidosHoje à meia-noite — garante que o contador do dia zera automaticamente
+            (function agendarResetMeiaNoite() {
+                const agora = new Date();
+                const meiaNoite = new Date(agora);
+                meiaNoite.setDate(meiaNoite.getDate() + 1);
+                meiaNoite.setHours(0, 0, 5, 0); // 00:00:05 do próximo dia
+                const msAteResetear = meiaNoite - agora;
+                setTimeout(async () => {
+                    const refatoracaoMigrada = configuracoes.refatoracaoMigrada === true || window._refatoracaoMigrada === true;
+                    if (refatoracaoMigrada && firebaseConnected && window.firebaseUtils) {
+                        console.log('🔄 Resetando pedidosHoje para todos os clientes (virada do dia)...');
+                        try {
+                            const { writeBatch, doc } = window.firebaseUtils;
+                            const batch = writeBatch(window.db);
+                            clientes.forEach(c => {
+                                if ((c.pedidosHoje || 0) > 0) {
+                                    batch.update(doc(window.db, 'clientes', c.id), { pedidosHoje: 0 });
+                                }
+                            });
+                            await batch.commit();
+                            clientes.forEach((c, i) => { clientes[i].pedidosHoje = 0; });
+                            updateDashboard();
+                            console.log('✅ pedidosHoje zerado com sucesso');
+                        } catch (err) {
+                            console.warn('⚠️ Erro ao resetar pedidosHoje:', err);
+                        }
+                    }
+                    agendarResetMeiaNoite(); // reagenda para o próximo dia
+                }, msAteResetear);
+            })();
 
             // Firebase já está resolvido quando initializeApp é chamado (via firebaseReady Promise)
             if (window.firebaseLoaded && window.auth && window.firebaseUtils && window.authUtils) {
@@ -3875,83 +4034,88 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
             const quantidadeVazios = parseInt(document.getElementById('quantidadeGaloesVazios').value) || 0;
             const valorUnitario = configuracoes.precoGalao || 15.00;
             const valorUnitarioVazio = configuracoes.precoGalaoVazio || 25.00;
-            
-            // Check if customer has free jugs available
+            const galoesParaGratis = configuracoes.galoesParaGratis || 10;
             const clienteId = document.getElementById('clientePedido').value;
-            let galoesGratisDisponiveis = 0;
-            let galoesGratisParaEstesPedido = 0;
-            
+
+            // distribuirPedido é a ÚNICA fonte da verdade para valor e quantidade cobrada.
+            // Ela distingue corretamente grátis entregues no pedido de grátis pendentes.
+            let galoesPagos = quantidade;
+            let galoesGratisEntregues = 0;
+            let gratisDispAnteriores = 0;
+
             if (clienteId) {
-                galoesGratisDisponiveis = verificarFidelidade(clienteId);
-                galoesGratisParaEstesPedido = calcularGaloesGratisParaEstesPedido(clienteId, quantidade);
+                const dist = distribuirPedido(clienteId, quantidade);
+                galoesPagos         = dist.galoesPagos;
+                galoesGratisEntregues = dist.galoesGratis;
+                gratisDispAnteriores  = verificarFidelidade(clienteId);
             }
-            
-            // Calculate how many free jugs can be used
-            let galoesGratisParaUsar = Math.min(galoesGratisDisponiveis, quantidade);
-            
-            // Then see how many new free jugs can be applied in this order
-            const galoesRestantesParaPagar = quantidade - galoesGratisParaUsar;
-            const novosGaloesGratisParaUsar = Math.min(galoesGratisParaEstesPedido, galoesRestantesParaPagar);
-            galoesGratisParaUsar += novosGaloesGratisParaUsar;
-            
-            const galoesPagos = quantidade - galoesGratisParaUsar;
-            
-            // Calculate costs
+
             const valorGaloes = galoesPagos * valorUnitario;
             const valorVazios = quantidadeVazios * valorUnitarioVazio;
-            const valorTotal = valorGaloes + valorVazios;
-            
-            document.getElementById('valorTotal').value = valorTotal.toFixed(2);
-            
-            // ── Monta o display de fidelidade abaixo do valor total ──
-            const totalDisplayEl = document.getElementById('totalDisplay');
-            const galoesParaGratis = configuracoes.galoesParaGratis || 10;
+            const valorTotal  = valorGaloes + valorVazios;
 
-            // Posição do ciclo APÓS este pedido (para mostrar ao usuário onde vai ficar)
-            const pagosTotaisAposEste = contarGaloesPagos(clienteId) + (galoesPagos - 0);
-            const cicloApos = pagosTotaisAposEste % galoesParaGratis;
+            document.getElementById('valorTotal').value = valorTotal.toFixed(2);
+
+            // ── Display de fidelidade ──
+            const totalDisplayEl = document.getElementById('totalDisplay');
+            if (!clienteId) { totalDisplayEl.innerHTML = ''; return; }
+
+            // Quantos ciclos fecharam com os galões PAGOS neste pedido
+            const cicloAntes = contarGaloesPagosCicloAtual(clienteId);
+            let cicloSim = cicloAntes;
+            let ciclosFechados = 0;
+            for (let i = 0; i < galoesPagos; i++) {
+                cicloSim++;
+                if (cicloSim >= galoesParaGratis) { ciclosFechados++; cicloSim = 0; }
+            }
+
+            // Grátis ganhos neste pedido = ciclos fechados pelos pagamentos de agora
+            // Desses, quantos foram ENTREGUES dentro do pedido vs ficam PENDENTES
+            const gratisGanhosNoPedido   = ciclosFechados;
+            const gratisEntreguesNovos   = galoesGratisEntregues - Math.max(0, gratisDispAnteriores - quantidade);
+            const gratisPendentes        = gratisGanhosNoPedido - Math.max(0, gratisEntreguesNovos);
+
+            // Posição do ciclo APÓS este pedido
+            const pagosTotaisApos = contarGaloesPagos(clienteId) + galoesPagos;
+            const cicloApos  = pagosTotaisApos % galoesParaGratis;
             const faltamApos = cicloApos === 0 ? galoesParaGratis : (galoesParaGratis - cicloApos);
 
-            // Grátis que ficam disponíveis APÓS este pedido (já existentes + ganhos agora)
-            const totalGratisApos = Math.floor(pagosTotaisAposEste / galoesParaGratis)
-                                  - contarGaloesGratisRecebidos(clienteId)
-                                  - galoesGratisParaEstesPedido; // os ganhos agora serão "usados" se entregues
+            const linhas = [];
 
-            if (clienteId) {
-                let linhas = [];
-
-                // Grátis entregues dentro deste pedido vs grátis que ficam pendentes
-                const gratisEntreguesNoPedido = galoesGratisParaUsar - galoesGratisDisponiveis;
-                const gratisPendentesAposPedido = galoesGratisParaEstesPedido - Math.max(0, gratisEntreguesNoPedido);
-
-                // Linha 1: grátis do ciclo anterior já incluídos no pedido
-                if (galoesGratisDisponiveis > 0) {
-                    linhas.push(`<span class="text-green-600 font-semibold">🎁 ${galoesGratisDisponiveis} galão(ns) grátis disponível(is) já incluído(s) neste pedido</span>`);
-                }
-
-                // Linha 2: grátis conquistados neste pedido
-                if (galoesGratisParaEstesPedido > 0) {
-                    if (gratisEntreguesNoPedido > 0) {
-                        // grátis ganho E entregue dentro do pedido
-                        linhas.push(`<span class="text-blue-600 font-semibold">🎉 Parabéns! ${galoesGratisParaEstesPedido} galão(ns) grátis conquistado(s) e incluído(s) neste pedido</span>`);
-                    } else {
-                        // grátis ganho mas fica pendente (ciclo fechou no último galão)
-                        linhas.push(`<span class="text-blue-600 font-semibold">🎉 Parabéns! Ao confirmar este pedido ganha ${galoesGratisParaEstesPedido} galão(ns) grátis no próximo</span>`);
-                    }
-                }
-
-                // Linha 3: progresso do ciclo após este pedido
-                linhas.push(`<span class="text-gray-600">Fidelidade após pedido: ${cicloApos}/${galoesParaGratis} — faltam ${faltamApos} compra(s) para o próximo grátis</span>`);
-
-                // Linha 4: total a pagar
-                if (galoesGratisParaUsar > 0 || galoesGratisParaEstesPedido > 0) {
-                    linhas.push(`<span class="font-bold">Total a pagar: R$ ${valorTotal.toFixed(2)}</span>`);
-                }
-
-                totalDisplayEl.innerHTML = linhas.join('<br>');
-            } else {
-                totalDisplayEl.innerHTML = '';
+            // 1. Grátis do ciclo anterior incluídos
+            if (gratisDispAnteriores > 0 && galoesGratisEntregues > 0) {
+                linhas.push(`<span class="text-green-600 font-semibold">🎁 ${gratisDispAnteriores} galão(ns) grátis de ciclo anterior — já incluído(s) neste pedido</span>`);
             }
+
+            // 2. Ciclo completado — mensagem principal
+            if (ciclosFechados > 0) {
+                if (gratisPendentes > 0) {
+                    // Fechou o ciclo mas o grátis vai para o próximo pedido
+                    linhas.push(`<span class="text-amber-600 font-bold">🎉 Parabéns! Completou ${galoesParaGratis} pagamentos — 1 galão GRÁTIS no seu próximo pedido!</span>`);
+                } else {
+                    // Grátis entregue dentro do próprio pedido
+                    linhas.push(`<span class="text-green-600 font-bold">🎉 Parabéns! Completou ${galoesParaGratis} pagamentos — 1 galão GRÁTIS já incluído neste pedido!</span>`);
+                }
+            }
+
+            // 3. Resumo do pedido quando há grátis
+            if (galoesGratisEntregues > 0) {
+                linhas.push(`<span class="text-gray-700 dark:text-gray-300">📦 Resumo: ${galoesPagos} pago(s) + ${galoesGratisEntregues} grátis = ${galoesPagos + galoesGratisEntregues} galões entregues</span>`);
+            }
+
+            // 4. Progresso do próximo ciclo
+            if (ciclosFechados > 0 && gratisPendentes > 0) {
+                linhas.push(`<span class="text-gray-500 dark:text-gray-400 text-sm">🔄 Novo ciclo: faltam ${galoesParaGratis} pagamentos para o próximo grátis</span>`);
+            } else {
+                linhas.push(`<span class="text-gray-500 dark:text-gray-400 text-sm">🔄 Fidelidade: ${cicloApos}/${galoesParaGratis} — faltam ${faltamApos} pagamento(s) para o próximo grátis</span>`);
+            }
+
+            // 5. Total a pagar (só quando há grátis envolvido, para destacar)
+            if (galoesGratisEntregues > 0 || ciclosFechados > 0) {
+                linhas.push(`<span class="font-bold text-gray-900 dark:text-white">💰 Total a pagar: R$ ${valorTotal.toFixed(2)} (${galoesPagos} × R$ ${valorUnitario.toFixed(2)})</span>`);
+            }
+
+            totalDisplayEl.innerHTML = linhas.join('<br>');
         }
 
         function getClienteUltimaCompra(clienteId) {
@@ -4535,35 +4699,43 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
                     data: getCurrentDateTime()
                 });
 
-                // Atualiza fidelidade + ultimaCompra no mesmo commit (evita escrita separada
-                // que dispararia o listener de clientes e causaria cascata de leituras).
+                // Atualiza fidelidade + ultimaCompra + contadores resumo no mesmo commit.
                 // Só quando o pedido já nasce pago (ex: grátis por fidelidade).
-                if (pedidoData.pago === true) {
-                    const clienteIdx = clientes.findIndex(c => c.id === pedidoData.clienteId);
-                    if (clienteIdx !== -1 && typeof clientes[clienteIdx].galoesPagosTotais === 'number') {
-                        const cliente = clientes[clienteIdx];
-                        const galoesDoPedido = pedidoData.galoesPagos || pedidoData.quantidade || 1;
-                        const ehGratis = pedidoData.isGratis === true;
+                const clienteIdx = clientes.findIndex(c => c.id === pedidoData.clienteId);
+                if (clienteIdx !== -1) {
+                    const cliente = clientes[clienteIdx];
+                    const clienteRef = doc(window.db, 'clientes', pedidoData.clienteId);
+                    const refatoracaoMigrada = configuracoes.refatoracaoMigrada === true || window._refatoracaoMigrada === true;
+                    const clienteUpdate = { updatedAt: getCurrentDateTime() };
 
-                        const novosPagos = ehGratis
-                            ? cliente.galoesPagosTotais
-                            : cliente.galoesPagosTotais + galoesDoPedido;
-                        const novosGratis = ehGratis
-                            ? (cliente.galoesGratisTotais || 0) + (pedidoData.quantidade || 1)
-                            : (cliente.galoesGratisTotais || 0);
-
-                        // Atualiza array local imediatamente (optimistic update)
-                        clientes[clienteIdx].galoesPagosTotais = novosPagos;
-                        clientes[clienteIdx].galoesGratisTotais = novosGratis;
+                    if (pedidoData.pago === true) {
+                        // Pedido já nasce pago — atualiza fidelidade + ultimaCompra + pedidosHoje
+                        if (typeof cliente.galoesPagosTotais === 'number') {
+                            const galoesDoPedido = pedidoData.galoesPagos || pedidoData.quantidade || 1;
+                            const ehGratis = pedidoData.isGratis === true;
+                            const novosPagos = ehGratis ? cliente.galoesPagosTotais : cliente.galoesPagosTotais + galoesDoPedido;
+                            const novosGratis = ehGratis ? (cliente.galoesGratisTotais || 0) + (pedidoData.quantidade || 1) : (cliente.galoesGratisTotais || 0);
+                            clientes[clienteIdx].galoesPagosTotais = novosPagos;
+                            clientes[clienteIdx].galoesGratisTotais = novosGratis;
+                            clienteUpdate.galoesPagosTotais = novosPagos;
+                            clienteUpdate.galoesGratisTotais = novosGratis;
+                        }
                         clientes[clienteIdx].ultimaCompra = getCurrentDateTime();
+                        clienteUpdate.ultimaCompra = getCurrentDateTime();
+                        if (refatoracaoMigrada) {
+                            const novoPedidosHoje = (cliente.pedidosHoje || 0) + 1;
+                            clientes[clienteIdx].pedidosHoje = novoPedidosHoje;
+                            clienteUpdate.pedidosHoje = novoPedidosHoje;
+                        }
+                    } else if (refatoracaoMigrada) {
+                        // Pedido nasce pendente — incrementa pedidosPendentes
+                        const novoPendentes = (cliente.pedidosPendentes || 0) + 1;
+                        clientes[clienteIdx].pedidosPendentes = novoPendentes;
+                        clienteUpdate.pedidosPendentes = novoPendentes;
+                    }
 
-                        const clienteRef = doc(window.db, 'clientes', pedidoData.clienteId);
-                        batch.update(clienteRef, {
-                            galoesPagosTotais: novosPagos,
-                            galoesGratisTotais: novosGratis,
-                            ultimaCompra: getCurrentDateTime(),
-                            updatedAt: getCurrentDateTime()
-                        });
+                    if (Object.keys(clienteUpdate).length > 1) {
+                        batch.update(clienteRef, clienteUpdate);
                     }
                 }
 
@@ -4754,6 +4926,17 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
                 // Só decrementa se o pedido estava pago (apenas pedidos pagos foram contados).
                 if (pedido.pago === true) {
                     await _atualizarAcumuladoCliente(pedido.clienteId, pedido, -1);
+                } else {
+                    // Pedido pendente excluído — decrementa pedidosPendentes
+                    const refatoracaoMigrada = configuracoes.refatoracaoMigrada === true || window._refatoracaoMigrada === true;
+                    if (refatoracaoMigrada) {
+                        const idx = clientes.findIndex(c => c.id === pedido.clienteId);
+                        if (idx !== -1) {
+                            const novoPendentes = Math.max(0, (clientes[idx].pedidosPendentes || 0) - 1);
+                            clientes[idx].pedidosPendentes = novoPendentes;
+                            await atualizarCliente(pedido.clienteId, { pedidosPendentes: novoPendentes });
+                        }
+                    }
                 }
                 
                 // CORREÇÃO 1: Update all displays IMMEDIATELY
@@ -5525,6 +5708,10 @@ Estamos sempre à disposição! 🙏`,
             if (btnMigrar) {
                 btnMigrar.addEventListener('click', () => migrarFidelidade());
             }
+            const btnMigrarRef = document.getElementById('btnMigrarRefatoracao');
+            if (btnMigrarRef) {
+                btnMigrarRef.addEventListener('click', () => migrarRefatoracao());
+            }
             const btnMigrarEmp = document.getElementById('btnMigrarEmprestimos');
             if (btnMigrarEmp) {
                 btnMigrarEmp.addEventListener('click', () => migrarEmprestimos());
@@ -6156,6 +6343,17 @@ Estamos sempre à disposição! 🙏`,
                                     }
                                 }
 
+                                // Contadores resumo — pedido pendente virou pago
+                                const refatoracaoMigrada = configuracoes.refatoracaoMigrada === true || window._refatoracaoMigrada === true;
+                                if (refatoracaoMigrada) {
+                                    const novoPendentes = Math.max(0, (cliente.pedidosPendentes || 0) - 1);
+                                    const novoPedidosHoje = (cliente.pedidosHoje || 0) + 1;
+                                    clienteUpdate.pedidosPendentes = novoPendentes;
+                                    clienteUpdate.pedidosHoje = novoPedidosHoje;
+                                    clientes[clienteIdx].pedidosPendentes = novoPendentes;
+                                    clientes[clienteIdx].pedidosHoje = novoPedidosHoje;
+                                }
+
                                 batch.update(clienteRef, clienteUpdate);
                                 // Atualiza array local do cliente imediatamente
                                 clientes[clienteIdx].ultimaCompra = getCurrentDateTime();
@@ -6389,19 +6587,67 @@ Estamos sempre à disposição! 🙏`,
             window.open(url, '_blank');
         }
 
-        // MODIFICADO: Criar pedidos grátis automaticamente ao registrar pedido
+        // Estado para suspender o submit até resposta do modal de grátis
+        let _pedidoPendente = null;
+
+        // Setup do modal de grátis pendente
+        document.getElementById('gratisSim').addEventListener('click', () => {
+            if (!_pedidoPendente) return;
+            document.getElementById('gratisModal').classList.add('hidden');
+            // Inclui o grátis: incrementa a quantidade e registra
+            _pedidoPendente.quantidade += 1;
+            _registrarPedido(_pedidoPendente);
+            _pedidoPendente = null;
+        });
+        document.getElementById('gratisNao').addEventListener('click', () => {
+            if (!_pedidoPendente) return;
+            document.getElementById('gratisModal').classList.add('hidden');
+            // Segue com a quantidade original — grátis fica pendente
+            _registrarPedido(_pedidoPendente);
+            _pedidoPendente = null;
+        });
+
         document.getElementById('formPedido').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+
+            const clienteId = document.getElementById('clientePedido').value;
+            const quantidade = parseInt(document.getElementById('quantidadeGaloes').value);
+            const quantidadeVazios = parseInt(document.getElementById('quantidadeGaloesVazios').value) || 0;
+            const valorUnitario = configuracoes.precoGalao || 15.00;
+            const galoesParaGratis = configuracoes.galoesParaGratis || 10;
+
+            // Detectar se o pedido fecha exatamente o ciclo sem grátis entregue
+            const dist = distribuirPedido(clienteId, quantidade);
+            const cicloAntes = contarGaloesPagosCicloAtual(clienteId);
+            let cicloSim = cicloAntes;
+            let ciclosFechados = 0;
+            for (let i = 0; i < dist.galoesPagos; i++) {
+                cicloSim++;
+                if (cicloSim >= galoesParaGratis) { ciclosFechados++; cicloSim = 0; }
+            }
+            const gratisPendente = ciclosFechados > 0 && dist.galoesGratis === 0;
+
+            if (gratisPendente) {
+                // Suspender o submit e mostrar o modal de escolha
+                const cliente = clientes.find(c => c.id == clienteId);
+                _pedidoPendente = { clienteId, quantidade, quantidadeVazios, valorUnitario };
+                document.getElementById('gratisModalN').textContent = galoesParaGratis;
+                document.getElementById('gratisModalSubtitulo').textContent =
+                    `Cliente: ${cliente?.nome || ''} — ${quantidade} galão(ns) pedido(s)`;
+                document.getElementById('gratisModal').classList.remove('hidden');
+                return; // aguarda clique no modal
+            }
+
+            // Sem grátis pendente — registra diretamente
+            await _registrarPedido({ clienteId, quantidade, quantidadeVazios, valorUnitario });
+        });
+
+        async function _registrarPedido({ clienteId, quantidade, quantidadeVazios, valorUnitario }) {
             const loadingEl = document.getElementById('pedidoLoading');
             loadingEl.classList.remove('hidden');
             
             try {
-                const clienteId = document.getElementById('clientePedido').value;
                 const cliente = clientes.find(c => c.id == clienteId);
-                const quantidade = parseInt(document.getElementById('quantidadeGaloes').value);
-                const quantidadeVazios = parseInt(document.getElementById('quantidadeGaloesVazios').value) || 0;
-                const valorUnitario = configuracoes.precoGalao || 15.00;
                 
                 // Distribuição correta: usa grátis disponíveis + calcula grátis ganhos neste pedido
                 const dist = distribuirPedido(clienteId, quantidade);
@@ -6489,23 +6735,34 @@ Nenhum valor a pagar.`, 'info');
                     }
                 }
                 
-                this.reset();
+                document.getElementById('formPedido').reset();
                 document.getElementById('clienteInfo').classList.add('hidden');
                 document.getElementById('clientePedidoInput').value = '';
+                document.getElementById('clientePedido').value = '';
                 document.getElementById('dataIda').value = getCurrentDateLocal();
                 document.getElementById('quantidadeGaloes').value = '1';
                 document.getElementById('quantidadeGaloesVazios').value = '0';
                 calcularValorTotal();
                 
+                // Limpar formulário
+                document.getElementById('formPedido').reset();
+                document.getElementById('clienteInfo').classList.add('hidden');
+                document.getElementById('clientePedidoInput').value = '';
+                document.getElementById('clientePedido').value = '';
+                document.getElementById('dataIda').value = getCurrentDateLocal();
+                document.getElementById('quantidadeGaloes').value = '1';
+                document.getElementById('quantidadeGaloesVazios').value = '0';
+                calcularValorTotal();
+
                 toast('✅ Pedido registrado com sucesso!', 'success');
                 
             } catch (error) {
                 console.error('❌ Erro ao registrar pedido:', error);
                 toast('❌ Erro ao registrar pedido. Tente novamente.', 'error');
             } finally {
-                        loadingEl.classList.add('hidden');
+                loadingEl.classList.add('hidden');
             }
-        });
+        }
 
  function createPedidoElement(pedido, isAdmin) {
     const cliente = clientes.find(c => c.id == pedido.clienteId);
@@ -7027,13 +7284,23 @@ Nenhum valor a pagar.`, 'info');
 
         function updateDashboard() {
             const hoje = getCurrentDateLocal();
+            const refatoracaoMigrada = configuracoes.refatoracaoMigrada === true || window._refatoracaoMigrada === true;
             
             // Total de clientes ativos
             const clientesAtivos = clientes.filter(c => !c.inativo).length;
             document.getElementById('totalClientes').textContent = clientesAtivos;
             
-            // MODIFICADO: Vendas hoje agora mostra número de pedidos
-            const vendasHoje = pedidos.filter(p => p.pago && isSameDate(p.dataIda, hoje)).length;
+            // Vendas hoje e pedidos pendentes:
+            // Modo otimizado — lê campos resumo do cliente (zero leituras extras)
+            // Modo legado  — filtra array de pedidos em memória
+            let vendasHoje, pedidosPendentes;
+            if (refatoracaoMigrada) {
+                vendasHoje = clientes.reduce((t, c) => t + (c.pedidosHoje || 0), 0);
+                pedidosPendentes = clientes.reduce((t, c) => t + (c.pedidosPendentes || 0), 0);
+            } else {
+                vendasHoje = pedidos.filter(p => p.pago && isSameDate(p.dataIda, hoje)).length;
+                pedidosPendentes = pedidos.filter(p => !p.pago).length;
+            }
             document.getElementById('vendasHoje').textContent = vendasHoje;
             
             // Total galões no estoque
@@ -7043,8 +7310,6 @@ Nenhum valor a pagar.`, 'info');
             });
             document.getElementById('galoesEstoque').textContent = totalGaloesEstoque;
             
-            // Pedidos pendentes
-            const pedidosPendentes = pedidos.filter(p => !p.pago).length;
             document.getElementById('pedidosPendentes').textContent = pedidosPendentes;
             
             // MODIFICADO: Atualizar notificações com nova lógica
@@ -8405,6 +8670,101 @@ O app agora usa acumulados de fidelidade. Recarregue a página para ativar o fil
                 btnEl.disabled = false;
                 btnEl.textContent = '⚡ Migrar Fidelidade (Admin)';
             }
+        }
+
+        async function migrarRefatoracao() {
+            if (isOfflineMode || !firebaseConnected || !currentUser) {
+                toast('⚠️ Conecte-se ao Firebase antes de migrar.', 'warning');
+                return;
+            }
+            if (currentUser.email !== 'adm@comercialrocha.com') {
+                toast('⚠️ Apenas o admin pode executar a migração.', 'warning');
+                return;
+            }
+
+            const statusEl = document.getElementById('migracaoRefatoracaoStatus');
+            const btnEl = document.getElementById('btnMigrarRefatoracao');
+
+            if (!confirm('🚀 Isso vai calcular os contadores de pedidos pendentes e pedidos de hoje para cada cliente e salvar no banco.\n\nNenhum dado será perdido — apenas campos novos serão adicionados.\n\nApós concluir, o app para de usar o listener de pedidos na abertura, reduzindo as leituras em ~90%.\n\nContinuar?')) return;
+
+            btnEl.disabled = true;
+            btnEl.textContent = '⏳ Migrando...';
+            statusEl.classList.remove('hidden');
+            statusEl.className = 'text-xs text-center mt-2 text-blue-600';
+            statusEl.textContent = 'Buscando todos os pedidos do Firebase...';
+
+            // Busca todos os pedidos diretamente do Firestore
+            let todosPedidos = [];
+            try {
+                const { collection, query, orderBy, getDocs } = window.firebaseUtils;
+                const q = query(collection(window.db, 'pedidos'), orderBy('data', 'desc'));
+                const snap = await getDocs(q);
+                snap.forEach(d => todosPedidos.push({ id: d.id, ...d.data() }));
+                statusEl.textContent = `${todosPedidos.length} pedidos carregados. Calculando contadores...`;
+            } catch (err) {
+                console.error('❌ Erro ao buscar pedidos:', err);
+                statusEl.className = 'text-xs text-center mt-2 text-red-600 font-bold';
+                statusEl.textContent = '❌ Erro ao buscar pedidos. Tente novamente.';
+                btnEl.disabled = false;
+                btnEl.textContent = '🚀 Migrar Contadores (Admin)';
+                return;
+            }
+
+            const hoje = getCurrentDateLocal();
+            let ok = 0, erros = 0;
+            const total = clientes.length;
+
+            for (const cliente of clientes) {
+                try {
+                    const pedidosCliente = todosPedidos.filter(p => p.clienteId === cliente.id);
+                    const pedidosPendentes = pedidosCliente.filter(p => !p.pago).length;
+                    const pedidosHoje = pedidosCliente.filter(p => p.pago && isSameDate(p.dataIda || p.data, hoje)).length;
+
+                    // Atualiza array local
+                    const idx = clientes.findIndex(c => c.id === cliente.id);
+                    if (idx !== -1) {
+                        clientes[idx].pedidosPendentes = pedidosPendentes;
+                        clientes[idx].pedidosHoje = pedidosHoje;
+                    }
+
+                    await atualizarCliente(cliente.id, { pedidosPendentes, pedidosHoje });
+                    ok++;
+                    statusEl.textContent = `Migrando ${ok}/${total} clientes...`;
+                } catch (err) {
+                    console.error('❌ Erro ao migrar cliente:', cliente.id, err);
+                    erros++;
+                }
+            }
+
+            if (erros > 0) {
+                statusEl.className = 'text-xs text-center mt-2 text-orange-600 font-bold';
+                statusEl.textContent = `⚠️ ${ok} ok, ${erros} com erro. Verifique o console.`;
+                btnEl.disabled = false;
+                btnEl.textContent = '🚀 Migrar Contadores (Admin)';
+                return;
+            }
+
+            // Salva flag no Firestore — todos os aparelhos recebem automaticamente
+            try {
+                const { doc, updateDoc } = window.firebaseUtils;
+                await updateDoc(doc(window.db, 'configuracoes', 'global'), {
+                    refatoracaoMigrada: true,
+                    refatoracaoMigradaEm: getCurrentDateTime()
+                });
+                configuracoes.refatoracaoMigrada = true;
+                window._refatoracaoMigrada = true;
+            } catch (err) {
+                console.error('❌ Erro ao salvar flag no Firestore:', err);
+            }
+
+            statusEl.className = 'text-xs text-center mt-2 text-green-600 font-bold';
+            statusEl.textContent = `✅ Migração concluída! ${ok} clientes atualizados.`;
+            btnEl.textContent = '✅ Migração concluída';
+
+            toast(`✅ Migração concluída! ${ok} clientes atualizados.\n\nO app agora usa o modo otimizado — leituras reduzidas em ~90%. Os outros aparelhos ativam automaticamente.`, 'success', 8000);
+
+            // Atualiza o dashboard com os novos campos
+            updateDashboard();
         }
 
         function exportarParaExcel(titulo) {
