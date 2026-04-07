@@ -1494,12 +1494,6 @@ window.firebaseLoaded = true;
                                 🪣 Migrar Empréstimos (Admin)
                             </button>
                             <p id="migracaoEmprestimosStatus" class="text-xs text-center mt-2 hidden"></p>
-                            <hr class="border-gray-300 dark:border-gray-600 my-2 mt-3">
-                            <p class="text-xs text-gray-500 mb-2">🚀 <strong>Passo 3:</strong> Migra contadores de pedidos para os clientes — elimina o listener de pedidos e reduz leituras em ~90%. Rode <strong>uma única vez</strong> após os Passos 1 e 2.</p>
-                            <button id="btnMigrarRefatoracao" class="btn-modern w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
-                                🚀 Migrar Contadores (Admin)
-                            </button>
-                            <p id="migracaoRefatoracaoStatus" class="text-xs text-center mt-2 hidden"></p>
                         </div>
                     </div>
                 </div>
@@ -2929,62 +2923,43 @@ Estamos sempre à disposição! 🙏`,
                 updateConnectionStatus('❌ Erro', 'error');
             });
 
-            // Pedidos — se a refatoração já foi feita (flag no Firestore via configuracoes/global),
-            // carrega apenas os pedidos de hoje via getDocs pontual.
-            // Pedidos de outros dias são buscados sob demanda (relatórios, histórico, lote).
-            // Antes da migração, mantém o comportamento anterior com filtro de 30 dias.
+            // Pedidos — se a migração de fidelidade já foi feita, filtra os últimos 30 dias
+            // (reduz leituras em ~67% vs 90 dias). Antes da migração, carrega tudo para garantir fidelidade correta.
+            // Pedidos mais antigos continuam acessíveis via relatórios (getDocs pontual).
+            let pedidosQuery;
             const fidelidadeMigrada = localStorage.getItem('fidelidadeMigrada') === 'true';
-            const refatoracaoMigrada = configuracoes.refatoracaoMigrada === true || window._refatoracaoMigrada === true;
-
-            if (refatoracaoMigrada) {
-                // Modo otimizado: busca só pedidos de hoje uma vez
-                const hoje = getCurrentDateLocal();
-                const { collection, query, where, orderBy, getDocs } = window.firebaseUtils;
-                const pedidosHojeQuery = query(
+            if (fidelidadeMigrada) {
+                const _30diasAtras = new Date();
+                _30diasAtras.setDate(_30diasAtras.getDate() - 30);
+                const _30diasStr = _30diasAtras.toISOString().split('T')[0];
+                pedidosQuery = query(
                     collection(window.db, 'pedidos'),
-                    where('data', '>=', hoje + 'T00:00:00.000Z'),
+                    where('data', '>=', _30diasStr),
                     orderBy('data', 'desc')
                 );
-                getDocs(pedidosHojeQuery).then(snapshot => {
-                    pedidos = [];
-                    snapshot.forEach(d => pedidos.push({ id: d.id, ...d.data() }));
-                    saveLocalData();
-                    updateListaPedidos();
-                    updateDashboard();
-                    console.log(`⚡ Modo otimizado: ${pedidos.length} pedidos de hoje carregados (sem listener)`);
-                }).catch(err => {
-                    console.error('❌ Erro ao buscar pedidos de hoje:', err);
-                });
+                console.log('⚡ Filtro de 30 dias ativo (fidelidade migrada)');
             } else {
-                // Modo legado: listener com filtro de 30 dias (ou tudo se fidelidade não migrada)
-                let pedidosQuery;
-                if (fidelidadeMigrada) {
-                    const _30diasAtras = new Date();
-                    _30diasAtras.setDate(_30diasAtras.getDate() - 30);
-                    const _30diasStr = _30diasAtras.toISOString().split('T')[0];
-                    pedidosQuery = query(
-                        collection(window.db, 'pedidos'),
-                        where('data', '>=', _30diasStr),
-                        orderBy('data', 'desc')
-                    );
-                    console.log('⚡ Filtro de 30 dias ativo (fidelidade migrada)');
-                } else {
-                    pedidosQuery = query(collection(window.db, 'pedidos'), orderBy('data', 'desc'));
-                    console.log('📋 Carregando todos os pedidos (migração pendente)');
-                }
-                pedidosListener = onSnapshot(pedidosQuery, (snapshot) => {
-                    pedidos = [];
-                    snapshot.forEach((d) => { pedidos.push({ id: d.id, ...d.data() }); });
-                    saveLocalData();
-                    if (snapshot.metadata.fromCache && !snapshot.metadata.hasPendingWrites && _pedidosCarregados) return;
-                    _pedidosCarregados = true;
-                    clearTimeout(_pedidosUpdateTimer);
-                    _pedidosUpdateTimer = setTimeout(() => { updateListaPedidos(); updateDashboard(); }, 120);
-                }, (error) => {
-                    console.error('❌ Erro ao escutar pedidos:', error);
-                    updateConnectionStatus('❌ Erro', 'error');
-                });
+                pedidosQuery = query(collection(window.db, 'pedidos'), orderBy('data', 'desc'));
+                console.log('📋 Carregando todos os pedidos (migração pendente)');
             }
+            pedidosListener = onSnapshot(pedidosQuery, (snapshot) => {
+                pedidos = [];
+                snapshot.forEach((d) => { pedidos.push({ id: d.id, ...d.data() }); });
+                saveLocalData();
+                // Ignora apenas snapshots de cache sem escrita pendente após a primeira carga.
+                // fromCache=false (vindo do servidor) sempre passa — garante consistência entre aparelhos.
+                // hasPendingWrites=true sempre passa — escrita local ainda sendo confirmada.
+                // fromCache=true + hasPendingWrites=false após carga inicial — ignorado (sem mudança real).
+                if (snapshot.metadata.fromCache && !snapshot.metadata.hasPendingWrites && _pedidosCarregados) return;
+                _pedidosCarregados = true;
+                // Debounce: evita re-renders em cascata com 3 aparelhos simultâneos.
+                // Chamadas diretas de ação do usuário (excluir, confirmar, etc.) não passam aqui.
+                clearTimeout(_pedidosUpdateTimer);
+                _pedidosUpdateTimer = setTimeout(() => { updateListaPedidos(); updateDashboard(); }, 120);
+            }, (error) => {
+                console.error('❌ Erro ao escutar pedidos:', error);
+                updateConnectionStatus('❌ Erro', 'error');
+            });
 
             // Estoque
             const estoqueRef = collection(window.db, 'estoque');
@@ -3046,12 +3021,6 @@ Estamos sempre à disposição! 🙏`,
                     saveConfiguracoes();
                     console.log('✅ Configurações atualizadas do Firebase');
 
-                    // Sincroniza flag de refatoração para todos os aparelhos via Firestore
-                    if (configData.refatoracaoMigrada === true && !window._refatoracaoMigrada) {
-                        window._refatoracaoMigrada = true;
-                        console.log('⚡ Refatoração migrada detectada via Firestore — ativando modo otimizado');
-                    }
-
                     // Se havia emoji antigo, salva a versão corrigida de volta no Firebase
                     if (precisaMigrar && currentUser?.email === 'adm@comercialrocha.com') {
                         console.log('🔄 Migrando emojis das mensagens no Firebase...');
@@ -3097,69 +3066,7 @@ Estamos sempre à disposição! 🙏`,
         }
 
         function aplicarFiltroData() {
-            const refatoracaoMigrada = configuracoes.refatoracaoMigrada === true || window._refatoracaoMigrada === true;
-            if (!refatoracaoMigrada) {
-                updateListaPedidos();
-                return;
-            }
-            // Modo otimizado: busca pedidos do filtro ativo sob demanda
-            const hoje = getCurrentDateLocal();
-            if (filtroDataAtual === 'hoje') {
-                updateListaPedidos();
-                return;
-            }
-            if (filtroDataAtual === 'pendentes' || filtroDataAtual === 'todos') {
-                _buscarPedidosFiltroAtivo().then(() => updateListaPedidos());
-                return;
-            }
-            if (filtroDataAtual === 'customDay') {
-                const data = document.getElementById('filtroDataEspecifica').value;
-                if (data) _buscarPedidosDia(data).then(() => updateListaPedidos());
-                return;
-            }
-            if (filtroDataAtual === 'customMonth') {
-                const mes = document.getElementById('filtroMesEspecifico').value;
-                if (mes) _getPedidosMes(mes).then(resultado => { pedidos = resultado; updateListaPedidos(); });
-                return;
-            }
             updateListaPedidos();
-        }
-
-        async function _buscarPedidosFiltroAtivo() {
-            if (!window.db || !window.firebaseUtils || isOfflineMode) return;
-            try {
-                const { collection, query, orderBy, getDocs, where } = window.firebaseUtils;
-                const hoje = getCurrentDateLocal();
-                const _30diasAtras = new Date();
-                _30diasAtras.setDate(_30diasAtras.getDate() - 30);
-                const _30diasStr = _30diasAtras.toISOString().split('T')[0];
-                const q = query(collection(window.db, 'pedidos'), where('data', '>=', _30diasStr), orderBy('data', 'desc'));
-                const snap = await getDocs(q);
-                pedidos = [];
-                snap.forEach(d => pedidos.push({ id: d.id, ...d.data() }));
-                saveLocalData();
-            } catch (err) {
-                console.warn('⚠️ Erro ao buscar pedidos do filtro:', err);
-            }
-        }
-
-        async function _buscarPedidosDia(data) {
-            if (!window.db || !window.firebaseUtils || isOfflineMode) return;
-            try {
-                const { collection, query, where, orderBy, getDocs } = window.firebaseUtils;
-                const q = query(
-                    collection(window.db, 'pedidos'),
-                    where('data', '>=', data + 'T00:00:00.000Z'),
-                    where('data', '<=', data + 'T23:59:59.999Z'),
-                    orderBy('data', 'desc')
-                );
-                const snap = await getDocs(q);
-                pedidos = [];
-                snap.forEach(d => pedidos.push({ id: d.id, ...d.data() }));
-                saveLocalData();
-            } catch (err) {
-                console.warn('⚠️ Erro ao buscar pedidos do dia:', err);
-            }
         }
 
         function filtrarPedidosPorData(pedidosList) {
@@ -3270,37 +3177,6 @@ Estamos sempre à disposição! 🙏`,
             
             checkInternetConnection();
             setInterval(checkInternetConnection, 180000); // 3 minutos
-
-            // Reset de pedidosHoje à meia-noite — garante que o contador do dia zera automaticamente
-            (function agendarResetMeiaNoite() {
-                const agora = new Date();
-                const meiaNoite = new Date(agora);
-                meiaNoite.setDate(meiaNoite.getDate() + 1);
-                meiaNoite.setHours(0, 0, 5, 0); // 00:00:05 do próximo dia
-                const msAteResetear = meiaNoite - agora;
-                setTimeout(async () => {
-                    const refatoracaoMigrada = configuracoes.refatoracaoMigrada === true || window._refatoracaoMigrada === true;
-                    if (refatoracaoMigrada && firebaseConnected && window.firebaseUtils) {
-                        console.log('🔄 Resetando pedidosHoje para todos os clientes (virada do dia)...');
-                        try {
-                            const { writeBatch, doc } = window.firebaseUtils;
-                            const batch = writeBatch(window.db);
-                            clientes.forEach(c => {
-                                if ((c.pedidosHoje || 0) > 0) {
-                                    batch.update(doc(window.db, 'clientes', c.id), { pedidosHoje: 0 });
-                                }
-                            });
-                            await batch.commit();
-                            clientes.forEach((c, i) => { clientes[i].pedidosHoje = 0; });
-                            updateDashboard();
-                            console.log('✅ pedidosHoje zerado com sucesso');
-                        } catch (err) {
-                            console.warn('⚠️ Erro ao resetar pedidosHoje:', err);
-                        }
-                    }
-                    agendarResetMeiaNoite(); // reagenda para o próximo dia
-                }, msAteResetear);
-            })();
 
             // Firebase já está resolvido quando initializeApp é chamado (via firebaseReady Promise)
             if (window.firebaseLoaded && window.auth && window.firebaseUtils && window.authUtils) {
@@ -4699,47 +4575,51 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
                     data: getCurrentDateTime()
                 });
 
-                // Atualiza fidelidade + ultimaCompra + contadores resumo no mesmo commit.
+                // Atualiza fidelidade + ultimaCompra no mesmo commit (evita escrita separada
+                // que dispararia o listener de clientes e causaria cascata de leituras).
                 // Só quando o pedido já nasce pago (ex: grátis por fidelidade).
-                const clienteIdx = clientes.findIndex(c => c.id === pedidoData.clienteId);
-                if (clienteIdx !== -1) {
-                    const cliente = clientes[clienteIdx];
-                    const clienteRef = doc(window.db, 'clientes', pedidoData.clienteId);
-                    const refatoracaoMigrada = configuracoes.refatoracaoMigrada === true || window._refatoracaoMigrada === true;
-                    const clienteUpdate = { updatedAt: getCurrentDateTime() };
+                if (pedidoData.pago === true) {
+                    const clienteIdx = clientes.findIndex(c => c.id === pedidoData.clienteId);
+                    if (clienteIdx !== -1 && typeof clientes[clienteIdx].galoesPagosTotais === 'number') {
+                        const cliente = clientes[clienteIdx];
+                        const galoesDoPedido = pedidoData.galoesPagos || pedidoData.quantidade || 1;
+                        const ehGratis = pedidoData.isGratis === true;
 
-                    if (pedidoData.pago === true) {
-                        // Pedido já nasce pago — atualiza fidelidade + ultimaCompra + pedidosHoje
-                        if (typeof cliente.galoesPagosTotais === 'number') {
-                            const galoesDoPedido = pedidoData.galoesPagos || pedidoData.quantidade || 1;
-                            const ehGratis = pedidoData.isGratis === true;
-                            const novosPagos = ehGratis ? cliente.galoesPagosTotais : cliente.galoesPagosTotais + galoesDoPedido;
-                            const novosGratis = ehGratis ? (cliente.galoesGratisTotais || 0) + (pedidoData.quantidade || 1) : (cliente.galoesGratisTotais || 0);
-                            clientes[clienteIdx].galoesPagosTotais = novosPagos;
-                            clientes[clienteIdx].galoesGratisTotais = novosGratis;
-                            clienteUpdate.galoesPagosTotais = novosPagos;
-                            clienteUpdate.galoesGratisTotais = novosGratis;
-                        }
+                        const novosPagos = ehGratis
+                            ? cliente.galoesPagosTotais
+                            : cliente.galoesPagosTotais + galoesDoPedido;
+                        const novosGratis = ehGratis
+                            ? (cliente.galoesGratisTotais || 0) + (pedidoData.quantidade || 1)
+                            : (cliente.galoesGratisTotais || 0);
+
+                        // Atualiza array local imediatamente (optimistic update)
+                        clientes[clienteIdx].galoesPagosTotais = novosPagos;
+                        clientes[clienteIdx].galoesGratisTotais = novosGratis;
                         clientes[clienteIdx].ultimaCompra = getCurrentDateTime();
-                        clienteUpdate.ultimaCompra = getCurrentDateTime();
-                        if (refatoracaoMigrada) {
-                            const novoPedidosHoje = (cliente.pedidosHoje || 0) + 1;
-                            clientes[clienteIdx].pedidosHoje = novoPedidosHoje;
-                            clienteUpdate.pedidosHoje = novoPedidosHoje;
-                        }
-                    } else if (refatoracaoMigrada) {
-                        // Pedido nasce pendente — incrementa pedidosPendentes
-                        const novoPendentes = (cliente.pedidosPendentes || 0) + 1;
-                        clientes[clienteIdx].pedidosPendentes = novoPendentes;
-                        clienteUpdate.pedidosPendentes = novoPendentes;
-                    }
 
-                    if (Object.keys(clienteUpdate).length > 1) {
-                        batch.update(clienteRef, clienteUpdate);
+                        const clienteRef = doc(window.db, 'clientes', pedidoData.clienteId);
+                        batch.update(clienteRef, {
+                            galoesPagosTotais: novosPagos,
+                            galoesGratisTotais: novosGratis,
+                            ultimaCompra: getCurrentDateTime(),
+                            updatedAt: getCurrentDateTime()
+                        });
                     }
                 }
 
                 await batch.commit();
+
+                // ✅ Optimistic update: insere o pedido imediatamente no array local.
+                // Com persistentLocalCache + filtro where('data'), o onSnapshot especulativo
+                // (hasPendingWrites=true) não inclui o doc novo porque o campo 'data' só é
+                // resolvido no servidor. Sem isso o pedido só aparece após recarregar a página.
+                const _dataAgora = getCurrentDateTime();
+                const _novoPedido = { id: pedidoRef.id, ...pedidoData, userId: currentUser.uid, data: _dataAgora };
+                if (!pedidos.some(p => p.id === pedidoRef.id)) {
+                    pedidos.unshift(_novoPedido);
+                }
+                updateListaPedidos();
+                updateDashboard();
 
                 // Invalida cache do cliente para refletir o novo pedido
                 delete _cachePedidosCliente[pedidoData.clienteId];
@@ -4926,17 +4806,6 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
                 // Só decrementa se o pedido estava pago (apenas pedidos pagos foram contados).
                 if (pedido.pago === true) {
                     await _atualizarAcumuladoCliente(pedido.clienteId, pedido, -1);
-                } else {
-                    // Pedido pendente excluído — decrementa pedidosPendentes
-                    const refatoracaoMigrada = configuracoes.refatoracaoMigrada === true || window._refatoracaoMigrada === true;
-                    if (refatoracaoMigrada) {
-                        const idx = clientes.findIndex(c => c.id === pedido.clienteId);
-                        if (idx !== -1) {
-                            const novoPendentes = Math.max(0, (clientes[idx].pedidosPendentes || 0) - 1);
-                            clientes[idx].pedidosPendentes = novoPendentes;
-                            await atualizarCliente(pedido.clienteId, { pedidosPendentes: novoPendentes });
-                        }
-                    }
                 }
                 
                 // CORREÇÃO 1: Update all displays IMMEDIATELY
@@ -5708,10 +5577,6 @@ Estamos sempre à disposição! 🙏`,
             if (btnMigrar) {
                 btnMigrar.addEventListener('click', () => migrarFidelidade());
             }
-            const btnMigrarRef = document.getElementById('btnMigrarRefatoracao');
-            if (btnMigrarRef) {
-                btnMigrarRef.addEventListener('click', () => migrarRefatoracao());
-            }
             const btnMigrarEmp = document.getElementById('btnMigrarEmprestimos');
             if (btnMigrarEmp) {
                 btnMigrarEmp.addEventListener('click', () => migrarEmprestimos());
@@ -6341,17 +6206,6 @@ Estamos sempre à disposição! 🙏`,
                                         clienteUpdate.galoesGratisTotais = (cliente.galoesGratisTotais || 0) + (pedidoConfirmado.quantidade || 1);
                                         clientes[clienteIdx].galoesGratisTotais = clienteUpdate.galoesGratisTotais;
                                     }
-                                }
-
-                                // Contadores resumo — pedido pendente virou pago
-                                const refatoracaoMigrada = configuracoes.refatoracaoMigrada === true || window._refatoracaoMigrada === true;
-                                if (refatoracaoMigrada) {
-                                    const novoPendentes = Math.max(0, (cliente.pedidosPendentes || 0) - 1);
-                                    const novoPedidosHoje = (cliente.pedidosHoje || 0) + 1;
-                                    clienteUpdate.pedidosPendentes = novoPendentes;
-                                    clienteUpdate.pedidosHoje = novoPedidosHoje;
-                                    clientes[clienteIdx].pedidosPendentes = novoPendentes;
-                                    clientes[clienteIdx].pedidosHoje = novoPedidosHoje;
                                 }
 
                                 batch.update(clienteRef, clienteUpdate);
@@ -7284,23 +7138,13 @@ Nenhum valor a pagar.`, 'info');
 
         function updateDashboard() {
             const hoje = getCurrentDateLocal();
-            const refatoracaoMigrada = configuracoes.refatoracaoMigrada === true || window._refatoracaoMigrada === true;
             
             // Total de clientes ativos
             const clientesAtivos = clientes.filter(c => !c.inativo).length;
             document.getElementById('totalClientes').textContent = clientesAtivos;
             
-            // Vendas hoje e pedidos pendentes:
-            // Modo otimizado — lê campos resumo do cliente (zero leituras extras)
-            // Modo legado  — filtra array de pedidos em memória
-            let vendasHoje, pedidosPendentes;
-            if (refatoracaoMigrada) {
-                vendasHoje = clientes.reduce((t, c) => t + (c.pedidosHoje || 0), 0);
-                pedidosPendentes = clientes.reduce((t, c) => t + (c.pedidosPendentes || 0), 0);
-            } else {
-                vendasHoje = pedidos.filter(p => p.pago && isSameDate(p.dataIda, hoje)).length;
-                pedidosPendentes = pedidos.filter(p => !p.pago).length;
-            }
+            // MODIFICADO: Vendas hoje agora mostra número de pedidos
+            const vendasHoje = pedidos.filter(p => p.pago && isSameDate(p.dataIda, hoje)).length;
             document.getElementById('vendasHoje').textContent = vendasHoje;
             
             // Total galões no estoque
@@ -7310,6 +7154,8 @@ Nenhum valor a pagar.`, 'info');
             });
             document.getElementById('galoesEstoque').textContent = totalGaloesEstoque;
             
+            // Pedidos pendentes
+            const pedidosPendentes = pedidos.filter(p => !p.pago).length;
             document.getElementById('pedidosPendentes').textContent = pedidosPendentes;
             
             // MODIFICADO: Atualizar notificações com nova lógica
@@ -8670,101 +8516,6 @@ O app agora usa acumulados de fidelidade. Recarregue a página para ativar o fil
                 btnEl.disabled = false;
                 btnEl.textContent = '⚡ Migrar Fidelidade (Admin)';
             }
-        }
-
-        async function migrarRefatoracao() {
-            if (isOfflineMode || !firebaseConnected || !currentUser) {
-                toast('⚠️ Conecte-se ao Firebase antes de migrar.', 'warning');
-                return;
-            }
-            if (currentUser.email !== 'adm@comercialrocha.com') {
-                toast('⚠️ Apenas o admin pode executar a migração.', 'warning');
-                return;
-            }
-
-            const statusEl = document.getElementById('migracaoRefatoracaoStatus');
-            const btnEl = document.getElementById('btnMigrarRefatoracao');
-
-            if (!confirm('🚀 Isso vai calcular os contadores de pedidos pendentes e pedidos de hoje para cada cliente e salvar no banco.\n\nNenhum dado será perdido — apenas campos novos serão adicionados.\n\nApós concluir, o app para de usar o listener de pedidos na abertura, reduzindo as leituras em ~90%.\n\nContinuar?')) return;
-
-            btnEl.disabled = true;
-            btnEl.textContent = '⏳ Migrando...';
-            statusEl.classList.remove('hidden');
-            statusEl.className = 'text-xs text-center mt-2 text-blue-600';
-            statusEl.textContent = 'Buscando todos os pedidos do Firebase...';
-
-            // Busca todos os pedidos diretamente do Firestore
-            let todosPedidos = [];
-            try {
-                const { collection, query, orderBy, getDocs } = window.firebaseUtils;
-                const q = query(collection(window.db, 'pedidos'), orderBy('data', 'desc'));
-                const snap = await getDocs(q);
-                snap.forEach(d => todosPedidos.push({ id: d.id, ...d.data() }));
-                statusEl.textContent = `${todosPedidos.length} pedidos carregados. Calculando contadores...`;
-            } catch (err) {
-                console.error('❌ Erro ao buscar pedidos:', err);
-                statusEl.className = 'text-xs text-center mt-2 text-red-600 font-bold';
-                statusEl.textContent = '❌ Erro ao buscar pedidos. Tente novamente.';
-                btnEl.disabled = false;
-                btnEl.textContent = '🚀 Migrar Contadores (Admin)';
-                return;
-            }
-
-            const hoje = getCurrentDateLocal();
-            let ok = 0, erros = 0;
-            const total = clientes.length;
-
-            for (const cliente of clientes) {
-                try {
-                    const pedidosCliente = todosPedidos.filter(p => p.clienteId === cliente.id);
-                    const pedidosPendentes = pedidosCliente.filter(p => !p.pago).length;
-                    const pedidosHoje = pedidosCliente.filter(p => p.pago && isSameDate(p.dataIda || p.data, hoje)).length;
-
-                    // Atualiza array local
-                    const idx = clientes.findIndex(c => c.id === cliente.id);
-                    if (idx !== -1) {
-                        clientes[idx].pedidosPendentes = pedidosPendentes;
-                        clientes[idx].pedidosHoje = pedidosHoje;
-                    }
-
-                    await atualizarCliente(cliente.id, { pedidosPendentes, pedidosHoje });
-                    ok++;
-                    statusEl.textContent = `Migrando ${ok}/${total} clientes...`;
-                } catch (err) {
-                    console.error('❌ Erro ao migrar cliente:', cliente.id, err);
-                    erros++;
-                }
-            }
-
-            if (erros > 0) {
-                statusEl.className = 'text-xs text-center mt-2 text-orange-600 font-bold';
-                statusEl.textContent = `⚠️ ${ok} ok, ${erros} com erro. Verifique o console.`;
-                btnEl.disabled = false;
-                btnEl.textContent = '🚀 Migrar Contadores (Admin)';
-                return;
-            }
-
-            // Salva flag no Firestore — todos os aparelhos recebem automaticamente
-            try {
-                const { doc, updateDoc } = window.firebaseUtils;
-                await updateDoc(doc(window.db, 'configuracoes', 'global'), {
-                    refatoracaoMigrada: true,
-                    refatoracaoMigradaEm: getCurrentDateTime()
-                });
-                configuracoes.refatoracaoMigrada = true;
-                window._refatoracaoMigrada = true;
-            } catch (err) {
-                console.error('❌ Erro ao salvar flag no Firestore:', err);
-            }
-
-            statusEl.className = 'text-xs text-center mt-2 text-green-600 font-bold';
-            statusEl.textContent = `✅ Migração concluída! ${ok} clientes atualizados.`;
-            btnEl.textContent = '✅ Migração concluída';
-
-            toast(`✅ Migração concluída! ${ok} clientes atualizados.\n\nO app agora usa o modo otimizado — leituras reduzidas em ~90%. Os outros aparelhos ativam automaticamente.`, 'success', 8000);
-
-            // Atualiza o dashboard com os novos campos
-            updateDashboard();
         }
 
         function exportarParaExcel(titulo) {
