@@ -5160,7 +5160,11 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
                         endereco: endereco,
                         ultimaCompra: null,
                         galaoAtual: null,
-                        inativo: false
+                        inativo: false,
+                        // Campos de fidelidade inicializados em zero — necessário para o sistema
+                        // de fidelidade funcionar corretamente sem depender do fallback do array de pedidos
+                        galoesPagosTotais: 0,
+                        galoesGratisTotais: 0
                     };
                     
                     await salvarCliente(dadosCliente);
