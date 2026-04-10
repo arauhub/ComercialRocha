@@ -2927,7 +2927,10 @@ Estamos sempre à disposição! 🙏`,
             // (reduz leituras em ~67% vs 90 dias). Antes da migração, carrega tudo para garantir fidelidade correta.
             // Pedidos mais antigos continuam acessíveis via relatórios (getDocs pontual).
             let pedidosQuery;
-            const fidelidadeMigrada = localStorage.getItem('fidelidadeMigrada') === 'true';
+            // ⚠️ Lê de configuracoes (Firestore) para que TODOS os aparelhos usem o filtro.
+            // Fallback para localStorage garante compatibilidade com sessões já abertas.
+            const fidelidadeMigrada = configuracoes.fidelidadeMigrada === true
+                || localStorage.getItem('fidelidadeMigrada') === 'true';
             if (fidelidadeMigrada) {
                 const _30diasAtras = new Date();
                 _30diasAtras.setDate(_30diasAtras.getDate() - 30);
@@ -3208,7 +3211,13 @@ Estamos sempre à disposição! 🙏`,
                     currentUser = user;
                     updateAuthStatus(user.email.split('@')[0]);
                     checkConfigAccess(user.email);
-                    setupOptimizedFirebaseListeners(); // CHANGED: Use optimized listeners
+                    // Cancela listeners anteriores — evita duplicação na renovação de token
+                    if (clientesListener) { clientesListener(); clientesListener = null; }
+                    if (pedidosListener) { pedidosListener(); pedidosListener = null; }
+                    if (estoqueListener) { estoqueListener(); estoqueListener = null; }
+                    if (emprestimosListener) { emprestimosListener(); emprestimosListener = null; }
+                    if (configuracoesListener) { configuracoesListener(); configuracoesListener = null; }
+                    setupOptimizedFirebaseListeners();
                     showMainApp();
                     syncPendingData();
                 } else {
@@ -3333,12 +3342,18 @@ Estamos sempre à disposição! 🙏`,
                 // Cache para evitar leituras desnecessárias
                 const configCacheKey = `config_${Date.now()}`;
                 
+                // ⚠️ merge:true preserva campos extras no Firestore que o app não conhece
+                // (corFundo, corHeader, sloganComprovante, refatoracaoMigrada, etc.)
+                // Sem merge, setDoc sobrescreveria o documento inteiro apagando esses campos.
                 await setDoc(doc(window.db, 'configuracoes', 'global'), {
                     ...configuracoes,
+                    // Garante que flags de migração nunca sejam removidas ao salvar configurações
+                    fidelidadeMigrada: configuracoes.fidelidadeMigrada === true ? true : (configuracoes.fidelidadeMigrada || false),
+                    emprestimosMigrados: configuracoes.emprestimosMigrados === true ? true : (configuracoes.emprestimosMigrados || false),
                     updatedBy: currentUser.email,
                     updatedAt: getCurrentDateTime(),
                     cacheKey: configCacheKey
-                });
+                }, { merge: true });
                 
                 saveConfiguracoes();
                 
@@ -5499,7 +5514,10 @@ Estamos sempre à disposição! 🙏`,
                         galoesParaGratis: 10,
                         frequenciaBackup: 7,
                         caminhoBackup: '',
-                        ultimoBackup: null
+                        ultimoBackup: null,
+                        // ⚠️ Preserva flags de migração — nunca devem ser apagadas pelo restaurar padrão
+                        fidelidadeMigrada: configuracoes.fidelidadeMigrada || false,
+                        emprestimosMigrados: configuracoes.emprestimosMigrados || false
                     };
                     document.getElementById('configDiasNotificacao').value = configuracoes.diasNotificacao;
                     document.getElementById('configPrecoGalao').value = configuracoes.precoGalao;
@@ -7393,7 +7411,7 @@ Estamos sempre à disposição! 🙏`;
         // Se o mês estiver dentro dos 30 dias em memória, usa o array.
         // Caso contrário, busca no Firestore via getDocs.
         async function _getPedidosMes(mesAno) {
-            const fidelidadeMigrada = localStorage.getItem('fidelidadeMigrada') === 'true';
+            const fidelidadeMigrada = configuracoes.fidelidadeMigrada === true || localStorage.getItem('fidelidadeMigrada') === 'true';
             if (!fidelidadeMigrada) return pedidos; // antes da migração: usa array completo
 
             const [ano, mes] = mesAno.split('-').map(Number);
@@ -7432,7 +7450,7 @@ Estamos sempre à disposição! 🙏`;
         // Retorna pedidos para um ano específico.
         // Se o ano for o atual e já tiver 30 dias cobertos, usa getDocs do início do ano.
         async function _getPedidosAno(ano) {
-            const fidelidadeMigrada = localStorage.getItem('fidelidadeMigrada') === 'true';
+            const fidelidadeMigrada = configuracoes.fidelidadeMigrada === true || localStorage.getItem('fidelidadeMigrada') === 'true';
             if (!fidelidadeMigrada) return pedidos;
 
             const inicioAno = new Date(ano, 0, 1);
@@ -7467,7 +7485,7 @@ Estamos sempre à disposição! 🙏`;
         // Usa cache em memória (_cachePedidosCliente) para evitar leituras repetidas no Firebase
         // durante a mesma sessão. O cache é invalidado ao criar, atualizar ou excluir pedidos.
         async function _getPedidosCliente(clienteId) {
-            const fidelidadeMigrada = localStorage.getItem('fidelidadeMigrada') === 'true';
+            const fidelidadeMigrada = configuracoes.fidelidadeMigrada === true || localStorage.getItem('fidelidadeMigrada') === 'true';
             if (!fidelidadeMigrada) return pedidos.filter(p => p.clienteId == clienteId);
 
             if (!window.db || !window.firebaseUtils || isOfflineMode) {
@@ -8504,8 +8522,21 @@ Estamos sempre à disposição! 🙏`;
                 statusEl.textContent = `✅ Migração concluída! ${ok} clientes atualizados.`;
                 btnEl.textContent = '✅ Migração concluída';
 
-                // Salva flag no localStorage para ativar filtro de 90 dias
+                // Salva flag no localStorage (este dispositivo) E no Firestore (todos os aparelhos).
+                // Sem salvar no Firestore, outros dispositivos continuariam lendo todo o histórico.
                 localStorage.setItem('fidelidadeMigrada', 'true');
+                configuracoes.fidelidadeMigrada = true;
+                try {
+                    const { setDoc, doc } = window.firebaseUtils;
+                    await setDoc(doc(window.db, 'configuracoes', 'global'), {
+                        ...configuracoes,
+                        fidelidadeMigrada: true,
+                        updatedAt: getCurrentDateTime()
+                    }, { merge: true });
+                    console.log('✅ fidelidadeMigrada salvo no Firestore — todos os aparelhos usarão o filtro de 30 dias');
+                } catch (err) {
+                    console.warn('⚠️ Erro ao salvar fidelidadeMigrada no Firestore:', err);
+                }
 
                 toast(`✅ Migração concluída! ${ok} clientes atualizados.
 
