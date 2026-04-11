@@ -2938,6 +2938,7 @@ Estamos sempre à disposição! 🙏`,
             // Debounce de 300ms para absorver escritas em cascata (batch commit dispara 1 evento, mas
             // múltiplos aparelhos podem disparar em sequência). fromCache ignorado após primeira carga.
             let _clientesUpdateTimer = null;
+            let _primeiraCargaClientes = true;
             const clientesRef = collection(window.db, 'clientes');
             clientesListener = onSnapshot(clientesRef, (snapshot) => {
                 clientes = [];
@@ -2945,6 +2946,13 @@ Estamos sempre à disposição! 🙏`,
                 saveLocalData();
                 if (snapshot.metadata.fromCache && !snapshot.metadata.hasPendingWrites && _clientesCarregados) return;
                 _clientesCarregados = true;
+
+                // Na primeira carga real do servidor, verifica se pedidosHoje precisa ser zerado
+                if (_primeiraCargaClientes && !snapshot.metadata.fromCache) {
+                    _primeiraCargaClientes = false;
+                    _verificarEResetarHoje();
+                }
+
                 clearTimeout(_clientesUpdateTimer);
                 _clientesUpdateTimer = setTimeout(() => { updateClientesUI(); }, 300);
             }, (error) => {
@@ -3083,11 +3091,31 @@ Estamos sempre à disposição! 🙏`,
             });
 
             lastSyncTime = Date.now();
+        }
 
-            // Executa reset de pedidosHoje se o dia mudou desde a última abertura
-            if (window._precisaResetarHoje) {
-                window._precisaResetarHoje = false;
-                setTimeout(() => _executarResetPedidosHoje(), 2000); // aguarda clientes carregarem
+        // Verifica se pedidosHoje está desatualizado e zera se necessário.
+        // Chamado na primeira carga real dos clientes — dados garantidamente disponíveis.
+        async function _verificarEResetarHoje() {
+            const refatoracaoMigrada = configuracoes.refatoracaoMigrada === true || window._refatoracaoMigrada === true;
+            if (!refatoracaoMigrada) return;
+
+            const hoje = getCurrentDateLocal();
+            const ultimoDia = localStorage.getItem('_ultimoDiaApp');
+
+            // Caso 1: dia mudou desde a última abertura
+            const diaMudou = ultimoDia && ultimoDia !== hoje;
+
+            // Caso 2: campo tem valor mas não há pedidos pagos hoje no banco
+            // (cobre o caso de publicar novo código sem o dia ter mudado)
+            const temCampoComValor = clientes.some(c => (c.pedidosHoje || 0) > 0);
+            const temPedidoHojeReal = pedidos.some(p => p.pago && isSameDate(p.dataIda || p.data, hoje));
+            const campoDesatualizado = temCampoComValor && !temPedidoHojeReal;
+
+            localStorage.setItem('_ultimoDiaApp', hoje);
+
+            if (diaMudou || campoDesatualizado) {
+                console.log(`🔄 Zerando pedidosHoje — motivo: ${diaMudou ? 'dia mudou' : 'campo desatualizado'}`);
+                await _executarResetPedidosHoje();
             }
         }
 
@@ -3345,27 +3373,23 @@ Estamos sempre à disposição! 🙏`,
             checkInternetConnection();
             setInterval(checkInternetConnection, 180000); // 3 minutos
 
-            // Reset de pedidosHoje na abertura do app — verifica se o dia mudou desde a última abertura.
-            // Mais confiável que timer de meia-noite, pois funciona independente de o app estar aberto às 00:00.
+            // Registra o dia atual — usado por _verificarEResetarHoje na primeira carga de clientes
             (function verificarResetDia() {
-                const hoje = getCurrentDateLocal(); // ex: "2026-04-11"
+                const hoje = getCurrentDateLocal();
                 const ultimoDia = localStorage.getItem('_ultimoDiaApp');
                 if (ultimoDia && ultimoDia !== hoje) {
-                    // Dia mudou — zera pedidosHoje assim que o Firebase estiver pronto
-                    window._precisaResetarHoje = true;
-                    console.log(`🔄 Dia mudou (${ultimoDia} → ${hoje}), pedidosHoje será zerado`);
+                    console.log(`🔄 Dia mudou (${ultimoDia} → ${hoje}), pedidosHoje será zerado ao carregar`);
                 }
-                localStorage.setItem('_ultimoDiaApp', hoje);
-
-                // Verifica também a cada hora — cobre o caso de o app ficar aberto o dia todo
+                // Não atualiza _ultimoDiaApp aqui — deixa para _verificarEResetarHoje após dados carregados
+                // Verifica também a cada hora — cobre app aberto passando da meia-noite
                 setInterval(async () => {
                     const diaAtual = getCurrentDateLocal();
                     const diaArmazenado = localStorage.getItem('_ultimoDiaApp');
-                    if (diaArmazenado !== diaAtual) {
+                    if (diaArmazenado && diaArmazenado !== diaAtual) {
                         localStorage.setItem('_ultimoDiaApp', diaAtual);
                         await _executarResetPedidosHoje();
                     }
-                }, 3600000); // verifica a cada 1 hora
+                }, 3600000);
             })();
 
             // Firebase já está resolvido quando initializeApp é chamado (via firebaseReady Promise)
