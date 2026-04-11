@@ -3083,11 +3083,52 @@ Estamos sempre à disposição! 🙏`,
             });
 
             lastSyncTime = Date.now();
+
+            // Executa reset de pedidosHoje se o dia mudou desde a última abertura
+            if (window._precisaResetarHoje) {
+                window._precisaResetarHoje = false;
+                setTimeout(() => _executarResetPedidosHoje(), 2000); // aguarda clientes carregarem
+            }
         }
 
-        // ================================
-        // REST OF THE CODE (UNCHANGED FUNCTIONS)
-        // ================================
+        // Zera pedidosHoje em todos os clientes via writeBatch — chamado na abertura se o dia mudou
+        async function _executarResetPedidosHoje() {
+            const refatoracaoMigrada = configuracoes.refatoracaoMigrada === true || window._refatoracaoMigrada === true;
+            if (!refatoracaoMigrada || !firebaseConnected || !window.firebaseUtils || isOfflineMode) return;
+            if (!clientes || clientes.length === 0) return;
+
+            const temHoje = clientes.some(c => (c.pedidosHoje || 0) > 0);
+            if (!temHoje) return; // já zerado, nada a fazer
+
+            try {
+                console.log('🔄 Zerando pedidosHoje (dia mudou)...');
+                const { writeBatch, doc } = window.firebaseUtils;
+                const BATCH_SIZE = 499;
+                let batch = writeBatch(window.db);
+                let count = 0;
+
+                for (const c of clientes) {
+                    if ((c.pedidosHoje || 0) > 0) {
+                        batch.update(doc(window.db, 'clientes', c.id), { pedidosHoje: 0 });
+                        count++;
+                        if (count >= BATCH_SIZE) {
+                            await batch.commit();
+                            batch = writeBatch(window.db);
+                            count = 0;
+                        }
+                    }
+                }
+                if (count > 0) await batch.commit();
+
+                // Atualiza array local
+                clientes.forEach((c, i) => { clientes[i].pedidosHoje = 0; });
+                saveLocalData();
+                updateDashboard();
+                console.log('✅ pedidosHoje zerado com sucesso');
+            } catch (err) {
+                console.warn('⚠️ Erro ao zerar pedidosHoje:', err);
+            }
+        }
 
         // Novas funções de filtro de data
         function setFiltroData(tipo, evt) {
@@ -3145,15 +3186,32 @@ Estamos sempre à disposição! 🙏`,
             if (!window.db || !window.firebaseUtils || isOfflineMode) return;
             try {
                 const { collection, query, orderBy, getDocs, where } = window.firebaseUtils;
-                const hoje = getCurrentDateLocal();
-                const _30diasAtras = new Date();
-                _30diasAtras.setDate(_30diasAtras.getDate() - 30);
-                const _30diasStr = _30diasAtras.toISOString().split('T')[0];
-                const q = query(collection(window.db, 'pedidos'), where('data', '>=', _30diasStr), orderBy('data', 'desc'));
-                const snap = await getDocs(q);
-                pedidos = [];
-                snap.forEach(d => pedidos.push({ id: d.id, ...d.data() }));
-                saveLocalData();
+
+                if (filtroDataAtual === 'pendentes') {
+                    // Pendentes: busca TODOS os não pagos independente da data
+                    // Usa só where sem orderBy para evitar necessidade de índice composto
+                    // Ordena em memória depois
+                    const q = query(
+                        collection(window.db, 'pedidos'),
+                        where('pago', '==', false)
+                    );
+                    const snap = await getDocs(q);
+                    pedidos = [];
+                    snap.forEach(d => pedidos.push({ id: d.id, ...d.data() }));
+                    pedidos.sort((a, b) => (b.data || '').localeCompare(a.data || ''));
+                    saveLocalData();
+                    console.log(`📋 Pendentes: ${pedidos.length} pedidos não pagos carregados`);
+                } else {
+                    // Todos / outros: busca últimos 30 dias
+                    const _30diasAtras = new Date();
+                    _30diasAtras.setDate(_30diasAtras.getDate() - 30);
+                    const _30diasStr = _30diasAtras.toISOString().split('T')[0];
+                    const q = query(collection(window.db, 'pedidos'), where('data', '>=', _30diasStr), orderBy('data', 'desc'));
+                    const snap = await getDocs(q);
+                    pedidos = [];
+                    snap.forEach(d => pedidos.push({ id: d.id, ...d.data() }));
+                    saveLocalData();
+                }
             } catch (err) {
                 console.warn('⚠️ Erro ao buscar pedidos do filtro:', err);
             }
@@ -3287,35 +3345,27 @@ Estamos sempre à disposição! 🙏`,
             checkInternetConnection();
             setInterval(checkInternetConnection, 180000); // 3 minutos
 
-            // Reset de pedidosHoje à meia-noite — garante que o contador do dia zera automaticamente
-            (function agendarResetMeiaNoite() {
-                const agora = new Date();
-                const meiaNoite = new Date(agora);
-                meiaNoite.setDate(meiaNoite.getDate() + 1);
-                meiaNoite.setHours(0, 0, 5, 0); // 00:00:05 do próximo dia
-                const msAteResetear = meiaNoite - agora;
-                setTimeout(async () => {
-                    const refatoracaoMigrada = configuracoes.refatoracaoMigrada === true || window._refatoracaoMigrada === true;
-                    if (refatoracaoMigrada && firebaseConnected && window.firebaseUtils) {
-                        console.log('🔄 Resetando pedidosHoje para todos os clientes (virada do dia)...');
-                        try {
-                            const { writeBatch, doc } = window.firebaseUtils;
-                            const batch = writeBatch(window.db);
-                            clientes.forEach(c => {
-                                if ((c.pedidosHoje || 0) > 0) {
-                                    batch.update(doc(window.db, 'clientes', c.id), { pedidosHoje: 0 });
-                                }
-                            });
-                            await batch.commit();
-                            clientes.forEach((c, i) => { clientes[i].pedidosHoje = 0; });
-                            updateDashboard();
-                            console.log('✅ pedidosHoje zerado com sucesso');
-                        } catch (err) {
-                            console.warn('⚠️ Erro ao resetar pedidosHoje:', err);
-                        }
+            // Reset de pedidosHoje na abertura do app — verifica se o dia mudou desde a última abertura.
+            // Mais confiável que timer de meia-noite, pois funciona independente de o app estar aberto às 00:00.
+            (function verificarResetDia() {
+                const hoje = getCurrentDateLocal(); // ex: "2026-04-11"
+                const ultimoDia = localStorage.getItem('_ultimoDiaApp');
+                if (ultimoDia && ultimoDia !== hoje) {
+                    // Dia mudou — zera pedidosHoje assim que o Firebase estiver pronto
+                    window._precisaResetarHoje = true;
+                    console.log(`🔄 Dia mudou (${ultimoDia} → ${hoje}), pedidosHoje será zerado`);
+                }
+                localStorage.setItem('_ultimoDiaApp', hoje);
+
+                // Verifica também a cada hora — cobre o caso de o app ficar aberto o dia todo
+                setInterval(async () => {
+                    const diaAtual = getCurrentDateLocal();
+                    const diaArmazenado = localStorage.getItem('_ultimoDiaApp');
+                    if (diaArmazenado !== diaAtual) {
+                        localStorage.setItem('_ultimoDiaApp', diaAtual);
+                        await _executarResetPedidosHoje();
                     }
-                    agendarResetMeiaNoite(); // reagenda para o próximo dia
-                }, msAteResetear);
+                }, 3600000); // verifica a cada 1 hora
             })();
 
             // Firebase já está resolvido quando initializeApp é chamado (via firebaseReady Promise)
