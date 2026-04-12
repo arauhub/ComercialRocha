@@ -4837,6 +4837,19 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
 
                 await batch.commit();
 
+                // Adiciona o pedido no array local imediatamente (sem precisar de F5)
+                // No modo otimizado não há listener de pedidos — a UI só atualiza via array local
+                const pedidoLocal = {
+                    id: pedidoRef.id,
+                    ...pedidoData,
+                    userId: currentUser.uid,
+                    data: getCurrentDateTime()
+                };
+                pedidos.unshift(pedidoLocal);
+                saveLocalData();
+                updateListaPedidos();
+                updateDashboard();
+
                 // Invalida cache do cliente para refletir o novo pedido
                 delete _cachePedidosCliente[pedidoData.clienteId];
 
