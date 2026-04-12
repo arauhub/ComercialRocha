@@ -5035,6 +5035,20 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
                 // Só decrementa se o pedido estava pago (apenas pedidos pagos foram contados).
                 if (pedido.pago === true) {
                     await _atualizarAcumuladoCliente(pedido.clienteId, pedido, -1);
+                    // Decrementa pedidosHoje se o pedido era de hoje
+                    const refatoracaoMigrada = configuracoes.refatoracaoMigrada === true || window._refatoracaoMigrada === true;
+                    if (refatoracaoMigrada) {
+                        const hoje = getCurrentDateLocal();
+                        const eraHoje = isSameDate(pedido.dataIda || pedido.data, hoje);
+                        if (eraHoje) {
+                            const idx = clientes.findIndex(c => c.id === pedido.clienteId);
+                            if (idx !== -1) {
+                                const novoPedidosHoje = Math.max(0, (clientes[idx].pedidosHoje || 0) - 1);
+                                clientes[idx].pedidosHoje = novoPedidosHoje;
+                                await atualizarCliente(pedido.clienteId, { pedidosHoje: novoPedidosHoje });
+                            }
+                        }
+                    }
                 } else {
                     // Pedido pendente excluído — decrementa pedidosPendentes
                     const refatoracaoMigrada = configuracoes.refatoracaoMigrada === true || window._refatoracaoMigrada === true;
