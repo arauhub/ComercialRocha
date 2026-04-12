@@ -1483,24 +1483,6 @@ window.firebaseLoaded = true;
                         </button>
                         <div class="admin-only" id="migracaoFidelidadeSection">
                             <hr class="border-gray-300 dark:border-gray-600 my-2">
-                            <p class="text-xs text-gray-500 mb-2">⚡ <strong>Passo 1:</strong> Migra os totais de fidelidade para os clientes, reduzindo leituras em ~80%. Rode <strong>uma única vez</strong>.</p>
-                            <button id="btnMigrarFidelidade" class="btn-modern w-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700">
-                                ⚡ Migrar Fidelidade (Admin)
-                            </button>
-                            <p id="migracaoStatus" class="text-xs text-center mt-2 hidden"></p>
-                            <hr class="border-gray-300 dark:border-gray-600 my-2 mt-3">
-                            <p class="text-xs text-gray-500 mb-2">🪣 <strong>Passo 2:</strong> Migra galões emprestados dos pedidos para a coleção de empréstimos — ficam permanentes e não somem com o filtro de 90 dias. Rode <strong>uma única vez</strong>.</p>
-                            <button id="btnMigrarEmprestimos" class="btn-modern w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700">
-                                🪣 Migrar Empréstimos (Admin)
-                            </button>
-                            <p id="migracaoEmprestimosStatus" class="text-xs text-center mt-2 hidden"></p>
-                            <hr class="border-gray-300 dark:border-gray-600 my-2 mt-3">
-                            <p class="text-xs text-gray-500 mb-2">🚀 <strong>Passo 3:</strong> Migra contadores de pedidos para os clientes — elimina o listener de pedidos e reduz leituras em ~90%. Rode <strong>uma única vez</strong> após os Passos 1 e 2.</p>
-                            <button id="btnMigrarRefatoracao" class="btn-modern w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
-                                🚀 Migrar Contadores (Admin)
-                            </button>
-                            <p id="migracaoRefatoracaoStatus" class="text-xs text-center mt-2 hidden"></p>
-                            <hr class="border-gray-300 dark:border-gray-600 my-2 mt-3">
                             <p class="text-xs text-gray-500 mb-2">🔧 <strong>Recalibrar:</strong> Recalcula e corrige os contadores de pedidos pendentes e hoje para todos os clientes. Use se os números do dashboard estiverem errados.</p>
                             <button id="btnRecalibrarContadores" class="btn-modern w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700">
                                 🔧 Recalibrar Contadores (Admin)
@@ -2931,6 +2913,7 @@ Estamos sempre à disposição! 🙏`,
 
             let _clientesCarregados = false;
             let _pedidosCarregados = false;
+            let _pedidosHojeCarregados = false; // true após getDocs de pedidos de hoje terminar
             let _estoqueCarregado = false;
             let _emprestimosCarregados = false;
 
@@ -2979,6 +2962,7 @@ Estamos sempre à disposição! 🙏`,
                 getDocs(pedidosHojeQuery).then(snapshot => {
                     pedidos = [];
                     snapshot.forEach(d => pedidos.push({ id: d.id, ...d.data() }));
+                    _pedidosHojeCarregados = true; // pedidos prontos — Caso 2 do reset já pode ser avaliado
                     saveLocalData();
                     updateListaPedidos();
                     updateDashboard();
@@ -3107,9 +3091,11 @@ Estamos sempre à disposição! 🙏`,
 
             // Caso 2: campo tem valor mas não há pedidos pagos hoje no banco
             // (cobre o caso de publicar novo código sem o dia ter mudado)
+            // IMPORTANTE: só avalia se pedidos já foram carregados do Firebase.
+            // Se pedidos[] ainda está vazio (getDocs não terminou), evita zerar indevidamente.
             const temCampoComValor = clientes.some(c => (c.pedidosHoje || 0) > 0);
-            const temPedidoHojeReal = pedidos.some(p => p.pago && isSameDate(p.dataIda || p.data, hoje));
-            const campoDesatualizado = temCampoComValor && !temPedidoHojeReal;
+            const temPedidoHojeReal = _pedidosHojeCarregados && pedidos.some(p => p.pago && isSameDate(p.dataIda || p.data, hoje));
+            const campoDesatualizado = _pedidosHojeCarregados && temCampoComValor && !temPedidoHojeReal;
 
             localStorage.setItem('_ultimoDiaApp', hoje);
 
@@ -5802,45 +5788,16 @@ Estamos sempre à disposição! 🙏`,
                 mostrarNotificacaoBackup(configuracoes.ultimoBackup ? formatLocalDate(configuracoes.ultimoBackup) : 'Nunca');
             });
 
-            // Botões de migração (admin only)
-            const btnMigrar = document.getElementById('btnMigrarFidelidade');
-            if (btnMigrar) {
-                btnMigrar.addEventListener('click', () => migrarFidelidade());
-            }
-            const btnMigrarRef = document.getElementById('btnMigrarRefatoracao');
-            if (btnMigrarRef) {
-                btnMigrarRef.addEventListener('click', () => migrarRefatoracao());
-            }
+            // Botão recalibrar (admin only)
             const btnRecalibrar = document.getElementById('btnRecalibrarContadores');
             if (btnRecalibrar) {
                 btnRecalibrar.addEventListener('click', () => recalibrarContadores());
             }
-            const btnMigrarEmp = document.getElementById('btnMigrarEmprestimos');
-            if (btnMigrarEmp) {
-                btnMigrarEmp.addEventListener('click', () => migrarEmprestimos());
-            }
 
-            // Mostra seção de migração só para admin
+            // Mostra seção de admin só para admin
             const migracaoSection = document.getElementById('migracaoFidelidadeSection');
             if (migracaoSection && currentUser?.email === 'adm@comercialrocha.com') {
                 migracaoSection.classList.add('admin-active');
-                // Mostra status das migrações já realizadas
-                if (localStorage.getItem('fidelidadeMigrada') === 'true') {
-                    const statusEl = document.getElementById('migracaoStatus');
-                    if (statusEl) {
-                        statusEl.classList.remove('hidden');
-                        statusEl.className = 'text-xs text-center mt-2 text-green-600 font-bold';
-                        statusEl.textContent = '✅ Já realizada neste dispositivo.';
-                    }
-                }
-                if (localStorage.getItem('emprestimosMigrados') === 'true') {
-                    const statusEl = document.getElementById('migracaoEmprestimosStatus');
-                    if (statusEl) {
-                        statusEl.classList.remove('hidden');
-                        statusEl.className = 'text-xs text-center mt-2 text-green-600 font-bold';
-                        statusEl.textContent = '✅ Já realizada neste dispositivo.';
-                    }
-                }
             }
         }
 
@@ -8595,315 +8552,6 @@ Estamos sempre à disposição! 🙏`;
 
 
 
-        // ================================================================
-        // MIGRAÇÃO DE EMPRÉSTIMOS — roda uma única vez pelo admin
-        // Lê todos os pedidos que têm galoesEmprestados não vazios
-        // e cria documentos na coleção emprestimos para cada um,
-        // evitando duplicatas (checa se já existe).
-        // ================================================================
-        async function migrarEmprestimos() {
-            if (isOfflineMode || !firebaseConnected || !currentUser) {
-                toast('⚠️ Conecte-se ao Firebase antes de migrar.', 'warning');
-                return;
-            }
-            if (currentUser.email !== 'adm@comercialrocha.com') {
-                toast('⚠️ Apenas o admin pode executar a migração.', 'warning');
-                return;
-            }
-
-            const statusEl = document.getElementById('migracaoEmprestimosStatus');
-            const btnEl = document.getElementById('btnMigrarEmprestimos');
-
-            if (!confirm('🪣 Isso vai buscar todos os pedidos com galões emprestados e criar documentos na coleção de empréstimos.\n\nNada será apagado — apenas novos documentos serão criados onde necessário.\n\nContinuar?')) return;
-
-            btnEl.disabled = true;
-            btnEl.textContent = '⏳ Migrando...';
-            statusEl.classList.remove('hidden');
-            statusEl.className = 'text-xs text-center mt-2 text-blue-600';
-            statusEl.textContent = 'Buscando pedidos com galões emprestados...';
-
-            // Busca TODOS os pedidos diretamente do Firestore
-            let todosPedidos = [];
-            try {
-                const { collection, query, orderBy, getDocs } = window.firebaseUtils;
-                const q = query(collection(window.db, 'pedidos'), orderBy('data', 'desc'));
-                const snap = await getDocs(q);
-                snap.forEach(d => todosPedidos.push({ id: d.id, ...d.data() }));
-            } catch (err) {
-                statusEl.className = 'text-xs text-center mt-2 text-red-600 font-bold';
-                statusEl.textContent = '❌ Erro ao buscar pedidos. Tente novamente.';
-                btnEl.disabled = false;
-                btnEl.textContent = '🪣 Migrar Empréstimos (Admin)';
-                return;
-            }
-
-            // Filtra pedidos que têm galoesEmprestados não vazios
-            const pedidosComEmprestimo = todosPedidos.filter(p =>
-                p.galoesEmprestados && p.galoesEmprestados.length > 0
-            );
-
-            statusEl.textContent = `${pedidosComEmprestimo.length} pedidos com empréstimos encontrados. Criando documentos...`;
-
-            let criados = 0, ignorados = 0, erros = 0;
-
-            for (const pedido of pedidosComEmprestimo) {
-                const cliente = clientes.find(c => c.id === pedido.clienteId);
-                for (const dataGalao of pedido.galoesEmprestados) {
-                    try {
-                        // Verifica se já existe na coleção (evita duplicata)
-                        const jaExiste = emprestimos.some(e =>
-                            e.pedidoId === pedido.id && e.dataGalao === dataGalao
-                        );
-                        if (jaExiste) {
-                            ignorados++;
-                            continue;
-                        }
-                        await salvarEmprestimo({
-                            clienteId: pedido.clienteId,
-                            clienteNome: cliente?.nome || 'Desconhecido',
-                            dataGalao: dataGalao,
-                            tipo: 'cheio',
-                            observacoes: `Emprestado no pedido de ${formatLocalDate(pedido.dataIda || pedido.data)}`,
-                            devolvido: false,
-                            dataEmprestimo: pedido.dataIda || pedido.data || getCurrentDateLocal(),
-                            dataDevolucao: null,
-                            pedidoId: pedido.id
-                        });
-                        criados++;
-                    } catch (err) {
-                        console.error('❌ Erro ao migrar empréstimo:', pedido.id, dataGalao, err);
-                        erros++;
-                    }
-                }
-                statusEl.textContent = `Criados: ${criados} | Já existiam: ${ignorados} | Erros: ${erros}`;
-            }
-
-            if (erros === 0) {
-                statusEl.className = 'text-xs text-center mt-2 text-green-600 font-bold';
-                statusEl.textContent = `✅ Concluído! ${criados} criados, ${ignorados} já existiam.`;
-                btnEl.textContent = '✅ Migração concluída';
-                localStorage.setItem('emprestimosMigrados', 'true');
-                toast(`✅ Empréstimos migrados! ${criados} novos documentos criados.`, 'success', 6000);
-            } else {
-                statusEl.className = 'text-xs text-center mt-2 text-orange-600 font-bold';
-                statusEl.textContent = `⚠️ ${criados} ok, ${erros} com erro. Verifique o console.`;
-                btnEl.disabled = false;
-                btnEl.textContent = '🪣 Migrar Empréstimos (Admin)';
-            }
-        }
-
-        // ================================================================
-        // MIGRAÇÃO DE FIDELIDADE — roda uma única vez pelo admin
-        // Calcula galoesPagosTotais e galoesGratisTotais para cada cliente
-        // usando TODOS os pedidos históricos (carregados no array pedidos).
-        // Após migrar todos os clientes, ativa o filtro de 90 dias no listener.
-        // ================================================================
-        async function migrarFidelidade() {
-            if (isOfflineMode || !firebaseConnected || !currentUser) {
-                toast('⚠️ Conecte-se ao Firebase antes de migrar.', 'warning');
-                return;
-            }
-            if (currentUser.email !== 'adm@comercialrocha.com') {
-                toast('⚠️ Apenas o admin pode executar a migração.', 'warning');
-                return;
-            }
-
-            const statusEl = document.getElementById('migracaoStatus');
-            const btnEl = document.getElementById('btnMigrarFidelidade');
-
-            if (!confirm('⚡ Isso vai recalcular os totais de fidelidade de todos os clientes buscando TODOS os pedidos históricos diretamente do Firebase.\n\nOs dados atuais NÃO serão apagados — apenas dois campos novos serão adicionados.\n\nContinuar?')) return;
-
-            btnEl.disabled = true;
-            btnEl.textContent = '⏳ Migrando...';
-            statusEl.classList.remove('hidden');
-            statusEl.className = 'text-xs text-center mt-2 text-blue-600';
-            statusEl.textContent = 'Buscando TODOS os pedidos históricos do Firebase...';
-
-            // Busca TODOS os pedidos diretamente do Firestore via getDocs
-            // Não depende do array em memória — garante histórico completo independente do filtro
-            let todosPedidosHistoricos = [];
-            try {
-                const { collection, query, orderBy, getDocs } = window.firebaseUtils;
-                const q = query(collection(window.db, 'pedidos'), orderBy('data', 'desc'));
-                const snap = await getDocs(q);
-                snap.forEach(d => todosPedidosHistoricos.push({ id: d.id, ...d.data() }));
-                statusEl.textContent = `${todosPedidosHistoricos.length} pedidos carregados. Calculando fidelidade...`;
-            } catch (err) {
-                console.error('❌ Erro ao buscar pedidos históricos:', err);
-                statusEl.className = 'text-xs text-center mt-2 text-red-600 font-bold';
-                statusEl.textContent = '❌ Erro ao buscar pedidos. Tente novamente.';
-                btnEl.disabled = false;
-                btnEl.textContent = '⚡ Migrar Fidelidade (Admin)';
-                return;
-            }
-
-            let ok = 0, erros = 0;
-            const total = clientes.length;
-            const { writeBatch: wbFid, doc: docFid } = window.firebaseUtils;
-            const BATCH_SIZE_FID = 499;
-            let batchFid = wbFid(window.db);
-            let batchFidCount = 0;
-
-            for (const cliente of clientes) {
-                try {
-                    const galoesPagosTotais = todosPedidosHistoricos
-                        .filter(p => p.clienteId === cliente.id && !p.isGratis && p.pago === true)
-                        .reduce((t, p) => t + (p.galoesPagos || p.quantidade || 1), 0);
-                    const galoesGratisTotais = todosPedidosHistoricos
-                        .filter(p => p.clienteId === cliente.id && p.isGratis === true && p.pago === true)
-                        .reduce((t, p) => t + (p.quantidade || 1), 0);
-
-                    const idx = clientes.findIndex(c => c.id === cliente.id);
-                    if (idx !== -1) {
-                        clientes[idx].galoesPagosTotais = galoesPagosTotais;
-                        clientes[idx].galoesGratisTotais = galoesGratisTotais;
-                    }
-
-                    batchFid.update(docFid(window.db, 'clientes', cliente.id), {
-                        galoesPagosTotais, galoesGratisTotais, updatedAt: getCurrentDateTime()
-                    });
-                    batchFidCount++;
-                    ok++;
-                    statusEl.textContent = `Migrando ${ok}/${total} clientes...`;
-
-                    if (batchFidCount >= BATCH_SIZE_FID) {
-                        await batchFid.commit();
-                        batchFid = wbFid(window.db);
-                        batchFidCount = 0;
-                    }
-                } catch (err) {
-                    console.error('❌ Erro ao migrar cliente:', cliente.id, err);
-                    erros++;
-                }
-            }
-            if (batchFidCount > 0) await batchFid.commit();
-
-            if (erros === 0) {
-                statusEl.className = 'text-xs text-center mt-2 text-green-600 font-bold';
-                statusEl.textContent = `✅ Migração concluída! ${ok} clientes atualizados.`;
-                btnEl.textContent = '✅ Migração concluída';
-
-                // Salva flag no localStorage para ativar filtro de 90 dias
-                localStorage.setItem('fidelidadeMigrada', 'true');
-
-                toast(`✅ Migração concluída! ${ok} clientes atualizados.
-
-O app agora usa acumulados de fidelidade. Recarregue a página para ativar o filtro de 30 dias nos pedidos.`, 'success', 8000);
-            } else {
-                statusEl.className = 'text-xs text-center mt-2 text-orange-600 font-bold';
-                statusEl.textContent = `⚠️ ${ok} ok, ${erros} com erro. Verifique o console.`;
-                btnEl.disabled = false;
-                btnEl.textContent = '⚡ Migrar Fidelidade (Admin)';
-            }
-        }
-
-        async function migrarRefatoracao() {
-            if (isOfflineMode || !firebaseConnected || !currentUser) {
-                toast('⚠️ Conecte-se ao Firebase antes de migrar.', 'warning');
-                return;
-            }
-            if (currentUser.email !== 'adm@comercialrocha.com') {
-                toast('⚠️ Apenas o admin pode executar a migração.', 'warning');
-                return;
-            }
-
-            const statusEl = document.getElementById('migracaoRefatoracaoStatus');
-            const btnEl = document.getElementById('btnMigrarRefatoracao');
-
-            if (!confirm('🚀 Isso vai calcular os contadores de pedidos pendentes e pedidos de hoje para cada cliente e salvar no banco.\n\nNenhum dado será perdido — apenas campos novos serão adicionados.\n\nApós concluir, o app para de usar o listener de pedidos na abertura, reduzindo as leituras em ~90%.\n\nContinuar?')) return;
-
-            btnEl.disabled = true;
-            btnEl.textContent = '⏳ Migrando...';
-            statusEl.classList.remove('hidden');
-            statusEl.className = 'text-xs text-center mt-2 text-blue-600';
-            statusEl.textContent = 'Buscando todos os pedidos do Firebase...';
-
-            // Busca todos os pedidos diretamente do Firestore
-            let todosPedidos = [];
-            try {
-                const { collection, query, orderBy, getDocs } = window.firebaseUtils;
-                const q = query(collection(window.db, 'pedidos'), orderBy('data', 'desc'));
-                const snap = await getDocs(q);
-                snap.forEach(d => todosPedidos.push({ id: d.id, ...d.data() }));
-                statusEl.textContent = `${todosPedidos.length} pedidos carregados. Calculando contadores...`;
-            } catch (err) {
-                console.error('❌ Erro ao buscar pedidos:', err);
-                statusEl.className = 'text-xs text-center mt-2 text-red-600 font-bold';
-                statusEl.textContent = '❌ Erro ao buscar pedidos. Tente novamente.';
-                btnEl.disabled = false;
-                btnEl.textContent = '🚀 Migrar Contadores (Admin)';
-                return;
-            }
-
-            const hoje = getCurrentDateLocal();
-            let ok = 0, erros = 0;
-            const total = clientes.length;
-            const { writeBatch: wbRef, doc: docRef2 } = window.firebaseUtils;
-            const BATCH_SIZE_REF = 499;
-            let batchRef = wbRef(window.db);
-            let batchRefCount = 0;
-
-            for (const cliente of clientes) {
-                try {
-                    const pedidosCliente = todosPedidos.filter(p => p.clienteId === cliente.id);
-                    const pedidosPendentes = pedidosCliente.filter(p => !p.pago).length;
-                    const pedidosHoje = pedidosCliente.filter(p => p.pago && isSameDate(p.dataIda || p.data, hoje)).length;
-
-                    const idx = clientes.findIndex(c => c.id === cliente.id);
-                    if (idx !== -1) {
-                        clientes[idx].pedidosPendentes = pedidosPendentes;
-                        clientes[idx].pedidosHoje = pedidosHoje;
-                    }
-
-                    batchRef.update(docRef2(window.db, 'clientes', cliente.id), {
-                        pedidosPendentes, pedidosHoje, updatedAt: getCurrentDateTime()
-                    });
-                    batchRefCount++;
-                    ok++;
-                    statusEl.textContent = `Migrando ${ok}/${total} clientes...`;
-
-                    if (batchRefCount >= BATCH_SIZE_REF) {
-                        await batchRef.commit();
-                        batchRef = wbRef(window.db);
-                        batchRefCount = 0;
-                    }
-                } catch (err) {
-                    console.error('❌ Erro ao migrar cliente:', cliente.id, err);
-                    erros++;
-                }
-            }
-            if (batchRefCount > 0) await batchRef.commit();
-
-            if (erros > 0) {
-                statusEl.className = 'text-xs text-center mt-2 text-orange-600 font-bold';
-                statusEl.textContent = `⚠️ ${ok} ok, ${erros} com erro. Verifique o console.`;
-                btnEl.disabled = false;
-                btnEl.textContent = '🚀 Migrar Contadores (Admin)';
-                return;
-            }
-
-            // Salva flag no Firestore — todos os aparelhos recebem automaticamente
-            try {
-                const { doc, updateDoc } = window.firebaseUtils;
-                await updateDoc(doc(window.db, 'configuracoes', 'global'), {
-                    refatoracaoMigrada: true,
-                    refatoracaoMigradaEm: getCurrentDateTime()
-                });
-                configuracoes.refatoracaoMigrada = true;
-                window._refatoracaoMigrada = true;
-            } catch (err) {
-                console.error('❌ Erro ao salvar flag no Firestore:', err);
-            }
-
-            statusEl.className = 'text-xs text-center mt-2 text-green-600 font-bold';
-            statusEl.textContent = `✅ Migração concluída! ${ok} clientes atualizados.`;
-            btnEl.textContent = '✅ Migração concluída';
-
-            toast(`✅ Migração concluída! ${ok} clientes atualizados.\n\nO app agora usa o modo otimizado — leituras reduzidas em ~90%. Os outros aparelhos ativam automaticamente.`, 'success', 8000);
-
-            // Atualiza o dashboard com os novos campos
-            updateDashboard();
-        }
 
         async function recalibrarContadores() {
             if (isOfflineMode || !firebaseConnected || !currentUser) {
