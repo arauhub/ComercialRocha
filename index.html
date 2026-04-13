@@ -5504,16 +5504,21 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
             });
         }
 
-        function mostrarHistoricoCliente(clienteId) {
+        async function mostrarHistoricoCliente(clienteId) {
             const cliente = clientes.find(c => c.id === clienteId);
             if (!cliente) return;
             
             const modal = document.getElementById('historicoClienteModal');
             const infoDiv = document.getElementById('historicoClienteInfo');
             const contentDiv = document.getElementById('historicoClienteContent');
+
+            // Abre o modal imediatamente com loading enquanto busca
+            contentDiv.innerHTML = '<p class="text-gray-500 text-center py-8">⏳ Carregando histórico...</p>';
+            modal.classList.remove('hidden');
             
-            // Buscar pedidos do cliente
-            const pedidosCliente = pedidos.filter(p => p.clienteId == clienteId).sort((a, b) => new Date(b.data) - new Date(a.data));
+            // Busca todos os pedidos do cliente (com cache — sem leitura extra se já buscou antes)
+            const todosPedidos = await _getPedidosCliente(clienteId);
+            const pedidosCliente = todosPedidos.sort((a, b) => new Date(b.data) - new Date(a.data));
             
             // Calcular informações de fidelidade
             const galoesPagosTotal = contarGaloesPagos(clienteId);
@@ -5593,8 +5598,6 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
                 
                 contentDiv.innerHTML = historicoHtml;
             }
-            
-            modal.classList.remove('hidden');
         }
 
         // Função otimizada para atualizar UI relacionada aos clientes
