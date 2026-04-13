@@ -7725,42 +7725,42 @@ Estamos sempre à disposição! 🙏`;
         // Usa cache em memória (_cachePedidosCliente) para evitar leituras repetidas no Firebase
         // durante a mesma sessão. O cache é invalidado ao criar, atualizar ou excluir pedidos.
         async function _getPedidosCliente(clienteId) {
-            const fidelidadeMigrada = localStorage.getItem('fidelidadeMigrada') === 'true';
-            if (!fidelidadeMigrada) return pedidos.filter(p => p.clienteId == clienteId);
-
-            if (!window.db || !window.firebaseUtils || isOfflineMode) {
-                return pedidos.filter(p => p.clienteId == clienteId);
-            }
-
             // ✅ CACHE: reutiliza resultado já buscado nesta sessão
             if (_cachePedidosCliente[clienteId]) {
                 console.log(`⚡ Cache hit: ${_cachePedidosCliente[clienteId].length} pedidos do cliente ${clienteId} (sem leitura Firebase)`);
                 return _cachePedidosCliente[clienteId];
             }
 
+            if (!window.db || !window.firebaseUtils || isOfflineMode) {
+                const resultado = pedidos.filter(p => p.clienteId == clienteId)
+                    .sort((a, b) => new Date(b.data) - new Date(a.data));
+                return resultado;
+            }
+
             try {
-                const { collection, query, where, orderBy, getDocs } = window.firebaseUtils;
+                // ✅ Busca SEM orderBy para não exigir índice composto no Firestore
+                // A ordenação é feita em memória após a leitura
+                const { collection, query, where, getDocs } = window.firebaseUtils;
                 const q = query(
                     collection(window.db, 'pedidos'),
-                    where('clienteId', '==', clienteId),
-                    orderBy('data', 'desc')
+                    where('clienteId', '==', clienteId)
                 );
                 const snap = await getDocs(q);
                 const resultado = [];
                 snap.forEach(d => resultado.push({ id: d.id, ...d.data() }));
+
+                // Ordena por data decrescente em memória (sem custo de leitura extra)
+                resultado.sort((a, b) => new Date(b.data) - new Date(a.data));
+
                 console.log(`📋 Buscou ${resultado.length} pedidos históricos do cliente ${clienteId} (salvo em cache)`);
                 // ✅ CACHE: salva resultado para reutilização
                 _cachePedidosCliente[clienteId] = resultado;
                 return resultado;
             } catch (err) {
-                // Se o erro for de índice faltando, orienta o usuário
-                if (err.code === 'failed-precondition' || (err.message && err.message.includes('index'))) {
-                    console.warn('⚠️ Índice composto necessário. Verifique o console do Firebase para criar: pedidos(clienteId ASC, data DESC)');
-                    toast('⚠️ Para relatório completo do cliente, crie o índice no Firebase Console (link no console do navegador).', 'warning', 6000);
-                } else {
-                    console.warn('⚠️ Erro ao buscar pedidos do cliente, usando array:', err);
-                }
-                return pedidos.filter(p => p.clienteId == clienteId);
+                console.warn('⚠️ Erro ao buscar pedidos do cliente, usando array local:', err);
+                const resultado = pedidos.filter(p => p.clienteId == clienteId)
+                    .sort((a, b) => new Date(b.data) - new Date(a.data));
+                return resultado;
             }
         }
 
