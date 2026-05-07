@@ -1953,7 +1953,7 @@ window.firebaseLoaded = true;
             </div>
             <!-- ============================================================
                  VERSÃO DO ARQUIVO — LEIA ANTES DE EDITAR
-                 Versão atual: v1.1
+                 Versão atual: v1.2
                  Toda vez que qualquer alteração for feita neste arquivo,
                  incremente a versão aqui E no span#app-version abaixo.
                  Regra: correção pequena → sobe o minor (v1.1 → v1.2)
@@ -1962,7 +1962,7 @@ window.firebaseLoaded = true;
                  SEMPRE, mesmo que o usuário não peça explicitamente.
                  ============================================================ -->
             <div class="flex items-center space-x-4">
-                <span id="app-version" style="font-size:10px;opacity:0.35;letter-spacing:0.03em;color:#fff;font-family:monospace;user-select:none;">v1.1</span>
+                <span id="app-version" style="font-size:10px;opacity:0.35;letter-spacing:0.03em;color:#fff;font-family:monospace;user-select:none;">v1.2</span>
                 <button id="configBtn" class="hidden p-2 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30 transition-all" onclick="abrirConfiguracoes()">
                     <span class="text-xl">⚙️</span>
                 </button>
@@ -5591,7 +5591,7 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
                             <td class="border border-gray-300 dark:border-gray-600 p-2">
                                 ${pedido.isGratis ? '🎉 GRÁTIS' : '💰 Compra'}
                             </td>
-                            <td class="border border-gray-300 dark:border-gray-600 p-2 text-center">${pedido.quantidade}</td>
+                            <td class="border border-gray-300 dark:border-gray-600 p-2 text-center">${pedido.isGratis ? pedido.quantidade : (typeof pedido.galoesPagos === 'number' ? pedido.galoesPagos : pedido.quantidade)}</td>
                             <td class="border border-gray-300 dark:border-gray-600 p-2">${galoesEntregues}</td>
                             <td class="border border-gray-300 dark:border-gray-600 p-2">${galoesRecebidos}</td>
                             <td class="border border-gray-300 dark:border-gray-600 p-2 text-right">
@@ -6235,18 +6235,25 @@ Estamos sempre à disposição! 🙏`,
                         }
                     });
                     
+                    const pedidoEditado = pedidos.find(p => p.id === currentEditingPedido);
+                    const novaQuantidade = parseInt(document.getElementById('editPedidoQuantidade').value);
+
+                    // Recalcula galoesPagos com base na nova quantidade e no tipo do pedido.
+                    // Pedidos grátis têm galoesPagos=0; os demais usam a quantidade diretamente.
+                    // Isso evita divergência no contador de fidelidade quando a quantidade é editada.
+                    const novoGaloesPagos = (pedidoEditado && pedidoEditado.isGratis === true) ? 0 : novaQuantidade;
+
                     const dadosAtualizacao = {
                         dataIda: document.getElementById('editPedidoData').value,
-                        quantidade: parseInt(document.getElementById('editPedidoQuantidade').value),
+                        quantidade: novaQuantidade,
                         quantidadeVazios: parseInt(document.getElementById('editPedidoQuantidadeVazios').value) || 0,
                         valorTotal: parseFloat(document.getElementById('editPedidoValor').value),
                         galoesEntregues: galoesEntregues,
                         galoesVindos: galoesVindos,
-                        galoesEmprestados: galoesEmprestados, // MELHORIA 4: Incluir galões emprestados
-                        observacoes: document.getElementById('editPedidoObservacoes').value
+                        galoesEmprestados: galoesEmprestados,
+                        observacoes: document.getElementById('editPedidoObservacoes').value,
+                        galoesPagos: novoGaloesPagos // mantém galoesPagos sincronizado com quantidade
                     };
-                    
-                    const pedidoEditado = pedidos.find(p => p.id === currentEditingPedido);
                     await atualizarPedido(currentEditingPedido, dadosAtualizacao);
 
                     // Sincroniza galões emprestados com a coleção emprestimos
@@ -8635,9 +8642,23 @@ Estamos sempre à disposição! 🙏`;
                     const pedidosPendentesReal = pedidosCliente.filter(p => !p.pago).length;
                     const pedidosHojeReal = pedidosCliente.filter(p => p.pago && isSameDate(p.dataIda || p.data, hoje)).length;
 
+                    // Recalcula galoesPagosTotais somando galoesPagos de cada pedido pago e não-grátis.
+                    // Usa galoesPagos se disponível; caso contrário usa quantidade como fallback.
+                    // Isso corrige divergências causadas por edições de pedidos que não atualizavam galoesPagos.
+                    const galoesPagosTotaisReal = pedidosCliente
+                        .filter(p => p.pago === true && p.isGratis !== true)
+                        .reduce((total, p) => total + (typeof p.galoesPagos === 'number' ? p.galoesPagos : (p.quantidade || 1)), 0);
+
+                    // Recalcula galoesGratisTotais somando quantidade dos pedidos grátis pagos.
+                    const galoesGratisTotaisReal = pedidosCliente
+                        .filter(p => p.pago === true && p.isGratis === true)
+                        .reduce((total, p) => total + (p.quantidade || 1), 0);
+
                     const precisaCorrigir =
                         (cliente.pedidosPendentes ?? -1) !== pedidosPendentesReal ||
-                        (cliente.pedidosHoje ?? -1) !== pedidosHojeReal;
+                        (cliente.pedidosHoje ?? -1) !== pedidosHojeReal ||
+                        (typeof cliente.galoesPagosTotais === 'number' && cliente.galoesPagosTotais !== galoesPagosTotaisReal && galoesPagosTotaisReal > cliente.galoesPagosTotais) ||
+                        (typeof cliente.galoesGratisTotais === 'number' && cliente.galoesGratisTotais !== galoesGratisTotaisReal && galoesGratisTotaisReal > cliente.galoesGratisTotais);
 
                     if (precisaCorrigir) {
                         // Optimistic update local
@@ -8645,12 +8666,17 @@ Estamos sempre à disposição! 🙏`;
                         if (idx !== -1) {
                             clientes[idx].pedidosPendentes = pedidosPendentesReal;
                             clientes[idx].pedidosHoje = pedidosHojeReal;
+                            if (typeof clientes[idx].galoesPagosTotais === 'number' && galoesPagosTotaisReal > clientes[idx].galoesPagosTotais) clientes[idx].galoesPagosTotais = galoesPagosTotaisReal;
+                            if (typeof clientes[idx].galoesGratisTotais === 'number' && galoesGratisTotaisReal > clientes[idx].galoesGratisTotais) clientes[idx].galoesGratisTotais = galoesGratisTotaisReal;
                         }
-                        batch.update(doc(window.db, 'clientes', cliente.id), {
+                        const updatePayload = {
                             pedidosPendentes: pedidosPendentesReal,
                             pedidosHoje: pedidosHojeReal,
                             updatedAt: getCurrentDateTime()
-                        });
+                        };
+                        if (typeof cliente.galoesPagosTotais === 'number' && galoesPagosTotaisReal > cliente.galoesPagosTotais) updatePayload.galoesPagosTotais = galoesPagosTotaisReal;
+                        if (typeof cliente.galoesGratisTotais === 'number' && galoesGratisTotaisReal > cliente.galoesGratisTotais) updatePayload.galoesGratisTotais = galoesGratisTotaisReal;
+                        batch.update(doc(window.db, 'clientes', cliente.id), updatePayload);
                         batchCount++;
                         corrigidos++;
 
