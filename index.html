@@ -1953,7 +1953,7 @@ window.firebaseLoaded = true;
             </div>
             <!-- ============================================================
                  VERSÃO DO ARQUIVO — LEIA ANTES DE EDITAR
-                 Versão atual: v1.2
+                 Versão atual: v1.3
                  Toda vez que qualquer alteração for feita neste arquivo,
                  incremente a versão aqui E no span#app-version abaixo.
                  Regra: correção pequena → sobe o minor (v1.1 → v1.2)
@@ -1962,7 +1962,7 @@ window.firebaseLoaded = true;
                  SEMPRE, mesmo que o usuário não peça explicitamente.
                  ============================================================ -->
             <div class="flex items-center space-x-4">
-                <span id="app-version" style="font-size:10px;opacity:0.35;letter-spacing:0.03em;color:#fff;font-family:monospace;user-select:none;">v1.2</span>
+                <span id="app-version" style="font-size:10px;opacity:0.35;letter-spacing:0.03em;color:#fff;font-family:monospace;user-select:none;">v1.3</span>
                 <button id="configBtn" class="hidden p-2 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30 transition-all" onclick="abrirConfiguracoes()">
                     <span class="text-xl">⚙️</span>
                 </button>
@@ -7235,6 +7235,27 @@ Nenhum valor a pagar.`, 'info');
             document.getElementById('editPedidoQuantidadeVazios').value = pedido.quantidadeVazios || 0;
             document.getElementById('editPedidoValor').value = pedido.valorTotal;
             document.getElementById('editPedidoObservacoes').value = pedido.observacoes || '';
+
+            // Recalcula valorTotal automaticamente quando a quantidade muda.
+            // Só aplica em pedidos não-grátis; o campo valor continua editável manualmente.
+            // Clona os inputs para remover listeners anteriores (evita duplicação ao reabrir o modal).
+            const _inputQtd = document.getElementById('editPedidoQuantidade');
+            const _inputQtdV = document.getElementById('editPedidoQuantidadeVazios');
+            const _newQtd = _inputQtd.cloneNode(true);
+            const _newQtdV = _inputQtdV.cloneNode(true);
+            _inputQtd.parentNode.replaceChild(_newQtd, _inputQtd);
+            _inputQtdV.parentNode.replaceChild(_newQtdV, _inputQtdV);
+            if (!pedido.isGratis) {
+                const _preco = configuracoes.precoGalao || 16;
+                const _precoV = configuracoes.precoGalaoVazio || 25;
+                const _recalc = () => {
+                    const q = parseInt(document.getElementById('editPedidoQuantidade').value) || 0;
+                    const qv = parseInt(document.getElementById('editPedidoQuantidadeVazios').value) || 0;
+                    document.getElementById('editPedidoValor').value = (q * _preco + qv * _precoV).toFixed(2);
+                };
+                document.getElementById('editPedidoQuantidade').addEventListener('input', _recalc);
+                document.getElementById('editPedidoQuantidadeVazios').addEventListener('input', _recalc);
+            }
             
             const galoesEntreguesContainer = document.getElementById('editGaloesEntregues');
             galoesEntreguesContainer.innerHTML = '';
