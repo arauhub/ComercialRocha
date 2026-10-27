@@ -3938,7 +3938,7 @@ Estamos sempre à disposição! 🙏`,
             // Filtra pago:true para não contar pedidos ainda pendentes de pagamento
             return pedidos
                 .filter(p => p.clienteId === clienteId && !p.isGratis && p.pago === true)
-                .reduce((total, p) => total + (p.galoesPagos || p.quantidade || 1), 0);
+                .reduce((total, p) => total + (typeof p.galoesPagos === 'number' ? p.galoesPagos : (p.quantidade || 1)), 0);
         }
 
         // Total de galões grátis já recebidos
@@ -4818,7 +4818,7 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
                     if (pedidoData.pago === true) {
                         // Pedido já nasce pago — atualiza fidelidade + ultimaCompra + pedidosHoje
                         if (typeof cliente.galoesPagosTotais === 'number') {
-                            const galoesDoPedido = pedidoData.galoesPagos || pedidoData.quantidade || 1;
+                            const galoesDoPedido = (typeof pedidoData.galoesPagos === 'number' ? pedidoData.galoesPagos : (pedidoData.quantidade || 1));
                             const ehGratis = pedidoData.isGratis === true;
                             const novosPagos = ehGratis ? cliente.galoesPagosTotais : cliente.galoesPagosTotais + galoesDoPedido;
                             const novosGratis = ehGratis ? (cliente.galoesGratisTotais || 0) + (pedidoData.quantidade || 1) : (cliente.galoesGratisTotais || 0);
@@ -4890,7 +4890,7 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
                 // Antes da migração, contarGaloesPagos usa o fallback do array — sem risco.
                 if (typeof cliente.galoesPagosTotais !== 'number') return;
 
-                const galoesDoPedido = pedidoData.galoesPagos || pedidoData.quantidade || 1;
+                const galoesDoPedido = (typeof pedidoData.galoesPagos === 'number' ? pedidoData.galoesPagos : (pedidoData.quantidade || 1));
                 const ehGratis = pedidoData.isGratis === true;
                 const ehPago = pedidoData.pago === true;
 
@@ -5399,7 +5399,9 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
                         endereco: endereco,
                         ultimaCompra: null,
                         galaoAtual: null,
-                        inativo: false
+                        inativo: false,
+                        galoesPagosTotais: 0,
+                        galoesGratisTotais: 0
                     };
                     
                     await salvarCliente(dadosCliente);
@@ -5531,13 +5533,30 @@ ${galoesGratisParaCriar} pedido(s) grátis foi(ram) criado(s) automaticamente.`,
             const todosPedidos = await _getPedidosCliente(clienteId);
             const pedidosCliente = todosPedidos.sort((a, b) => new Date(b.data) - new Date(a.data));
             
-            // Calcular informações de fidelidade
-            const galoesPagosTotal = contarGaloesPagos(clienteId);
-            const galoesPagosCicloAtual = contarGaloesPagosCicloAtual(clienteId);
-            const proximaGratis = proximaCompraGratis(clienteId);
-            const galoesGratisDevidos = verificarFidelidade(clienteId);
-            const galoesGratisRecebidos = contarGaloesGratisRecebidos(clienteId);
+            // Calcular informações de fidelidade a partir do HISTÓRICO COMPLETO (todosPedidos),
+            // e não do contador do cliente / array local (que só tem pedidos de hoje).
             const fidelidadeLimit = configuracoes.galoesParaGratis || 10;
+            const galoesPagosTotal = pedidosCliente
+                .filter(p => p.pago === true && p.isGratis !== true)
+                .reduce((t, p) => t + (typeof p.galoesPagos === 'number' ? p.galoesPagos : (p.quantidade || 1)), 0);
+            const galoesGratisRecebidos = pedidosCliente
+                .filter(p => p.pago === true && p.isGratis === true)
+                .reduce((t, p) => t + (p.quantidade || 1), 0);
+            const galoesPagosCicloAtual = galoesPagosTotal % fidelidadeLimit;
+            const proximaGratis = Math.max(0, fidelidadeLimit - galoesPagosCicloAtual);
+            const galoesGratisDevidos = Math.max(0, Math.floor(galoesPagosTotal / fidelidadeLimit) - galoesGratisRecebidos);
+
+            // Auto-reparo: grava os totais no cadastro se estiverem ausentes ou diferentes
+            if (cliente.galoesPagosTotais !== galoesPagosTotal || cliente.galoesGratisTotais !== galoesGratisRecebidos) {
+                cliente.galoesPagosTotais = galoesPagosTotal;
+                cliente.galoesGratisTotais = galoesGratisRecebidos;
+                try {
+                    atualizarCliente(clienteId, {
+                        galoesPagosTotais: galoesPagosTotal,
+                        galoesGratisTotais: galoesGratisRecebidos
+                    }).catch(e => console.warn('⚠️ Falha ao reparar fidelidade do cliente:', e));
+                } catch (e) { console.warn('⚠️ Falha ao reparar fidelidade do cliente:', e); }
+            }
             
             // Informações do cliente
             infoDiv.innerHTML = `
@@ -6455,7 +6474,7 @@ Estamos sempre à disposição! 🙏`,
 
                                 // Fidelidade — só incrementa se campos já existem (pós-migração)
                                 if (typeof cliente.galoesPagosTotais === 'number') {
-                                    const galoesDoPedido = pedidoConfirmado.galoesPagos || pedidoConfirmado.quantidade || 1;
+                                    const galoesDoPedido = (typeof pedidoConfirmado.galoesPagos === 'number' ? pedidoConfirmado.galoesPagos : (pedidoConfirmado.quantidade || 1));
                                     if (!isGratisAgora) {
                                         clienteUpdate.galoesPagosTotais = cliente.galoesPagosTotais + galoesDoPedido;
                                         clientes[clienteIdx].galoesPagosTotais = clienteUpdate.galoesPagosTotais;
@@ -8678,8 +8697,8 @@ Estamos sempre à disposição! 🙏`;
                     const precisaCorrigir =
                         (cliente.pedidosPendentes ?? -1) !== pedidosPendentesReal ||
                         (cliente.pedidosHoje ?? -1) !== pedidosHojeReal ||
-                        (typeof cliente.galoesPagosTotais === 'number' && cliente.galoesPagosTotais !== galoesPagosTotaisReal && galoesPagosTotaisReal > cliente.galoesPagosTotais) ||
-                        (typeof cliente.galoesGratisTotais === 'number' && cliente.galoesGratisTotais !== galoesGratisTotaisReal && galoesGratisTotaisReal > cliente.galoesGratisTotais);
+                        cliente.galoesPagosTotais !== galoesPagosTotaisReal ||
+                        cliente.galoesGratisTotais !== galoesGratisTotaisReal;
 
                     if (precisaCorrigir) {
                         // Optimistic update local
@@ -8687,16 +8706,16 @@ Estamos sempre à disposição! 🙏`;
                         if (idx !== -1) {
                             clientes[idx].pedidosPendentes = pedidosPendentesReal;
                             clientes[idx].pedidosHoje = pedidosHojeReal;
-                            if (typeof clientes[idx].galoesPagosTotais === 'number' && galoesPagosTotaisReal > clientes[idx].galoesPagosTotais) clientes[idx].galoesPagosTotais = galoesPagosTotaisReal;
-                            if (typeof clientes[idx].galoesGratisTotais === 'number' && galoesGratisTotaisReal > clientes[idx].galoesGratisTotais) clientes[idx].galoesGratisTotais = galoesGratisTotaisReal;
+                            clientes[idx].galoesPagosTotais = galoesPagosTotaisReal;
+                            clientes[idx].galoesGratisTotais = galoesGratisTotaisReal;
                         }
                         const updatePayload = {
                             pedidosPendentes: pedidosPendentesReal,
                             pedidosHoje: pedidosHojeReal,
+                            galoesPagosTotais: galoesPagosTotaisReal,
+                            galoesGratisTotais: galoesGratisTotaisReal,
                             updatedAt: getCurrentDateTime()
                         };
-                        if (typeof cliente.galoesPagosTotais === 'number' && galoesPagosTotaisReal > cliente.galoesPagosTotais) updatePayload.galoesPagosTotais = galoesPagosTotaisReal;
-                        if (typeof cliente.galoesGratisTotais === 'number' && galoesGratisTotaisReal > cliente.galoesGratisTotais) updatePayload.galoesGratisTotais = galoesGratisTotaisReal;
                         batch.update(doc(window.db, 'clientes', cliente.id), updatePayload);
                         batchCount++;
                         corrigidos++;
